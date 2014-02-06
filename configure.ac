@@ -1,0 +1,10 @@
+AC_INIT([EFFORTS], 1.0)
+AC_CONFIG_SRCDIR([src/model.cpp])
+AM_INIT_AUTOMAKE
+AC_PROG_CXX
+AC_LANG(C++)
+AC_PROG_LIBTOOL
+
+AC_CHECK_PROGS(RANLIB, ranlib)
+AC_OUTPUT(Makefile src/Makefile tests/Makefile)
+

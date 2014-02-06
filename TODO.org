@@ -1,0 +1,45 @@
+#+TITLE: todo list for effort
+#+author: Giuseppe Lipari and Youcheng Sun
+
+* TODO As a first step, we do the model [0%]
+  Copy from old efforts. We need classes 
+  - Automaton
+  - Location
+  - Edges
+  - Guard 
+  - Expression
+  We need to prepare a way to create such objects that is independent from the parser
+
+** TODO Transform Expression into a class
+*** TODO Write a constructor 
+*** TODO Write methods to read/write the components
+*** TODO Write a method "eval" which evaluates the expression for some value of the variables
+*** TODO Write test cases for it
+   
+** TODO Write class AtomicConstraint
+   - A comparison between two expressions
+*** TODO Write a method eval()
+*** TODO Write test cases
+
+** TODO Write a class Constraint
+   It is a conjunction of AtomicConstraints
+*** TODO Write a method eval()
+*** TODO Write test cases
+
+** TODO PPL
+*** TODO Write a function to transform a Constraint into a PPL polyhedron, or octogonal shape, or DBM
+*** TODO Write tests   
+   
+** TODO Write a class Update 
+   It is an assignment 
+   It contains a variable and an expression
+
+** TODO Write class Variable 
+   represents a clock
+
+** TODO Write class DiscreteVariable
+   Represent a discrete variable
+
+
+
+  
