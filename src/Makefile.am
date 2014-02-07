@@ -2,6 +2,7 @@ lib_LTLIBRARIES = libefforts.la
 
 libefforts_la_CPPFLAGS = -I. -std=c++11 -Wall
 libefforts_la_SOURCES = model.cpp
+LIBS = -ltinyparser
 
 
 bin_PROGRAMS = efforts
