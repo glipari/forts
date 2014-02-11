@@ -1,5 +1,6 @@
 #include <iostream>
 #include <model.hpp>
+#include "expression.hpp"
 
 
 int main()
