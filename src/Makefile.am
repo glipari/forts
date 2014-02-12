@@ -1,7 +1,7 @@
 lib_LTLIBRARIES = libefforts.la
 
 libefforts_la_CPPFLAGS = -I. -std=c++11 -Wall $(TIPA_CFLAGS)
-libefforts_la_SOURCES = model.cpp
+libefforts_la_SOURCES = model.cpp syntax_trees.cpp
 #LIBS = -ltinyparser
 libefforts_la_LIBADD = $(TIPA_LIBS)
 
