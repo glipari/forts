@@ -119,8 +119,10 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libefforts_la_LIBADD =
-am_libefforts_la_OBJECTS = libefforts_la-model.lo
+am__DEPENDENCIES_1 =
+libefforts_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am_libefforts_la_OBJECTS = libefforts_la-model.lo \
+	libefforts_la-syntax_trees.lo
 libefforts_la_OBJECTS = $(am_libefforts_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -232,7 +234,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = -ltinyparser
+LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
@@ -254,11 +256,16 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TIPA_CFLAGS = @TIPA_CFLAGS@
+TIPA_LIBS = @TIPA_LIBS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -314,10 +321,12 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libefforts.la
-libefforts_la_CPPFLAGS = -I. -std=c++11 -Wall
-libefforts_la_SOURCES = model.cpp
-efforts_CPPFLAGS = -I. -std=c++11 -Wall
-efforts_LDFLAGS = -lefforts
+libefforts_la_CPPFLAGS = -I. -std=c++11 -Wall $(TIPA_CFLAGS)
+libefforts_la_SOURCES = model.cpp syntax_trees.cpp
+#LIBS = -ltinyparser
+libefforts_la_LIBADD = $(TIPA_LIBS)
+efforts_CPPFLAGS = -I. -std=c++11 -Wall $(TIPA_CFLAGS)
+efforts_LDFLAGS = -lefforts $(TIPA_LIBS)
 efforts_SOURCES = main.cpp
 all: all-am
 
@@ -453,6 +462,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/efforts-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-model.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-syntax_trees.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -481,6 +491,13 @@ libefforts_la-model.lo: model.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='model.cpp' object='libefforts_la-model.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-model.lo `test -f 'model.cpp' || echo '$(srcdir)/'`model.cpp
+
+libefforts_la-syntax_trees.lo: syntax_trees.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libefforts_la-syntax_trees.lo -MD -MP -MF $(DEPDIR)/libefforts_la-syntax_trees.Tpo -c -o libefforts_la-syntax_trees.lo `test -f 'syntax_trees.cpp' || echo '$(srcdir)/'`syntax_trees.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libefforts_la-syntax_trees.Tpo $(DEPDIR)/libefforts_la-syntax_trees.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='syntax_trees.cpp' object='libefforts_la-syntax_trees.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-syntax_trees.lo `test -f 'syntax_trees.cpp' || echo '$(srcdir)/'`syntax_trees.cpp
 
 efforts-main.o: main.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(efforts_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT efforts-main.o -MD -MP -MF $(DEPDIR)/efforts-main.Tpo -c -o efforts-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp

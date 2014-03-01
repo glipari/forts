@@ -65,7 +65,6 @@ public:
     }
 };
 
-
 shared_ptr<atomic_constraint_node> build_an_at_tree(string expr_input)
 {
     rule atomic_constraint, expr, primary, term, 

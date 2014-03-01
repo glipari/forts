@@ -1,7 +1,10 @@
 #+TITLE: todo list for effort
 #+author: Giuseppe Lipari and Youcheng Sun
 
-* TODO As a first step, we do the model [0%]
+* TODO As a first step, we do the model [11%]
+  :PROPERTIES:
+  :ORDERED:  t
+  :END:
   Copy from old efforts. We need classes 
   - Automaton
   - Location
@@ -11,20 +14,49 @@
   We need to prepare a way to create such objects that is independent from the parser
 
 ** TODO Transform Expression into a class
-*** TODO Write a constructor 
-*** TODO Write methods to read/write the components
-*** TODO Write a method "eval" which evaluates the expression for some value of the variables
-*** TODO Write test cases for it
+*** DONE Write a constructor 
+*** DONE Write methods to read/write the components
+*** DONE Write a method "eval" which evaluates the expression for some value of the variables
+*** DONE Write test cases for it
    
-** TODO Write class AtomicConstraint
+** DONE Write class AtomicConstraint
    - A comparison between two expressions
-*** TODO Write a method eval()
-*** TODO Write test cases
+*** DONE Write a method eval()
+*** DONE Write test cases
+** TODO Write classes for the different variables
+    We treat three different types of variables:
+    1) Discrete variables
+    2) Parameters 
+    3) Clocks
+    Therefore, a variable is a "typed string", which may be associated
+    an integer value.
+
+    - it should be forbidden to have multiplications or divisions
+      between clocks and parameters,
+    - clocks and parameters cannot be at the denominator of a fraction
+    - discrete variables instead can go anywhere. 
+
+    (this is because, before transforming a constraint into a
+    PPL::constraint, we substitute the discrete variables with 
+    their actual value)
+
+    Therefore, We have to do the following things:
+*** TODO Write a class for representing variables, (discrete, clock or parameters)
+*** TODO Add function check_linearity() to class expression
+    This class takes a list of variables, and check the above things
+*** TODO Add a parameter to function compute()
+    We additionally give the list of variables that is used to evaluate a value
+*** TODO Write test cases for everything
+
 
 ** TODO Write a class Constraint
    It is a conjunction of AtomicConstraints
 *** TODO Write a method eval()
 *** TODO Write test cases
+** TODO Add a method to_ppl() to atomic_constraint
+   This transforms the atomic constraint to a ppl expression
+   the method takes as input a list of discrete variables that are 
+   substituted during transformation
 
 ** TODO PPL
 *** TODO Write a function to transform a Constraint into a PPL polyhedron, or octogonal shape, or DBM

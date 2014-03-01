@@ -90,7 +90,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_test_OBJECTS = test-test_main.$(OBJEXT) \
-	test-test_expr_tree.$(OBJEXT)
+	test-test_atomic_constraint_tree.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_$(V))
@@ -365,13 +365,13 @@ TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/theyoucheng/Workspace/forts/missing aclocal-1.13
+ACLOCAL = ${SHELL} /home/lipari/repositories/efforts/missing aclocal-1.13
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /home/theyoucheng/Workspace/forts/missing autoconf
-AUTOHEADER = ${SHELL} /home/theyoucheng/Workspace/forts/missing autoheader
-AUTOMAKE = ${SHELL} /home/theyoucheng/Workspace/forts/missing automake-1.13
+AUTOCONF = ${SHELL} /home/lipari/repositories/efforts/missing autoconf
+AUTOHEADER = ${SHELL} /home/lipari/repositories/efforts/missing autoheader
+AUTOMAKE = ${SHELL} /home/lipari/repositories/efforts/missing automake-1.13
 AWK = mawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -403,12 +403,12 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -ltinyparser
+LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/theyoucheng/Workspace/forts/missing makeinfo
+MAKEINFO = ${SHELL} /home/lipari/repositories/efforts/missing makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -425,16 +425,21 @@ PACKAGE_TARNAME = efforts
 PACKAGE_URL = 
 PACKAGE_VERSION = 1.0
 PATH_SEPARATOR = :
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
 RANLIB = ranlib
 SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
+TIPA_CFLAGS = -I/usr/local/include/tipa-1.0 -I/usr/local/lib/tipa-1.0/include  
+TIPA_LIBS = -L/usr/local/lib -ltinyparser-1.0  
 VERSION = 1.0
-abs_builddir = /home/theyoucheng/Workspace/forts/tests
-abs_srcdir = /home/theyoucheng/Workspace/forts/tests
-abs_top_builddir = /home/theyoucheng/Workspace/forts
-abs_top_srcdir = /home/theyoucheng/Workspace/forts
+abs_builddir = /home/lipari/repositories/efforts/tests
+abs_srcdir = /home/lipari/repositories/efforts/tests
+abs_top_builddir = /home/lipari/repositories/efforts
+abs_top_srcdir = /home/lipari/repositories/efforts
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -464,7 +469,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/theyoucheng/Workspace/forts/install-sh
+install_sh = ${SHELL} /home/lipari/repositories/efforts/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -484,9 +489,9 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-test_CPPFLAGS = -I../src/ -std=c++11 -Wall
-test_LDFLAGS = -L../src/ -lefforts
-test_SOURCES = test_main.cpp test_expr_tree.cpp
+test_CPPFLAGS = -I../src/ -std=c++11 -Wall $(TIPA_CFLAGS)
+test_LDFLAGS = -L../src/ -lefforts $(TIPA_LIBS)
+test_SOURCES = test_main.cpp test_atomic_constraint_tree.cpp #test_expr_tree.cpp
 all: all-am
 
 .SUFFIXES:
@@ -541,7 +546,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/test-test_expr_tree.Po
+include ./$(DEPDIR)/test-test_atomic_constraint_tree.Po
 include ./$(DEPDIR)/test-test_main.Po
 
 .cpp.o:
@@ -579,19 +584,19 @@ test-test_main.obj: test_main.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_main.obj `if test -f 'test_main.cpp'; then $(CYGPATH_W) 'test_main.cpp'; else $(CYGPATH_W) '$(srcdir)/test_main.cpp'; fi`
 
-test-test_expr_tree.o: test_expr_tree.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_expr_tree.o -MD -MP -MF $(DEPDIR)/test-test_expr_tree.Tpo -c -o test-test_expr_tree.o `test -f 'test_expr_tree.cpp' || echo '$(srcdir)/'`test_expr_tree.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_expr_tree.Tpo $(DEPDIR)/test-test_expr_tree.Po
-#	$(AM_V_CXX)source='test_expr_tree.cpp' object='test-test_expr_tree.o' libtool=no \
+test-test_atomic_constraint_tree.o: test_atomic_constraint_tree.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_atomic_constraint_tree.o -MD -MP -MF $(DEPDIR)/test-test_atomic_constraint_tree.Tpo -c -o test-test_atomic_constraint_tree.o `test -f 'test_atomic_constraint_tree.cpp' || echo '$(srcdir)/'`test_atomic_constraint_tree.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_atomic_constraint_tree.Tpo $(DEPDIR)/test-test_atomic_constraint_tree.Po
+#	$(AM_V_CXX)source='test_atomic_constraint_tree.cpp' object='test-test_atomic_constraint_tree.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_expr_tree.o `test -f 'test_expr_tree.cpp' || echo '$(srcdir)/'`test_expr_tree.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_atomic_constraint_tree.o `test -f 'test_atomic_constraint_tree.cpp' || echo '$(srcdir)/'`test_atomic_constraint_tree.cpp
 
-test-test_expr_tree.obj: test_expr_tree.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_expr_tree.obj -MD -MP -MF $(DEPDIR)/test-test_expr_tree.Tpo -c -o test-test_expr_tree.obj `if test -f 'test_expr_tree.cpp'; then $(CYGPATH_W) 'test_expr_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_expr_tree.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_expr_tree.Tpo $(DEPDIR)/test-test_expr_tree.Po
-#	$(AM_V_CXX)source='test_expr_tree.cpp' object='test-test_expr_tree.obj' libtool=no \
+test-test_atomic_constraint_tree.obj: test_atomic_constraint_tree.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_atomic_constraint_tree.obj -MD -MP -MF $(DEPDIR)/test-test_atomic_constraint_tree.Tpo -c -o test-test_atomic_constraint_tree.obj `if test -f 'test_atomic_constraint_tree.cpp'; then $(CYGPATH_W) 'test_atomic_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_atomic_constraint_tree.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_atomic_constraint_tree.Tpo $(DEPDIR)/test-test_atomic_constraint_tree.Po
+#	$(AM_V_CXX)source='test_atomic_constraint_tree.cpp' object='test-test_atomic_constraint_tree.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_expr_tree.obj `if test -f 'test_expr_tree.cpp'; then $(CYGPATH_W) 'test_expr_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_expr_tree.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_atomic_constraint_tree.obj `if test -f 'test_atomic_constraint_tree.cpp'; then $(CYGPATH_W) 'test_atomic_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_atomic_constraint_tree.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -970,6 +975,7 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	recheck tags tags-am uninstall uninstall-am
 
+#LIBS = -ltinyparser
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

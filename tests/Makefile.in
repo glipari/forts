@@ -90,7 +90,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_test_OBJECTS = test-test_main.$(OBJEXT) \
-	test-test_expr_tree.$(OBJEXT)
+	test-test_atomic_constraint_tree.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -403,7 +403,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = -ltinyparser
+LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
@@ -425,11 +425,16 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TIPA_CFLAGS = @TIPA_CFLAGS@
+TIPA_LIBS = @TIPA_LIBS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -484,9 +489,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-test_CPPFLAGS = -I../src/ -std=c++11 -Wall
-test_LDFLAGS = -L../src/ -lefforts
-test_SOURCES = test_main.cpp test_expr_tree.cpp
+test_CPPFLAGS = -I../src/ -std=c++11 -Wall $(TIPA_CFLAGS)
+test_LDFLAGS = -L../src/ -lefforts $(TIPA_LIBS)
+test_SOURCES = test_main.cpp test_atomic_constraint_tree.cpp #test_expr_tree.cpp
 all: all-am
 
 .SUFFIXES:
@@ -541,7 +546,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_expr_tree.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_atomic_constraint_tree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_main.Po@am__quote@
 
 .cpp.o:
@@ -579,19 +584,19 @@ test-test_main.obj: test_main.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_main.obj `if test -f 'test_main.cpp'; then $(CYGPATH_W) 'test_main.cpp'; else $(CYGPATH_W) '$(srcdir)/test_main.cpp'; fi`
 
-test-test_expr_tree.o: test_expr_tree.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_expr_tree.o -MD -MP -MF $(DEPDIR)/test-test_expr_tree.Tpo -c -o test-test_expr_tree.o `test -f 'test_expr_tree.cpp' || echo '$(srcdir)/'`test_expr_tree.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_expr_tree.Tpo $(DEPDIR)/test-test_expr_tree.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_expr_tree.cpp' object='test-test_expr_tree.o' libtool=no @AMDEPBACKSLASH@
+test-test_atomic_constraint_tree.o: test_atomic_constraint_tree.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_atomic_constraint_tree.o -MD -MP -MF $(DEPDIR)/test-test_atomic_constraint_tree.Tpo -c -o test-test_atomic_constraint_tree.o `test -f 'test_atomic_constraint_tree.cpp' || echo '$(srcdir)/'`test_atomic_constraint_tree.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_atomic_constraint_tree.Tpo $(DEPDIR)/test-test_atomic_constraint_tree.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_atomic_constraint_tree.cpp' object='test-test_atomic_constraint_tree.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_expr_tree.o `test -f 'test_expr_tree.cpp' || echo '$(srcdir)/'`test_expr_tree.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_atomic_constraint_tree.o `test -f 'test_atomic_constraint_tree.cpp' || echo '$(srcdir)/'`test_atomic_constraint_tree.cpp
 
-test-test_expr_tree.obj: test_expr_tree.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_expr_tree.obj -MD -MP -MF $(DEPDIR)/test-test_expr_tree.Tpo -c -o test-test_expr_tree.obj `if test -f 'test_expr_tree.cpp'; then $(CYGPATH_W) 'test_expr_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_expr_tree.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_expr_tree.Tpo $(DEPDIR)/test-test_expr_tree.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_expr_tree.cpp' object='test-test_expr_tree.obj' libtool=no @AMDEPBACKSLASH@
+test-test_atomic_constraint_tree.obj: test_atomic_constraint_tree.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_atomic_constraint_tree.obj -MD -MP -MF $(DEPDIR)/test-test_atomic_constraint_tree.Tpo -c -o test-test_atomic_constraint_tree.obj `if test -f 'test_atomic_constraint_tree.cpp'; then $(CYGPATH_W) 'test_atomic_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_atomic_constraint_tree.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_atomic_constraint_tree.Tpo $(DEPDIR)/test-test_atomic_constraint_tree.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_atomic_constraint_tree.cpp' object='test-test_atomic_constraint_tree.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_expr_tree.obj `if test -f 'test_expr_tree.cpp'; then $(CYGPATH_W) 'test_expr_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_expr_tree.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_atomic_constraint_tree.obj `if test -f 'test_atomic_constraint_tree.cpp'; then $(CYGPATH_W) 'test_atomic_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_atomic_constraint_tree.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -970,6 +975,7 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	recheck tags tags-am uninstall uninstall-am
 
+#LIBS = -ltinyparser
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

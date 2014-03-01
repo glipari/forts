@@ -10,4 +10,3 @@ PKG_CHECK_MODULES([TIPA], [tipa-1.0 >= 0.1])
 AC_CHECK_PROGS(RANLIB, ranlib)
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_OUTPUT
-

@@ -7,7 +7,6 @@ class expression {
   shared_ptr<expr_tree_node> root; 
 public:
   expression (): root(nullptr) {}
-
 };
 
 
