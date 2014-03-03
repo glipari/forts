@@ -1,12 +1,12 @@
 lib_LTLIBRARIES = libefforts.la
 
-libefforts_la_CPPFLAGS = -I. -std=c++11 -Wall $(TIPA_CFLAGS)
-libefforts_la_SOURCES = model.cpp syntax_trees.cpp
+libefforts_la_CPPFLAGS = -I. -std=gnu++0x -Wall -I/usr/include/ $(TIPA_CFLAGS)
+libefforts_la_SOURCES = common.cpp model.cpp syntax_trees.cpp
 #LIBS = -ltinyparser
-libefforts_la_LIBADD = $(TIPA_LIBS)
+libefforts_la_LIBADD = -lppl -lgmp $(TIPA_LIBS)
 
 
 bin_PROGRAMS = efforts
-efforts_CPPFLAGS = -I. -std=c++11 -Wall $(TIPA_CFLAGS)
-efforts_LDFLAGS = -lefforts $(TIPA_LIBS)
+efforts_CPPFLAGS = -I. -std=gnu++0x -Wall $(TIPA_CFLAGS)
+efforts_LDFLAGS = -lefforts -lppl -lgmp $(TIPA_LIBS)
 efforts_SOURCES = main.cpp

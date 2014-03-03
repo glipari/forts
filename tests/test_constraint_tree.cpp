@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include <syntax_trees.hpp>
 
+using namespace Parma_Polyhedra_Library::IO_Operators;
+
 TEST_CASE("Test the syntax tree for a constraint", 
 	  "[TestConstraintTree]")
 {

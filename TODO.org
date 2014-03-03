@@ -13,7 +13,7 @@
   - Expression
   We need to prepare a way to create such objects that is independent from the parser
 
-** TODO Transform Expression into a class
+** DONE Transform Expression into a class
 *** DONE Write a constructor 
 *** DONE Write methods to read/write the components
 *** DONE Write a method "eval" which evaluates the expression for some value of the variables
@@ -41,7 +41,7 @@
     their actual value)
 
     Therefore, We have to do the following things:
-*** TODO Write a class for representing variables, (discrete, clock or parameters)
+*** DONE Write a class for representing variables, (discrete, clock or parameters)
 *** TODO Add function check_linearity() to class expression
     This class takes a list of variables, and check the above things
 *** TODO Add a parameter to function compute()
@@ -53,12 +53,12 @@
    It is a conjunction of AtomicConstraints
 *** DONE Write a method eval()
 *** DONE Write test cases
-** TODO Add a method to_ppl() to atomic_constraint
+** DONE Add a method to_ppl() to atomic_constraint
    This transforms the atomic constraint to a ppl expression
    the method takes as input a list of discrete variables that are 
    substituted during transformation
 
-** TODO PPL
+** DONE PPL
 *** TODO Write a function to transform a Constraint into a PPL polyhedron, or octogonal shape, or DBM
 *** TODO Write tests   
    

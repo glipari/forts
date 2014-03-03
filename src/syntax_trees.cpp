@@ -48,6 +48,7 @@ public:
       }
       constraint = make_shared<constraint_node>();
       for ( auto it = at_nodes.rbegin(); it != at_nodes.rend(); it ++) {
+        //auto it = at_nodes.back();
 	auto r = st.top(); st.pop();
 	auto l = st.top(); st.pop();
         (*it)->set_left(l);
@@ -67,7 +68,7 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
 	r_int, r_var, 
 	at_l, at_leq, at_eq, at_geq, at_g;
     
-    constraint = atomic_constraint >> *( rule('&') > atomic_constraint);
+    constraint = atomic_constraint >> *( rule('&') >> atomic_constraint);
     rule comparison = at_leq | at_geq | at_eq | at_l | at_g;
     atomic_constraint = expr > comparison > expr;
     at_l    = rule("<", true);
@@ -113,7 +114,8 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
 
     bool f = false;
     try {
-	f = atomic_constraint.parse(pc);
+	//f = atomic_constraint.parse(pc);
+	f = constraint.parse(pc);
     } catch (parse_exc &e) {
 	cout << "Parse exception!" << endl;
     }
