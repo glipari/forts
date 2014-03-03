@@ -49,10 +49,10 @@
 *** TODO Write test cases for everything
 
 
-** TODO Write a class Constraint
+** DONE Write a class Constraint
    It is a conjunction of AtomicConstraints
-*** TODO Write a method eval()
-*** TODO Write test cases
+*** DONE Write a method eval()
+*** DONE Write test cases
 ** TODO Add a method to_ppl() to atomic_constraint
    This transforms the atomic constraint to a ppl expression
    the method takes as input a list of discrete variables that are 

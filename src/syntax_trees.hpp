@@ -13,14 +13,14 @@ using namespace tipa;
 
 /**
    This class models a generic node in the syntax tree.  The only
-   virtual method is compute() to compute an integer value for the
+   virtual method is eval() to evalulate an integer value for the
    tree. 
 
    @todo: other methods may be added later
  */
 class expr_tree_node {
 public : 
-    virtual int compute() = 0;
+    virtual int eval() = 0;
     virtual ~expr_tree_node() {}
 };
 
@@ -53,7 +53,7 @@ class expr_var_node : public expr_tree_node {
     int value;
 public:
     expr_var_node(const string &n) : name(n), value(0){}
-    virtual int compute() { return value; }
+    virtual int eval() { return value; }
 };
 
 /**
@@ -63,15 +63,15 @@ class expr_leaf_node : public expr_tree_node {
     int value;
 public:
     expr_leaf_node(int v) : value(v){}
-    virtual int compute() {return value;}
+    virtual int eval() {return value;}
 };
 
 #define EXPR_OP_NODE_CLASS(xxx,sym) \
     class xxx##_node : public expr_op_node {	\
     public:					\
-    virtual int compute() {			\
-        int l = left->compute();            \
-        int r = right->compute();           \
+    virtual int eval() {			\
+        int l = left->eval();            \
+        int r = right->eval();           \
         return l sym r;                     \
       }                                     \
   };                                        \
@@ -93,7 +93,7 @@ protected:
     shared_ptr<expr_tree_node> left;
     shared_ptr<expr_tree_node> right;
 public :
-    virtual bool is_satisfied() = 0;
+    virtual bool eval() = 0;
     void set_left(shared_ptr<expr_tree_node> l) {
 	left = l;
     }
@@ -105,9 +105,9 @@ public :
 #define ATOMIC_CONSTRAINT_NODE_CLASS(xxx,sym)         \
   class xxx##_node : public atomic_constraint_node {  \
     public:                                           \
-      virtual bool is_satisfied() {                   \
-        int l = left->compute();                      \
-        int r = right->compute();                     \
+      virtual bool eval() {                   \
+        int l = left->eval();                      \
+        int r = right->eval();                     \
         return l sym r;                               \
       }                                               \
   };                                                  \
@@ -118,10 +118,33 @@ ATOMIC_CONSTRAINT_NODE_CLASS(eq,==);
 ATOMIC_CONSTRAINT_NODE_CLASS(geq,>=);
 ATOMIC_CONSTRAINT_NODE_CLASS(g,>);
 
+
+class constraint_node {
+protected:
+  vector< shared_ptr<atomic_constraint_node> > ats;
+public:
+  bool eval() {
+    for (auto it = ats.begin(); it != ats.end(); it++) {
+      if (!(*it)->eval()) {
+        return false;
+      }
+    }
+    return true;
+  }
+  void append_atomic_constraint(shared_ptr<atomic_constraint_node> at){
+    ats.push_back(at);
+  }
+};
+
 /**
    This is a function to build an atomic constraint from a simple
    string. 
  */
-shared_ptr<atomic_constraint_node> build_an_at_tree(string expr_input);
+//shared_ptr<atomic_constraint_node> build_an_at_tree(string expr_input);
+/**
+   This is a function to build a constraint from a simple
+   string. 
+ */
+shared_ptr<constraint_node> build_a_constraint_tree(string expr_input);
 
 #endif

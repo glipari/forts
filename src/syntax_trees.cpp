@@ -2,23 +2,22 @@
 
 class builder {
     stack< shared_ptr<expr_tree_node> > st;
-    shared_ptr<atomic_constraint_node> at_node;
+    vector< shared_ptr<atomic_constraint_node> > at_nodes;
+    shared_ptr<constraint_node> constraint;
 public:
+    builder () { constraint = nullptr; }
+
     void make_leaf(parser_context &pc){
 	auto x = pc.collect_tokens();
 	if (x.size() < 1) throw string("Error in collecting integer.");
 	int v = atoi(x[x.size()-1].second.c_str());
-	cout << v << endl;
 	auto node = make_shared<expr_leaf_node>(v);
 	st.push(node);
     }
     
     template<class T>
     void make_op(parser_context &pc) {
-	cout << " inside make_op : ";
-	cout << "right - " << st.top()->compute();
 	auto r = st.top(); st.pop();
-	cout << "; left - " << st.top()->compute() << endl;
 	auto l = st.top(); st.pop();
 	auto n = make_shared<T>();
 	n->set_left(l);
@@ -36,42 +35,39 @@ public:
     
     int get_size() {return st.size();}
     
-    
-    template<class T>
-    void make_at(parser_context &pc) {
-	cout << "Inside make_at " << endl;
-	cout << " the size of st " << st.size() << endl;
-	auto r = st.top(); st.pop();
-	auto l = st.top(); st.pop();
-	auto n = make_shared<T>();
-	n->set_left(l);
-	n->set_right(r);
-	at_node = n;
-    }
-
     template<class T>
     void store_comp(parser_context &pc) {
-	cout << "Inside store_comp" << endl;
 	auto x = pc.collect_tokens();
-	at_node = make_shared<T>(); 
+	auto at_node = make_shared<T>(); 
+        at_nodes.push_back(at_node);
     }
     
-    shared_ptr<atomic_constraint_node> get_tree() {
+    shared_ptr<constraint_node> get_tree() {
+      if ( constraint != nullptr) {
+        return constraint;
+      }
+      constraint = make_shared<constraint_node>();
+      for ( auto it = at_nodes.rbegin(); it != at_nodes.rend(); it ++) {
 	auto r = st.top(); st.pop();
 	auto l = st.top(); st.pop();
-	at_node->set_left(l);
-	at_node->set_right(r);
-	return at_node;
+        (*it)->set_left(l);
+        (*it)->set_right(r);
+      }
+
+      for ( auto it = at_nodes.begin(); it != at_nodes.end(); it ++)
+        constraint->append_atomic_constraint(*it);
+      return constraint;
     }
 };
 
-shared_ptr<atomic_constraint_node> build_an_at_tree(string expr_input)
+shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
 {
-    rule atomic_constraint, expr, primary, term, 
+    rule constraint, atomic_constraint, expr, primary, term, 
 	op_plus, op_minus, op_mult, op_div,
 	r_int, r_var, 
 	at_l, at_leq, at_eq, at_geq, at_g;
     
+    constraint = atomic_constraint >> *( rule('&') > atomic_constraint);
     rule comparison = at_leq | at_geq | at_eq | at_l | at_g;
     atomic_constraint = expr > comparison > expr;
     at_l    = rule("<", true);
