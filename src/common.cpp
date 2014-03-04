@@ -1,30 +1,24 @@
 #include "common.hpp"
 
-int var_2_val (string var, const DVList_ptr vt) {
-  if ( vt == nullptr)
-    throw string("null DVList_ptr.");
+int var_2_val (const string &var, const DVList &dvl) {
 
-  for (auto it = vt->begin(); it != vt->end(); it++)
+  for (auto it = dvl.begin(); it != dvl.end(); it++)
     if ( var == it->name)
       return it->valuation;
-  throw string("Unexpected variable.");
+  throw string("no such a variable ") + string("\"") + var + string("\"") + string(" in the DVList.");
 }
 
-bool in_DVList(string var, const DVList_ptr vt) {
-  if (vt == nullptr)
-    return false;
-  for (auto it = vt->begin(); it != vt->end(); it++)
+bool in_VList(const string &var, const VList &vl) {
+  for (auto it = vl.begin(); it != vl.end(); it++)
     if ( var == it->name)
       return true;
   return false;
 }
 
-Variable get_variable(const string var, const CVList_ptr cv) {
-  if ( cv == nullptr)
-    throw string("null CVList_ptr.");
+Variable get_variable(const string &var, const CVList &cvl) {
 
   int i = 0;
-  for ( auto it = cv->begin(); it != cv->end(); it ++) {
+  for ( auto it = cvl.begin(); it != cvl.end(); it ++) {
     if ( it->name == var)
       return Variable(i);
     i++;
@@ -32,4 +26,3 @@ Variable get_variable(const string var, const CVList_ptr cv) {
   //cout << "variable " << var << endl;
   throw string("no such a variable ") + string("\"") + var + string("\"") + string(" in the CVList.");
 }
-

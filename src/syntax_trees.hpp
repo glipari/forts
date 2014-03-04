@@ -23,8 +23,10 @@ using namespace tipa;
  */
 class expr_tree_node {
 public : 
-    virtual int eval(const DVList_ptr vt = nullptr) = 0; 
-    virtual Linear_Expr to_Linear_Expr(const CVList_ptr cv, const DVList_ptr vt = nullptr) = 0;
+    virtual int eval(const DVList &dvl) = 0; 
+    virtual bool has_variable(const CVList &cvl) = 0; 
+    virtual bool check_linearity(const CVList &cvl) = 0; 
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) = 0;
     virtual ~expr_tree_node() {}
 };
 
@@ -41,6 +43,9 @@ protected:
     shared_ptr<expr_tree_node> left;
     shared_ptr<expr_tree_node> right;
 public:
+    virtual bool has_variable(const CVList &cvl) {
+      return left->has_variable(cvl) || right->has_variable(cvl);
+    }
     void set_left(shared_ptr<expr_tree_node> l){
 	left = l;
     }
@@ -56,19 +61,23 @@ class expr_var_node : public expr_tree_node {
     string name;
     int value;
 public:
-    expr_var_node(const string &n) : name(n), value(0){}
-    virtual int eval(const DVList_ptr vt = nullptr) { 
-      if ( vt == nullptr)
-        return 0;
-      return var_2_val(name, vt); 
+    virtual bool has_variable(const CVList &cvl) {
+      return in_VList(name, cvl);
     }
-    virtual Linear_Expr to_Linear_Expr(const CVList_ptr cv, const DVList_ptr vt = nullptr) {
+    virtual bool check_linearity(const CVList &cvl) {
+      return true;  
+    }
+    expr_var_node(const string &n) : name(n) {}
+    virtual int eval(const DVList &dvl) { 
+      return var_2_val(name, dvl); 
+    }
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) {
       Linear_Expr le;
-      if ( in_DVList(name, vt) ) {
-        le += var_2_val(name, vt);
+      if ( in_VList(name, dvl) ) {
+        le += var_2_val(name, dvl);
         return le;
       }
-      Variable var = get_variable(name, cv);
+      Variable var = get_variable(name, cvl);
       le += var;
       return le;
     }
@@ -80,52 +89,79 @@ public:
 class expr_leaf_node : public expr_tree_node {
     int value;
 public:
+    virtual bool has_variable(const CVList &cvl) {
+      return false;
+    }
+    virtual bool check_linearity(const CVList &cvl) {
+      return true;  
+    }
     expr_leaf_node(int v) : value(v){}
-    virtual int eval(const DVList_ptr vt = nullptr) {return value;}
-    virtual Linear_Expr to_Linear_Expr(const CVList_ptr cv, const DVList_ptr vt = nullptr) {
+    virtual int eval(const DVList &dvl) {return value;}
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) {
       Linear_Expr le;
       le += value;
       return le;
     }
 };
 
-#define CONST_EXPR_OP_NODE_CLASS(xxx,sym) \
-    class xxx##_node : public expr_op_node {	\
+#define EXPR_OP_NODE(xxx,sym) \
+    class expr_##xxx : public expr_op_node {	\
     public:					\
-    virtual int eval(const DVList_ptr vt = nullptr) {			\
-        int l = left->eval(vt);            \
-        int r = right->eval(vt);           \
+    virtual int eval(const DVList &dvl) {			\
+        int l = left->eval(dvl);            \
+        int r = right->eval(dvl);           \
         return l sym r;                     \
       }                                     \
-      virtual Linear_Expr to_Linear_Expr(const CVList_ptr cv, const DVList_ptr vt = nullptr) { \
+  };                                        \
+
+EXPR_OP_NODE(mult,*);
+//EXPR_OP_NODE(div,/);
+EXPR_OP_NODE(plus,+);
+EXPR_OP_NODE(minus,-);
+
+#define NNLinear_EXPR_OP_NODE_CLASS(xxx,sym) \
+    class xxx##_node : public expr_##xxx {	\
+    public:					\
+      virtual bool check_linearity(const CVList &cvl) { \
+        bool r = right->has_variable(cvl);   \
+        bool l = left->has_variable(cvl);   \
+        if ( r && l)\
+          return false;\
+        return right->check_linearity(cvl) && left->check_linearity(cvl); \
+      }\
+      virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) { \
+        if ( !check_linearity(cvl)) \
+          throw ("Not a linear expression");\
         Linear_Expr le; \
-        int l = left->eval(vt);  \
-        int r = right->eval(vt); \
-        le += l sym r;   \
-        return le; \
+        bool l = left->has_variable(cvl); \
+        cout << "left is " << l << endl; \
+        if ( l )  \
+          return left->to_Linear_Expr(cvl,dvl) sym right->eval(dvl); \
+        else  \
+          return left->eval(dvl) sym right->to_Linear_Expr(cvl,dvl); \
       }   \
   };                                        \
 
 #define LINEAR_EXPR_OP_NODE_CLASS(xxx,sym) \
-    class xxx##_node : public expr_op_node {	\
+    class xxx##_node : public expr_##xxx {	\
     public:					\
-    virtual int eval(const DVList_ptr vt = nullptr) {			\
-        int l = left->eval(vt);            \
-        int r = right->eval(vt);           \
-        return l sym r;                     \
-      }                                     \
-      virtual Linear_Expr to_Linear_Expr(const CVList_ptr cv, const DVList_ptr vt = nullptr) { \
+      virtual bool check_linearity(const CVList &cvl) { \
+        bool r = right->check_linearity(cvl);   \
+        bool l = left->check_linearity(cvl);   \
+        return r && l;\
+      }\
+      virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) { \
         Linear_Expr le , l , r; \
-        l = left->to_Linear_Expr(cv,vt);  \
-        r = right->to_Linear_Expr(cv,vt); \
+        l = left->to_Linear_Expr(cvl,dvl);  \
+        r = right->to_Linear_Expr(cvl,dvl); \
         return l sym r; \
       }   \
   };                                        \
 
 LINEAR_EXPR_OP_NODE_CLASS(plus,+);
 LINEAR_EXPR_OP_NODE_CLASS(minus,-);
-CONST_EXPR_OP_NODE_CLASS(mult,*);
-CONST_EXPR_OP_NODE_CLASS(div,/);
+NNLinear_EXPR_OP_NODE_CLASS(mult,*);
+//EXPR_OP_NODE_CLASS(div,/);
 
 
 /**
@@ -139,8 +175,8 @@ protected:
     shared_ptr<expr_tree_node> left;
     shared_ptr<expr_tree_node> right;
 public :
-    virtual bool eval(const DVList_ptr vt = nullptr) = 0;
-    virtual AT_Constraint to_AT_Constraint(const CVList_ptr cv, const DVList_ptr vt = nullptr) = 0; 
+    virtual bool eval(const DVList &dvl) = 0;
+    virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) = 0; 
   
     void set_left(shared_ptr<expr_tree_node> l) {
 	left = l;
@@ -153,14 +189,14 @@ public :
 #define ATOMIC_CONSTRAINT_NODE_CLASS(xxx,sym)         \
   class xxx##_node : public atomic_constraint_node {  \
     public:                                           \
-      virtual bool eval(const DVList_ptr vt = nullptr) {                   \
-        int l = left->eval(vt);                      \
-        int r = right->eval(vt);                     \
+      virtual bool eval(const DVList &dvl) {                   \
+        int l = left->eval(dvl);                      \
+        int r = right->eval(dvl);                     \
         return l sym r;                               \
       }                                               \
-      virtual AT_Constraint to_AT_Constraint(const CVList_ptr cv, const DVList_ptr vt = nullptr) { \
-        Linear_Expr l = left->to_Linear_Expr(cv, vt);               \
-        Linear_Expr r = right->to_Linear_Expr(cv, vt);             \
+      virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) { \
+        Linear_Expr l = left->to_Linear_Expr(cvl, dvl);               \
+        Linear_Expr r = right->to_Linear_Expr(cvl, dvl);             \
         AT_Constraint c;  \
         c = l sym r;                     \
         return c;                                     \
@@ -178,9 +214,9 @@ class constraint_node {
 protected:
   vector< shared_ptr<atomic_constraint_node> > ats;
 public:
-  bool eval(const DVList_ptr vtp = nullptr) {
+  bool eval(const DVList &dvl) {
     for (auto it = ats.begin(); it != ats.end(); it++) {
-      if (!(*it)->eval(vtp)) {
+      if (!(*it)->eval(dvl)) {
         return false;
       }
     }
@@ -190,10 +226,10 @@ public:
     ats.push_back(at);
   }
 
-  Linear_Constraint to_Linear_Constraint(const CVList_ptr cvlp, const DVList_ptr vtp=nullptr) {
+  Linear_Constraint to_Linear_Constraint(const CVList &cvl, const DVList &dvl) {
     Linear_Constraint c;
     for ( auto it = ats.begin(); it != ats.end(); it ++)
-      c.insert((*it)->to_AT_Constraint(cvlp, vtp));
+      c.insert((*it)->to_AT_Constraint(cvl, dvl));
     return c;
   }
 };

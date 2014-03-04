@@ -83,7 +83,8 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
 
     term = primary >> *(op_mult | op_div);
     op_mult = rule('*') > primary;
-    op_div = rule('/') > primary;
+    op_div = op_mult;
+    //op_div = rule('/') > primary;
 
     primary = r_int | r_var | 
 	rule('(') >> expr >> rule(')');
@@ -99,7 +100,7 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
     op_plus  [std::bind(&builder::make_op<plus_node>,         &b, _1)];
     op_minus [std::bind(&builder::make_op<minus_node>,        &b, _1)];
     op_mult  [std::bind(&builder::make_op<mult_node>,         &b, _1)];
-    op_div   [std::bind(&builder::make_op<div_node>,          &b, _1)];
+    //op_div   [std::bind(&builder::make_op<div_node>,          &b, _1)];
 
     at_l      [std::bind(&builder::store_comp<l_node>,        &b, _1)];
     at_leq    [std::bind(&builder::store_comp<leq_node>,      &b, _1)];

@@ -42,7 +42,7 @@
 
     Therefore, We have to do the following things:
 *** DONE Write a class for representing variables, (discrete, clock or parameters)
-*** TODO Add function check_linearity() to class expression
+*** DONE Add function check_linearity() to class expression
     This class takes a list of variables, and check the above things
 *** TODO Add a parameter to function compute()
     We additionally give the list of variables that is used to evaluate a value

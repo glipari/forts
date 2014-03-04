@@ -24,19 +24,18 @@ typedef list<variable> DVList;
 // The continuous variable list
 typedef list<variable> CVList;
 // 
-typedef shared_ptr< list<variable> > DVList_ptr;
-typedef shared_ptr< list<variable> > CVList_ptr;
+typedef list<variable> VList;
 
-int var_2_val(string var, const DVList_ptr vt);
+int var_2_val(const string &var, const DVList &dvl);
 
-bool in_DVList(string var, const DVList_ptr vt);
+Variable get_variable(const string &var, const CVList &cvl);
+
+bool in_VList(const string &var, const VList &dvl);
 
 typedef PPL::Constraint_System Linear_Constraint;
 typedef PPL::Constraint AT_Constraint;
 typedef PPL::Linear_Expression Linear_Expr;
 typedef PPL::Variable Variable;
-
-Variable get_variable(const string var, const CVList_ptr cv);
 
 
 #endif

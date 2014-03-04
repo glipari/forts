@@ -8,10 +8,13 @@ TEST_CASE("Test the syntax tree for a constraint",
 {
   string input = "3+2==14";
   auto at_tree = build_a_constraint_tree(input);
-  REQUIRE (at_tree->eval() == false);
+  DVList dvl;
+  REQUIRE (at_tree->eval(dvl) == false);
 
   string input2 = "3+x-(2+4)==3-(2+4) & 1 <= 2";
   auto at_tree2 = build_a_constraint_tree(input2);
-  REQUIRE (at_tree2->eval() == true);
+  DVList dvl2;
+  dvl2.push_back(variable("x",0));
+  REQUIRE (at_tree2->eval(dvl2) == true);
 }
 
