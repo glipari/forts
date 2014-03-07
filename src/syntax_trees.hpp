@@ -245,4 +245,41 @@ public:
  */
 shared_ptr<constraint_node> build_a_constraint_tree(string expr_input);
 
+
+//class assignment_node {
+//protected:
+//    variable left;
+//    shared_ptr<expr_tree_node> right;
+//public :
+//    bool left_is_discrete(const DVList &dvl) {
+//      return in_VList(left.name, dvl);
+//    }
+//
+//    virtual void eval(DVList &dvl, const CVList &cvl) {
+//      if ( right->has_variable(cvl))
+//        throw string("There exists continuous variables in the right side of an assignment.");
+//      int res = right->eval(dvl);
+//      for (auto it = dvl.begin(); it != dvl.end(); it++)
+//        if ( it->name == left.name)
+//          it->valuation = res;
+//    }
+//    virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) {
+//      Linear_Expr r = right->to_Linear_Expr(dvl, cvl);
+//      Variable var = get_variable(left.name, cvl);
+//      AT_Constraint atc = (var==r);
+//      return atc;
+//    }
+//  
+//    void set_left(const variable &l) {
+//	left = l;
+//    }
+//    void set_right(shared_ptr<expr_tree_node> r) {
+//	right = r;
+//    }
+//};
+//
+//shared_ptr<assignment_node> build_an_assignment(string expr_input);
+shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input);
+
+
 #endif
