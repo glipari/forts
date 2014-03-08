@@ -24,6 +24,9 @@ typedef std::list<variable> VList;
 // returns the value associated to a discrete variable
 int var_2_val(const std::string &var, const DVList &dvl);
 
+// changes a value in the list
+void change_var_value(const std::string &var, DVList &dv, int val);
+
 // true is the variable is present in the list
 bool in_VList(const std::string &var, const VList &dvl);
 
