@@ -90,7 +90,9 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_test_OBJECTS = test-test_main.$(OBJEXT) \
-	test-test_atomic_constraint_tree.$(OBJEXT)
+	test-test_constraint_tree.$(OBJEXT) \
+	test-test_constraint_to_ppl.$(OBJEXT) \
+	test-test_ppl_coefficient.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_$(V))
@@ -489,9 +491,9 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-test_CPPFLAGS = -I../src/ -std=c++11 -Wall $(TIPA_CFLAGS)
-test_LDFLAGS = -L../src/ -lefforts $(TIPA_LIBS)
-test_SOURCES = test_main.cpp test_atomic_constraint_tree.cpp #test_expr_tree.cpp
+test_CPPFLAGS = -I../src/ -std=gnu++0x -Wall $(TIPA_CFLAGS)
+test_LDFLAGS = -L../src/ -lefforts -lppl -lgmp $(TIPA_LIBS)
+test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp test_ppl_coefficient.cpp #test_expr_tree.cpp
 all: all-am
 
 .SUFFIXES:
@@ -546,8 +548,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/test-test_atomic_constraint_tree.Po
+include ./$(DEPDIR)/test-test_constraint_to_ppl.Po
+include ./$(DEPDIR)/test-test_constraint_tree.Po
 include ./$(DEPDIR)/test-test_main.Po
+include ./$(DEPDIR)/test-test_ppl_coefficient.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -584,19 +588,47 @@ test-test_main.obj: test_main.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_main.obj `if test -f 'test_main.cpp'; then $(CYGPATH_W) 'test_main.cpp'; else $(CYGPATH_W) '$(srcdir)/test_main.cpp'; fi`
 
-test-test_atomic_constraint_tree.o: test_atomic_constraint_tree.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_atomic_constraint_tree.o -MD -MP -MF $(DEPDIR)/test-test_atomic_constraint_tree.Tpo -c -o test-test_atomic_constraint_tree.o `test -f 'test_atomic_constraint_tree.cpp' || echo '$(srcdir)/'`test_atomic_constraint_tree.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_atomic_constraint_tree.Tpo $(DEPDIR)/test-test_atomic_constraint_tree.Po
-#	$(AM_V_CXX)source='test_atomic_constraint_tree.cpp' object='test-test_atomic_constraint_tree.o' libtool=no \
+test-test_constraint_tree.o: test_constraint_tree.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_constraint_tree.o -MD -MP -MF $(DEPDIR)/test-test_constraint_tree.Tpo -c -o test-test_constraint_tree.o `test -f 'test_constraint_tree.cpp' || echo '$(srcdir)/'`test_constraint_tree.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_constraint_tree.Tpo $(DEPDIR)/test-test_constraint_tree.Po
+#	$(AM_V_CXX)source='test_constraint_tree.cpp' object='test-test_constraint_tree.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_atomic_constraint_tree.o `test -f 'test_atomic_constraint_tree.cpp' || echo '$(srcdir)/'`test_atomic_constraint_tree.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_constraint_tree.o `test -f 'test_constraint_tree.cpp' || echo '$(srcdir)/'`test_constraint_tree.cpp
 
-test-test_atomic_constraint_tree.obj: test_atomic_constraint_tree.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_atomic_constraint_tree.obj -MD -MP -MF $(DEPDIR)/test-test_atomic_constraint_tree.Tpo -c -o test-test_atomic_constraint_tree.obj `if test -f 'test_atomic_constraint_tree.cpp'; then $(CYGPATH_W) 'test_atomic_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_atomic_constraint_tree.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_atomic_constraint_tree.Tpo $(DEPDIR)/test-test_atomic_constraint_tree.Po
-#	$(AM_V_CXX)source='test_atomic_constraint_tree.cpp' object='test-test_atomic_constraint_tree.obj' libtool=no \
+test-test_constraint_tree.obj: test_constraint_tree.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_constraint_tree.obj -MD -MP -MF $(DEPDIR)/test-test_constraint_tree.Tpo -c -o test-test_constraint_tree.obj `if test -f 'test_constraint_tree.cpp'; then $(CYGPATH_W) 'test_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_constraint_tree.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_constraint_tree.Tpo $(DEPDIR)/test-test_constraint_tree.Po
+#	$(AM_V_CXX)source='test_constraint_tree.cpp' object='test-test_constraint_tree.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_atomic_constraint_tree.obj `if test -f 'test_atomic_constraint_tree.cpp'; then $(CYGPATH_W) 'test_atomic_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_atomic_constraint_tree.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_constraint_tree.obj `if test -f 'test_constraint_tree.cpp'; then $(CYGPATH_W) 'test_constraint_tree.cpp'; else $(CYGPATH_W) '$(srcdir)/test_constraint_tree.cpp'; fi`
+
+test-test_constraint_to_ppl.o: test_constraint_to_ppl.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_constraint_to_ppl.o -MD -MP -MF $(DEPDIR)/test-test_constraint_to_ppl.Tpo -c -o test-test_constraint_to_ppl.o `test -f 'test_constraint_to_ppl.cpp' || echo '$(srcdir)/'`test_constraint_to_ppl.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_constraint_to_ppl.Tpo $(DEPDIR)/test-test_constraint_to_ppl.Po
+#	$(AM_V_CXX)source='test_constraint_to_ppl.cpp' object='test-test_constraint_to_ppl.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_constraint_to_ppl.o `test -f 'test_constraint_to_ppl.cpp' || echo '$(srcdir)/'`test_constraint_to_ppl.cpp
+
+test-test_constraint_to_ppl.obj: test_constraint_to_ppl.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_constraint_to_ppl.obj -MD -MP -MF $(DEPDIR)/test-test_constraint_to_ppl.Tpo -c -o test-test_constraint_to_ppl.obj `if test -f 'test_constraint_to_ppl.cpp'; then $(CYGPATH_W) 'test_constraint_to_ppl.cpp'; else $(CYGPATH_W) '$(srcdir)/test_constraint_to_ppl.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_constraint_to_ppl.Tpo $(DEPDIR)/test-test_constraint_to_ppl.Po
+#	$(AM_V_CXX)source='test_constraint_to_ppl.cpp' object='test-test_constraint_to_ppl.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_constraint_to_ppl.obj `if test -f 'test_constraint_to_ppl.cpp'; then $(CYGPATH_W) 'test_constraint_to_ppl.cpp'; else $(CYGPATH_W) '$(srcdir)/test_constraint_to_ppl.cpp'; fi`
+
+test-test_ppl_coefficient.o: test_ppl_coefficient.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_ppl_coefficient.o -MD -MP -MF $(DEPDIR)/test-test_ppl_coefficient.Tpo -c -o test-test_ppl_coefficient.o `test -f 'test_ppl_coefficient.cpp' || echo '$(srcdir)/'`test_ppl_coefficient.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_ppl_coefficient.Tpo $(DEPDIR)/test-test_ppl_coefficient.Po
+#	$(AM_V_CXX)source='test_ppl_coefficient.cpp' object='test-test_ppl_coefficient.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_ppl_coefficient.o `test -f 'test_ppl_coefficient.cpp' || echo '$(srcdir)/'`test_ppl_coefficient.cpp
+
+test-test_ppl_coefficient.obj: test_ppl_coefficient.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_ppl_coefficient.obj -MD -MP -MF $(DEPDIR)/test-test_ppl_coefficient.Tpo -c -o test-test_ppl_coefficient.obj `if test -f 'test_ppl_coefficient.cpp'; then $(CYGPATH_W) 'test_ppl_coefficient.cpp'; else $(CYGPATH_W) '$(srcdir)/test_ppl_coefficient.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_ppl_coefficient.Tpo $(DEPDIR)/test-test_ppl_coefficient.Po
+#	$(AM_V_CXX)source='test_ppl_coefficient.cpp' object='test-test_ppl_coefficient.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_ppl_coefficient.obj `if test -f 'test_ppl_coefficient.cpp'; then $(CYGPATH_W) 'test_ppl_coefficient.cpp'; else $(CYGPATH_W) '$(srcdir)/test_ppl_coefficient.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

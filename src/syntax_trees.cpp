@@ -1,4 +1,9 @@
+#include <tipa/tinyparser.hpp>
 #include "syntax_trees.hpp"
+
+using namespace std;
+using namespace tipa;
+
 
 class builder {
     stack< shared_ptr<expr_tree_node> > st;

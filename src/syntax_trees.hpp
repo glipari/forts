@@ -6,20 +6,15 @@
 #include <sstream>
 #include <memory>
 
-#include <tipa/tinyparser.hpp>
+#include <common.hpp>
+#include <ppl_adapt.hpp>
 
-#include "common.hpp"
-
-using namespace std;
-using namespace tipa;
+//using namespace std;
+//using namespace tipa;
 
 
 /**
-   This class models a generic node in the syntax tree.  The only
-   virtual method is eval() to evalulate an integer value for the
-   tree. 
-
-   @todo: other methods may be added later
+   This class models a generic node in the syntax tree.
  */
 class expr_tree_node {
 public : 
@@ -40,16 +35,16 @@ public :
  */
 class expr_op_node : public expr_tree_node {
 protected:
-    shared_ptr<expr_tree_node> left;
-    shared_ptr<expr_tree_node> right;
+    std::shared_ptr<expr_tree_node> left;
+    std::shared_ptr<expr_tree_node> right;
 public:
     virtual bool has_variable(const CVList &cvl) {
       return left->has_variable(cvl) || right->has_variable(cvl);
     }
-    void set_left(shared_ptr<expr_tree_node> l){
+    void set_left(std::shared_ptr<expr_tree_node> l){
 	left = l;
     }
-    void set_right(shared_ptr<expr_tree_node> r){
+    void set_right(std::shared_ptr<expr_tree_node> r){
 	right = r;
     }
 };
@@ -58,7 +53,7 @@ public:
    A leaf node in the tree that represents a variable. 
  */
 class expr_var_node : public expr_tree_node {
-    string name;
+    std::string name;
     int value;
 public:
     virtual bool has_variable(const CVList &cvl) {
@@ -67,7 +62,7 @@ public:
     virtual bool check_linearity(const CVList &cvl) {
       return true;  
     }
-    expr_var_node(const string &n) : name(n) {}
+    expr_var_node(const std::string &n) : name(n) {}
     virtual int eval(const DVList &dvl) { 
       return var_2_val(name, dvl); 
     }
@@ -77,7 +72,7 @@ public:
         le += var_2_val(name, dvl);
         return le;
       }
-      Variable var = get_variable(name, cvl);
+      PPL::Variable var = get_variable(name, cvl);
       le += var;
       return le;
     }
@@ -104,6 +99,10 @@ public:
     }
 };
 
+
+/** 
+    These nodes represent operations
+*/
 #define EXPR_OP_NODE(xxx,sym) \
     class expr_##xxx : public expr_op_node {	\
     public:					\
@@ -134,7 +133,7 @@ EXPR_OP_NODE(minus,-);
           throw ("Not a linear expression");\
         Linear_Expr le; \
         bool l = left->has_variable(cvl); \
-        cout << "left is " << l << endl; \
+        std::cout << "left is " << l << std::endl;	\
         if ( l )  \
           return left->to_Linear_Expr(cvl,dvl) sym right->eval(dvl); \
         else  \
@@ -161,7 +160,6 @@ EXPR_OP_NODE(minus,-);
 LINEAR_EXPR_OP_NODE_CLASS(plus,+);
 LINEAR_EXPR_OP_NODE_CLASS(minus,-);
 NNLinear_EXPR_OP_NODE_CLASS(mult,*);
-//EXPR_OP_NODE_CLASS(div,/);
 
 
 /**
@@ -172,16 +170,16 @@ NNLinear_EXPR_OP_NODE_CLASS(mult,*);
  */
 class atomic_constraint_node {
 protected:
-    shared_ptr<expr_tree_node> left;
-    shared_ptr<expr_tree_node> right;
+    std::shared_ptr<expr_tree_node> left;
+    std::shared_ptr<expr_tree_node> right;
 public :
     virtual bool eval(const DVList &dvl) = 0;
     virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) = 0; 
   
-    void set_left(shared_ptr<expr_tree_node> l) {
+    void set_left(std::shared_ptr<expr_tree_node> l) {
 	left = l;
     }
-    void set_right(shared_ptr<expr_tree_node> r) {
+    void set_right(std::shared_ptr<expr_tree_node> r) {
 	right = r;
     }
 };
@@ -209,10 +207,9 @@ ATOMIC_CONSTRAINT_NODE_CLASS(eq,==);
 ATOMIC_CONSTRAINT_NODE_CLASS(geq,>=);
 ATOMIC_CONSTRAINT_NODE_CLASS(g,>);
 
-
 class constraint_node {
 protected:
-  vector< shared_ptr<atomic_constraint_node> > ats;
+    std::vector< std::shared_ptr<atomic_constraint_node> > ats;
 public:
   bool eval(const DVList &dvl) {
     for (auto it = ats.begin(); it != ats.end(); it++) {
@@ -222,7 +219,7 @@ public:
     }
     return true;
   }
-  void append_atomic_constraint(shared_ptr<atomic_constraint_node> at){
+  void append_atomic_constraint(std::shared_ptr<atomic_constraint_node> at){
     ats.push_back(at);
   }
 
@@ -238,11 +235,6 @@ public:
    This is a function to build an atomic constraint from a simple
    string. 
  */
-//shared_ptr<atomic_constraint_node> build_an_at_tree(string expr_input);
-/**
-   This is a function to build a constraint from a simple
-   string. 
- */
-shared_ptr<constraint_node> build_a_constraint_tree(string expr_input);
+std::shared_ptr<constraint_node> build_a_constraint_tree(std::string expr_input);
 
 #endif

@@ -1,7 +1,9 @@
 #include "catch.hpp"
 #include <syntax_trees.hpp>
+#include <ppl_adapt.hpp>
 
 using namespace Parma_Polyhedra_Library::IO_Operators;
+using namespace std;
 
 TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.", 
 	  "[TestConstraintToPPL]")
@@ -20,7 +22,7 @@ TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.",
 
   cout << "lc1st: " << lc1st << endl;
 
-  Variable x(0), y(1), z(2);
+  PPL::Variable x(0), y(1), z(2);
   Constraint_System css1st;
   css1st.insert(2*x==y);
   css1st.insert(x-z>=0);

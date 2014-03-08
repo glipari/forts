@@ -2,6 +2,7 @@
 #include <syntax_trees.hpp>
 
 using namespace Parma_Polyhedra_Library::IO_Operators;
+using namespace std;
 
 TEST_CASE("Test the syntax tree for a constraint", 
 	  "[TestConstraintTree]")

@@ -4,9 +4,9 @@
 #include "syntax_trees.hpp"
 
 class expression {
-  shared_ptr<expr_tree_node> root; 
+    std::shared_ptr<expr_tree_node> root; 
 public:
-  expression (): root(nullptr) {}
+    expression (): root(nullptr) {}
 };
 
 
