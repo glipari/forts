@@ -23,10 +23,17 @@ TEST_CASE("Test the syntax tree for a constraint",
 
 TEST_CASE("Test parsing assignment", "[assignment][parser]")
 {
-    string input = "x' = x + 1";
-    assignment a = build_assignment(input);
-    REQUIRE(a.x == "x");
-    CVList cvl;
-    cvl.push_back(variable("x", 0));
-    REQUIRE(a.expr->eval(cvl) == 1);
+    SECTION("First simple test") {
+	string input = "x' = x + 1";
+	assignment a = build_assignment(input);
+	REQUIRE(a.x == "x");
+	CVList cvl;
+	cvl.push_back(variable("x", 0));
+	REQUIRE(a.expr->eval(cvl) == 1);
+    }
+    SECTION("An error is raised") {
+	string input = "y = x + z";
+	assignment a;
+	CHECK_THROWS(a = build_assignment(input));	
+    }
 }
