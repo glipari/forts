@@ -123,7 +123,8 @@ am__DEPENDENCIES_1 =
 libefforts_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libefforts_la_OBJECTS = libefforts_la-common.lo \
 	libefforts_la-model.lo libefforts_la-syntax_trees.lo \
-	libefforts_la-ppl_adapt.lo libefforts_la-expression.lo
+	libefforts_la-ppl_adapt.lo libefforts_la-expression.lo \
+	libefforts_la-assignment.lo
 libefforts_la_OBJECTS = $(am_libefforts_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -323,7 +324,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libefforts.la
 libefforts_la_CPPFLAGS = -I. -std=gnu++0x -Wall -I/usr/include/ $(TIPA_CFLAGS)
-libefforts_la_SOURCES = common.cpp model.cpp syntax_trees.cpp ppl_adapt.cpp expression.cpp
+libefforts_la_SOURCES = common.cpp model.cpp syntax_trees.cpp \
+	ppl_adapt.cpp expression.cpp assignment.cpp
+
 #LIBS = -ltinyparser
 libefforts_la_LIBADD = -lppl -lgmp $(TIPA_LIBS)
 efforts_CPPFLAGS = -I. -std=gnu++0x -Wall $(TIPA_CFLAGS)
@@ -462,6 +465,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/efforts-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-assignment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-expression.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-model.Plo@am__quote@
@@ -523,6 +527,13 @@ libefforts_la-expression.lo: expression.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='expression.cpp' object='libefforts_la-expression.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-expression.lo `test -f 'expression.cpp' || echo '$(srcdir)/'`expression.cpp
+
+libefforts_la-assignment.lo: assignment.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libefforts_la-assignment.lo -MD -MP -MF $(DEPDIR)/libefforts_la-assignment.Tpo -c -o libefforts_la-assignment.lo `test -f 'assignment.cpp' || echo '$(srcdir)/'`assignment.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libefforts_la-assignment.Tpo $(DEPDIR)/libefforts_la-assignment.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='assignment.cpp' object='libefforts_la-assignment.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-assignment.lo `test -f 'assignment.cpp' || echo '$(srcdir)/'`assignment.cpp
 
 efforts-main.o: main.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(efforts_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT efforts-main.o -MD -MP -MF $(DEPDIR)/efforts-main.Tpo -c -o efforts-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp

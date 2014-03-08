@@ -5,7 +5,6 @@
 using namespace std;
 using namespace tipa;
 
-
 bool expr_op_node::has_variable(const CVList &cvl) 
 {
     return left->has_variable(cvl) || right->has_variable(cvl);
@@ -20,6 +19,7 @@ void expr_op_node::set_right(std::shared_ptr<expr_tree_node> r)
 {
     right = r;
 }
+
 
 expr_var_node::expr_var_node(const std::string &n) : name(n) 
 {}
@@ -139,7 +139,6 @@ rule prepare_expr_rule(expr_builder &b)
 
     return expr;
 }
-
 
 shared_ptr<expr_tree_node> build_expression(const string &expr_input)
 {
