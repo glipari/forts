@@ -3,48 +3,6 @@
 
 #include <expression.hpp>
 
-#define NNLinear_EXPR_OP_NODE_CLASS(xxx,sym)				\
-    class xxx##_node : public expr_##xxx {				\
-    public:								\
-    virtual bool check_linearity(const CVList &cvl) {			\
-        bool r = right->has_variable(cvl);				\
-        bool l = left->has_variable(cvl);				\
-        if (r && l)							\
-	    return false;						\
-        return right->check_linearity(cvl) && left->check_linearity(cvl); \
-    }									\
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) { \
-	if ( !check_linearity(cvl))					\
-	    throw ("Not a linear expression");				\
-	Linear_Expr le;							\
-	bool l = left->has_variable(cvl);				\
-	std::cout << "left is " << l << std::endl;			\
-	if (l)								\
-	    return left->to_Linear_Expr(cvl,dvl) sym right->eval(dvl);	\
-	else								\
-	    return left->eval(dvl) sym right->to_Linear_Expr(cvl, dvl); \
-    }									\
-    };                                        
-
-#define LINEAR_EXPR_OP_NODE_CLASS(xxx,sym)				\
-    class xxx##_node : public expr_##xxx {				\
-    public:								\
-    virtual bool check_linearity(const CVList &cvl) {			\
-        bool r = right->check_linearity(cvl);				\
-        bool l = left->check_linearity(cvl);				\
-        return r && l;							\
-    }									\
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) { \
-	Linear_Expr le , l , r;						\
-	l = left->to_Linear_Expr(cvl,dvl);				\
-	r = right->to_Linear_Expr(cvl,dvl);				\
-	return l sym r;							\
-    }									\
-    };                                        
-
-LINEAR_EXPR_OP_NODE_CLASS(plus,+);
-LINEAR_EXPR_OP_NODE_CLASS(minus,-);
-NNLinear_EXPR_OP_NODE_CLASS(mult,*);
 
 /**
    This class represents an atomic constraint An atomic constrains
@@ -58,7 +16,7 @@ protected:
     std::shared_ptr<expr_tree_node> right;
 public :
     virtual bool eval(const DVList &dvl) = 0;
-    virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) = 0; 
+    virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) = 0;
   
     void set_left(std::shared_ptr<expr_tree_node> l) {
 	left = l;

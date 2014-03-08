@@ -1,51 +1,113 @@
 #include "expression.hpp"
 
-#include <tipa/tinyparser.hpp>
-#include "syntax_trees.hpp"
+// #include "syntax_trees.hpp"
 
 using namespace std;
 using namespace tipa;
 
-class expr_builder {
-    stack< shared_ptr<expr_tree_node> > st;
-    // vector< shared_ptr<atomic_constraint_node> > at_nodes;
-    // shared_ptr<constraint_node> constraint;
-public:
-    expr_builder () {}
 
-    void make_leaf(parser_context &pc){
-	auto x = pc.collect_tokens();
-	if (x.size() < 1) throw string("Error in collecting integer.");
-	int v = atoi(x[x.size()-1].second.c_str());
-	auto node = make_shared<expr_leaf_node>(v);
-	st.push(node);
-    }
-    
-    template<class T>
-    void make_op(parser_context &pc) {
-	auto r = st.top(); st.pop();
-	auto l = st.top(); st.pop();
-	auto n = make_shared<T>();
-	n->set_left(l);
-	n->set_right(r);
-	st.push(n);
-    }
-    
-    void make_var(parser_context &pc) {
-	auto x = pc.collect_tokens();
-	if (x.size() < 1) throw string("Error in collecting variable."); 
-	string v = x[x.size()-1].second;
-	auto node = make_shared<expr_var_node>(v);
-	st.push(node);
-    }
-    
-    int get_size() {return st.size();}
-    
-    shared_ptr<expr_tree_node> get_tree() {
-	return st.top();
-    }
-};
+bool expr_op_node::has_variable(const CVList &cvl) 
+{
+    return left->has_variable(cvl) || right->has_variable(cvl);
+}
 
+void expr_op_node::set_left(std::shared_ptr<expr_tree_node> l)
+{
+    left = l;
+}
+
+void expr_op_node::set_right(std::shared_ptr<expr_tree_node> r)
+{
+    right = r;
+}
+
+expr_var_node::expr_var_node(const std::string &n) : name(n) 
+{}
+
+int expr_var_node::eval(const DVList &dvl) 
+{ 
+    return var_2_val(name, dvl); 
+}
+
+bool expr_var_node::has_variable(const CVList &cvl) 
+{
+    return in_VList(name, cvl);
+}
+
+bool expr_var_node::check_linearity(const CVList &cvl) 
+{
+    return true;  
+}
+
+Linear_Expr expr_var_node::to_Linear_Expr(const CVList &cvl, const DVList &dvl) 
+{
+    Linear_Expr le;
+    if ( in_VList(name, dvl) ) {
+	le += var_2_val(name, dvl);
+	return le;
+    }
+    PPL::Variable var = get_variable(name, cvl);
+    le += var;
+    return le;
+}
+
+expr_leaf_node::expr_leaf_node(int v) : value(v)
+{}
+
+int expr_leaf_node::eval(const DVList &dvl) 
+{
+    return value;
+}
+
+bool expr_leaf_node::has_variable(const CVList &cvl) 
+{
+    return false;
+}
+
+bool expr_leaf_node::check_linearity(const CVList &cvl) 
+{
+    return true;  
+}
+
+Linear_Expr expr_leaf_node::to_Linear_Expr(const CVList &cvl, const DVList &dvl) 
+{
+    Linear_Expr le;
+    le += value;
+    return le;
+}
+
+
+expr_builder::expr_builder () 
+{}
+
+void expr_builder::make_leaf(parser_context &pc)
+{
+    auto x = pc.collect_tokens();
+    if (x.size() < 1) throw string("Error in collecting integer.");
+    int v = atoi(x[x.size()-1].second.c_str());
+    auto node = make_shared<expr_leaf_node>(v);
+    st.push(node);
+}
+    
+    
+void expr_builder::make_var(parser_context &pc) 
+{
+    auto x = pc.collect_tokens();
+    if (x.size() < 1) throw string("Error in collecting variable."); 
+    string v = x[x.size()-1].second;
+    auto node = make_shared<expr_var_node>(v);
+    st.push(node);
+}
+    
+int expr_builder::get_size() 
+{
+    return st.size();
+}
+    
+shared_ptr<expr_tree_node> expr_builder::get_tree() 
+{
+    return st.top();
+}
 
 rule prepare_expr_rule(expr_builder &b)
 {
@@ -77,7 +139,6 @@ rule prepare_expr_rule(expr_builder &b)
 
     return expr;
 }
-
 
 
 shared_ptr<expr_tree_node> build_expression(const string &expr_input)
