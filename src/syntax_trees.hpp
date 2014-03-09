@@ -2,6 +2,9 @@
 #define _SYNTAX_TREES_HPP_
 
 #include <expression.hpp>
+#include <tipa/tinyparser.hpp>
+using namespace std;
+using namespace tipa;
 
 /**
    This class represents an atomic constraint An atomic constrains
@@ -78,40 +81,42 @@ public:
  */
 std::shared_ptr<constraint_node> build_a_constraint_tree(std::string expr_input);
 
-//class assignment_node {
-//protected:
-//    variable left;
-//    shared_ptr<expr_tree_node> right;
-//public :
-//    bool left_is_discrete(const DVList &dvl) {
-//      return in_VList(left.name, dvl);
-//    }
-//
-//    virtual void eval(DVList &dvl, const CVList &cvl) {
-//      if ( right->has_variable(cvl))
-//        throw string("There exists continuous variables in the right side of an assignment.");
-//      int res = right->eval(dvl);
-//      for (auto it = dvl.begin(); it != dvl.end(); it++)
-//        if ( it->name == left.name)
-//          it->valuation = res;
-//    }
-//    virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) {
-//      Linear_Expr r = right->to_Linear_Expr(dvl, cvl);
-//      Variable var = get_variable(left.name, cvl);
-//      AT_Constraint atc = (var==r);
-//      return atc;
-//    }
-//  
-//    void set_left(const variable &l) {
-//	left = l;
-//    }
-//    void set_right(shared_ptr<expr_tree_node> r) {
-//	right = r;
-//    }
-//};
-//
-//shared_ptr<assignment_node> build_an_assignment(string expr_input);
 std::shared_ptr<expr_tree_node> build_an_expr_tree(const std::string &expr_input);
 
+class builder : public expr_builder {
+    vector< shared_ptr<atomic_constraint_node> > at_nodes;
+    shared_ptr<constraint_node> constraint;
+public:
+    builder () : expr_builder() { constraint = nullptr; }
+    
+    template<class T>
+    void store_comp(parser_context &pc) {
+	auto x = pc.collect_tokens();
+	auto at_node = make_shared<T>(); 
+        at_nodes.push_back(at_node);
+    }
+    
+    shared_ptr<constraint_node> get_tree() {
+	if ( constraint != nullptr) {
+	    return constraint;
+	}
+	constraint = make_shared<constraint_node>();
+	for ( auto it = at_nodes.rbegin(); it != at_nodes.rend(); it ++) {
+	    //auto it = at_nodes.back();
+	    auto r = st.top(); st.pop();
+	    auto l = st.top(); st.pop();
+	    (*it)->set_left(l);
+	    (*it)->set_right(r);
+	}
+
+	for ( auto it = at_nodes.begin(); it != at_nodes.end(); it ++)
+	    constraint->append_atomic_constraint(*it);
+	return constraint;
+    }
+};
+
+typedef builder constraint_builder;
+
+rule prepare_constraint_rule(constraint_builder &cb);
 
 #endif
