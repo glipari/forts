@@ -19,6 +19,7 @@ public :
     virtual bool check_linearity(const CVList &cvl) = 0; 
     virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) = 0;
     virtual ~expr_tree_node() {}
+    virtual void print() = 0;
 };
 
 /**
@@ -51,6 +52,7 @@ public:
     virtual bool has_variable(const CVList &cvl);
     virtual bool check_linearity(const CVList &cvl);
     virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl);
+    virtual void print();
 };
 
 /**
@@ -65,6 +67,7 @@ public:
     virtual bool has_variable(const CVList &cvl);
     virtual bool check_linearity(const CVList &cvl);
     virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl);
+    virtual void print();
 };
 
 #define NNLinear_EXPR_OP_NODE_CLASS(xxx,sym)				\
@@ -96,6 +99,11 @@ public:
 	else								\
 	    return left->eval(dvl) sym right->to_Linear_Expr(cvl, dvl); \
     }									\
+    virtual void print() {                                              \
+      left->print();                                                    \
+      std::cout << #sym;                                                 \
+      right->print();                                                   \
+    }                                                                   \
     };                                        
 
 #define LINEAR_EXPR_OP_NODE_CLASS(xxx,sym)				\
@@ -119,6 +127,11 @@ public:
 	r = right->to_Linear_Expr(cvl,dvl);				\
 	return l sym r;							\
     }									\
+    virtual void print() {                                              \
+      left->print();                                                    \
+      std::cout << #sym ;                                                 \
+      right->print();                                                   \
+    }                                                                   \
     };                                        
 
 LINEAR_EXPR_OP_NODE_CLASS(plus,+);

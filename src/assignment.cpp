@@ -38,6 +38,12 @@
 //    
 //}
 
+void assignment::print() {
+  std::cout << x;
+  std::cout << "'=";
+  expr->print();
+}
+
 assignment build_assignment(const std::string &input)
 {
     assignment_builder ab;

@@ -39,6 +39,8 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
 	REQUIRE(b.expr->eval(cvl) == 11);
 
         auto it = e.guard;
+        it->print();
+        cout << endl;
         Variable A(0), B(1), C(2);
         Constraint_System css;
         css.insert(A >= 10*B);
@@ -68,9 +70,9 @@ TEST_CASE("Test parsing a location", "[location][parser]")
 {
     SECTION("First simple test on location") {
 	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10 do {B'=0} goto loc2; \n when B>=10 do {A'=0} goto loc1;";
-	//string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B>=10 do {A'=0} goto loc1; \n when A==100 do {C'=0} goto loc2;";
         cout << "xxxxx" << endl;
 	location l = build_a_location(input);
+        l.print();
 
         REQUIRE(l.name == "loc0");
         assignment a = l.rates.at(0);
@@ -134,5 +136,14 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         REQUIRE ( g_poly.contains(g_cvx));
 
 
+    }
+}
+
+TEST_CASE("Test printing a location", "[location][printer]")
+{
+    SECTION("First simple test on printing a location") {
+	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;";
+	location l = build_a_location(input);
+        l.print();
     }
 }

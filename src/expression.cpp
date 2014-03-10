@@ -51,6 +51,11 @@ Linear_Expr expr_var_node::to_Linear_Expr(const CVList &cvl, const DVList &dvl)
     return le;
 }
 
+void expr_var_node::print() 
+{
+    cout << name ;
+}
+
 expr_leaf_node::expr_leaf_node(int v) : value(v)
 {}
 
@@ -76,6 +81,10 @@ Linear_Expr expr_leaf_node::to_Linear_Expr(const CVList &cvl, const DVList &dvl)
     return le;
 }
 
+void expr_leaf_node::print() 
+{
+    cout << value ;
+}
 
 expr_builder::expr_builder () 
 {}

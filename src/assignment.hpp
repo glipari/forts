@@ -11,9 +11,11 @@ using namespace tipa;
 /**
    This class represents an assignment.
  */
-struct assignment {
+class assignment {
+public:
     std::string x;
     std::shared_ptr<expr_tree_node> expr;
+    void print();
 };
 
 

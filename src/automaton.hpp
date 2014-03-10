@@ -10,6 +10,7 @@ public:
     std::shared_ptr<constraint_node> guard;
     std::vector<assignment> assignments;
     std::string dest;
+    void print();
 };
 
 edge build_an_edge(const std::string &str);
@@ -37,6 +38,7 @@ public:
     std::shared_ptr<constraint_node> invariant;
     std::vector<assignment> rates;
     std::vector<edge> outgoings;
+    void print();
 };
 
 class location_builder {

@@ -18,6 +18,7 @@ protected:
     std::shared_ptr<expr_tree_node> right;
 public :
     virtual bool eval(const DVList &dvl) = 0;
+    virtual void print() = 0;
     virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) = 0;
   
     void set_left(std::shared_ptr<expr_tree_node> l) {
@@ -43,6 +44,11 @@ public :
         c = l sym r;							\
         return c;							\
     }									\
+    virtual void print() {                                              \
+      left->print();                                                    \
+      std::cout << #sym ;                                                 \
+      right->print();                                                   \
+    }                                                                   \
     };									\
 
 ATOMIC_CONSTRAINT_NODE_CLASS(l,<);
@@ -72,6 +78,13 @@ public:
 	for ( auto it = ats.begin(); it != ats.end(); it ++)
 	    c.insert((*it)->to_AT_Constraint(cvl, dvl));
 	return c;
+    }
+    void print() {
+      for (auto it = ats.begin(); it != ats.end(); it++) {
+        if ( it != ats.begin())
+          std::cout << "&" ;
+        (*it)->print();
+      }
     }
 };
 
