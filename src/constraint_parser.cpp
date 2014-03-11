@@ -1,7 +1,4 @@
-#include "syntax_trees.hpp"
-
-
-
+#include "constraint_parser.hpp"
 
 shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
 {
@@ -27,11 +24,11 @@ shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
     expr_builder b;
     using namespace std::placeholders;
 
-    r_var    [std::bind(&expr_builder::make_var,                   &b, _1)];
-    r_int    [std::bind(&expr_builder::make_leaf,                  &b, _1)];
-    op_plus  [std::bind(&expr_builder::make_op<plus_node>,         &b, _1)];
-    op_minus [std::bind(&expr_builder::make_op<minus_node>,        &b, _1)];
-    op_mult  [std::bind(&expr_builder::make_op<mult_node>,         &b, _1)];
+    r_var    [std::bind(&expr_builder::make_var,             &b, _1)];
+    r_int    [std::bind(&expr_builder::make_leaf,            &b, _1)];
+    op_plus  [std::bind(&expr_builder::make_op<plus_node>,   &b, _1)];
+    op_minus [std::bind(&expr_builder::make_op<minus_node>,  &b, _1)];
+    op_mult  [std::bind(&expr_builder::make_op<mult_node>,   &b, _1)];
 
   
     stringstream str(expr_input);

@@ -10,7 +10,6 @@ namespace PPL = Parma_Polyhedra_Library;
 typedef PPL::Constraint_System   Linear_Constraint;
 typedef PPL::Constraint          AT_Constraint;
 typedef PPL::Linear_Expression   Linear_Expr;
-//typedef PPL::Variable            Variable;
 
 // returns the PPL variable associated to the string in CVList
 // I do not like this function, it assumes the CVList is properly ordered... 

@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include <syntax_trees.hpp>
+#include <ppl_adapt.hpp>
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;

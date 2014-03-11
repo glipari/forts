@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include <syntax_trees.hpp>
+#include <constraint_parser.hpp>
 
 TEST_CASE("Test the syntax tree for an atomic constraint", 
 	  "[TestAtomicConstraintTree]")

@@ -1,25 +1,10 @@
 #include "catch.hpp"
-#include <syntax_trees.hpp>
-#include <assignment.hpp>
-#include <automaton.hpp>
+#include <constraint_parser.hpp>
+#include <assignment_parser.hpp>
+#include <automaton_parser.hpp>
 
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace std;
-
-//TEST_CASE("Test the syntax tree for a constraint", 
-//	  "[TestConstraintTree]")
-//{
-//  string input = "3+2==14";
-//  auto at_tree = build_a_constraint_tree(input);
-//  DVList dvl;
-//  REQUIRE (at_tree->eval(dvl) == false);
-//
-//  string input2 = "3+x-(2+4)==3-(2+4) & 1 <= 2";
-//  auto at_tree2 = build_a_constraint_tree(input2);
-//  DVList dvl2;
-//  dvl2.push_back(variable("x",0));
-//  REQUIRE (at_tree2->eval(dvl2) == true);
-//}
 
 
 TEST_CASE("Test parsing an edge", "[edge][parser]")
@@ -70,15 +55,15 @@ TEST_CASE("Test parsing a location", "[location][parser]")
 {
     SECTION("First simple test on location") {
 	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10 do {B'=0} goto loc2; \n when B>=10 do {A'=0} goto loc1;";
-        cout << "xxxxx" << endl;
+        //cout << "xxxxx" << endl;
 	location l = build_a_location(input);
-        l.print();
+        //l.print();
 
         REQUIRE(l.name == "loc0");
         assignment a = l.rates.at(0);
-        cout << a.x << endl;
+        //cout << a.x << endl;
         assignment b = l.rates.at(1);
-        cout << b.x << endl;
+        //cout << b.x << endl;
 	REQUIRE(a.x == "A");
 	REQUIRE(b.x == "B");
 	CVList cvl;
@@ -102,7 +87,6 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         C_Polyhedron poly(lc);
         REQUIRE ( cvx.contains(poly));
         REQUIRE ( poly.contains(cvx));
-
 
         edge e0 = l.outgoings.at(0);
         REQUIRE ( e0.dest == "loc2");
@@ -134,8 +118,6 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         cout << "g cvx " << g_cvx << endl;
         REQUIRE ( g_cvx.contains(g_poly));
         REQUIRE ( g_poly.contains(g_cvx));
-
-
     }
 }
 

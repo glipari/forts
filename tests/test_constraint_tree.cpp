@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include <syntax_trees.hpp>
-#include <assignment.hpp>
+#include <constraint_parser.hpp>
+#include <assignment_parser.hpp>
 
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace std;
