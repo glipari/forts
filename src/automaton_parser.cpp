@@ -35,9 +35,9 @@ rule prepare_edge_rule(edge_builder & e_builder)
 {
     rule r_edge, r_when, r_constraint, r_ass, r_do, r_goto, r_dest;
 
-    r_when = rule("when", true);
-    r_do= rule("do", true);
-    r_goto= rule("goto", true);
+    r_when = keyword("when");
+    r_do= keyword("do");
+    r_goto= keyword("goto");
     r_dest = rule(tk_ident);
     r_edge = r_when >> r_constraint >> r_do >> rule('{') >> r_ass >> *(rule(',') >> r_ass) >> rule('}') >> r_goto >> r_dest >> rule(';');
     r_ass = prepare_assignment_rule(e_builder);
@@ -119,14 +119,15 @@ rule prepare_outgoing_rule(location_builder &loc_builder)
 
 rule prepare_location_rule(location_builder & loc_builder)
 {
-    rule r_loc, r_while, r_constraint, r_ass, r_wait, r_l, r_name, r_outgoing;
+    rule r_loc, r_while, r_constraint, r_ass, r_wait, r_l, r_name, r_outgoing, r_emptyset;
 
     r_outgoing = prepare_outgoing_rule(loc_builder);
-    r_l = rule("loc", true);
-    r_while = rule("while", true);
-    r_wait= rule("wait", true);
+    r_l = keyword("loc");
+    r_while = keyword("while");
+    r_wait= keyword("wait");
+    r_emptyset = rule('{') >> rule('}');
     r_name = rule(tk_ident);
-    r_loc = r_l >> r_name >> rule(':') >> r_while >> r_constraint >> r_wait >> rule('{') >> r_ass >> *(rule(',') >> r_ass) >> rule('}') >> *r_outgoing;
+    r_loc = r_l >> r_name >> rule(':') >> r_while >> r_constraint >> r_wait >> (r_emptyset | (rule('{') >> r_ass >> *(rule(',') >> r_ass) >> rule('}') ) ) >> *r_outgoing;
     r_ass = prepare_rate_rule(loc_builder);
     r_constraint = prepare_constraint_rule(loc_builder.invariant_builder);
 
@@ -159,3 +160,74 @@ location build_a_location(const string &expr_input)
     else return loc_builder.get_location();
 }
 
+automaton automaton_builder::get_automaton()
+{
+  return aton;
+}
+
+void automaton_builder::the_name(parser_context &pc)
+{
+    auto x = pc.collect_tokens();
+    if (x.size() < 1) throw string("Error in collecting variable."); 
+    string v = x[x.size()-1].second;
+    aton.name = v;
+}
+
+void automaton_builder::a_label(parser_context &pc)
+{
+    auto x = pc.collect_tokens();
+    if (x.size() < 1) throw string("Error in collecting variable."); 
+    string v = x[x.size()-1].second;
+    aton.labels.push_back(v);
+}
+
+void automaton_builder::a_location(parser_context &pc)
+{
+  aton.locations.push_back(l_builder.get_location());
+  l_builder = location_builder();
+}
+
+rule prepare_automaton_rule(automaton_builder & a_builder)
+{
+    rule r_auto, r_head, r_lab, r_name, r_sync, r_loc, r_end;
+
+    r_head = keyword("automaton");
+    r_name = rule(tk_ident);
+    r_lab = rule(tk_ident);
+    r_sync = keyword("sync") >> rule(':') >>
+              -( r_lab >> *(rule(',')>>r_lab))
+                  >> rule(';');
+    r_loc = prepare_location_rule(a_builder.l_builder);
+    r_end = keyword("end");
+
+    r_auto = keyword("automaton") >> r_name >> -r_sync >> *(r_loc) >> keyword("end");
+
+    using namespace placeholders;
+    r_name [bind(&automaton_builder::the_name, &a_builder, _1)];
+    r_lab [bind(&automaton_builder::a_label, &a_builder, _1)];
+    r_loc [bind(&automaton_builder::a_location, &a_builder, _1)];
+    return r_auto;
+}
+
+automaton build_an_automaton(const string &expr_input)
+{
+    automaton_builder a_builder;
+    rule r_auto = prepare_automaton_rule(a_builder);
+
+    using namespace std::placeholders;
+
+    stringstream str(expr_input);
+
+    parser_context pc;
+    pc.set_stream(str);
+
+    bool f = false;
+    try {
+	f = r_auto.parse(pc);
+    } catch (parse_exc &e) {
+	cout << "Parse exception!" << endl;
+    }
+
+    if (!f) throw pc.get_formatted_err_msg();
+    else return a_builder.get_automaton();
+}

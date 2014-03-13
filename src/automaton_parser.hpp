@@ -41,4 +41,17 @@ tipa::rule prepare_rate_rule(location_builder &loc_builder);
 tipa::rule prepare_outgoing_rule(location_builder &loc_builder);
 location build_a_location(const std::string &str);
 
+class automaton_builder {
+public:
+    automaton aton;
+    location_builder l_builder;
+
+    void a_label(tipa::parser_context &pc);
+    void the_name(tipa::parser_context &pc);
+    void a_location(tipa::parser_context &pc);
+    automaton get_automaton();
+};
+
+tipa::rule prepare_automaton_rule(automaton_builder &a_builder);
+automaton build_an_automaton(const std::string &pc);
 #endif

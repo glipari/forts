@@ -25,4 +25,13 @@ public:
     void print();
 };
 
+/** The class for an automaton  */
+class automaton {
+public:
+    std::string name; 
+    /** The set of synchronization labels */
+    std::vector<std::string> labels;
+    std::vector<location> locations;
+    void print();
+};
 #endif

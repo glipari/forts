@@ -32,3 +32,20 @@ void location::print()
 	it->print();
 }
 
+void automaton::print()
+{
+  std::cout << "automaton " << name << std::endl;
+  std::cout << "sync: ";
+  for ( auto it = labels.begin(); it != labels.end(); it++) {
+    if ( it != labels.begin())
+      std::cout << ", ";
+    std::cout << *it ;
+  }
+  std:: cout << ";" << std::endl;
+  for ( auto it = locations.begin(); it != locations.end(); it++) {
+    it->print();
+    std::cout << std::endl;
+  }
+  std:: cout << "end" << std::endl;
+}
+

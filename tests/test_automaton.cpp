@@ -2,6 +2,8 @@
 #include <constraint_parser.hpp>
 #include <assignment_parser.hpp>
 #include <automaton_parser.hpp>
+#include <string>
+#include <fstream>
 
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace std;
@@ -124,8 +126,39 @@ TEST_CASE("Test parsing a location", "[location][parser]")
 TEST_CASE("Test printing a location", "[location][printer]")
 {
     SECTION("First simple test on printing a location") {
-	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;";
+	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc1;";
 	location l = build_a_location(input);
         l.print();
+        cout << " -------------------- " << endl;
+	string input2 = "loc loc0 : while A>=10*B & C <=x*3+2 wait {} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc1;";
+	location l2 = build_a_location(input2);
+        l2.print();
+    }
+}
+
+TEST_CASE("Test printing an automaton", "[automaton][printer]")
+{
+    SECTION("To print the location inside an automaton first.") {
+	string input1 = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc3;\n"; 
+        location loc1 = build_a_location(input1);
+        loc1.print();
+    }
+
+    SECTION("First simple test on printing an automaton") {
+	string input1 = "automaton A \n sync : a1, a2; \n loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc3;  \n loc loc1 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc5;\n when B>=100*C do {A'=0, B'=2} goto loc4;  end";
+        automaton aton1 = build_an_automaton(input1);
+        aton1.print();
+    }
+
+    SECTION("Read an automaton from a file") {
+	std::ifstream ifs1("automaton1.txt");
+        std::string str1((std::istreambuf_iterator<char>(ifs1)), std::istreambuf_iterator<char>()); 
+        std::cout << str1 << endl;
+        //str1.erase(std::remove(str1.begin(), str1.end(), '\n'), str1.end());
+        for (auto it = str1.begin(); it != str1.end(); it++)
+          if (*it == '\n')
+            *it = ' ';
+        automaton aton1 = build_an_automaton(str1);
+        aton1.print();
     }
 }
