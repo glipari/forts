@@ -1,0 +1,9 @@
+automaton A1
+sync : a1, a2;
+loc l0: while x<=3*y & x<=10  wait { x'=0, y'=1}
+  when x==3*y   do {x'=10, y'=0}  goto l1;
+  when x==y     do {x'=10, y'=0}  goto l0;
+loc l1: while x<=3*y   wait { x'=0, y'=1}
+  when x>=3*y   do {x'=10, y'=0}  goto l1;
+  when x>=y     do {x'=10, y'=0}  goto l0;
+end
