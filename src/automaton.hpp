@@ -29,6 +29,7 @@ public:
 class automaton {
 public:
     std::string name; 
+    std::string init_loc_name;
     /** The set of synchronization labels */
     std::vector<std::string> labels;
     std::vector<location> locations;

@@ -12,6 +12,7 @@ struct variable {
 
     std::string name;
     int valuation;
+    void set_val(int v) { valuation = v;}
 };
 
 // The variable table for discrete variables
