@@ -26,6 +26,7 @@ public:
 	st.push(n);
     }
     
+    void make_neg(tipa::parser_context &pc);
     void make_var(tipa::parser_context &pc);
     int get_size();
     std::shared_ptr<expr_tree_node> get_tree();

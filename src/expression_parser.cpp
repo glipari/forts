@@ -24,6 +24,15 @@ void expr_builder::make_var(parser_context &pc)
     st.push(node);
 }
     
+void expr_builder::make_neg(tipa::parser_context &pc) {
+    auto r = st.top(); st.pop();
+    auto l = std::make_shared<expr_leaf_node>(0);
+    auto n = std::make_shared<minus_node>();
+    n->set_left(l);
+    n->set_right(r);
+    st.push(n);
+}
+
 int expr_builder::get_size() 
 {
     return st.size();
@@ -38,9 +47,9 @@ rule prepare_expr_rule(expr_builder &b)
 {
     rule expr, primary, term, 
 	op_plus, op_minus, op_mult, op_div,
-	r_int, r_var; 
+	r_int, r_var, r_neg; 
 
-    expr = term >> *(op_plus | op_minus);
+    expr = (term|r_neg) >> *(op_plus | op_minus);
     op_plus = rule('+') > term;
     op_minus = rule('-') > term;
 
@@ -51,6 +60,7 @@ rule prepare_expr_rule(expr_builder &b)
     primary = r_int | r_var | 
 	rule('(') >> expr >> rule(')');
 
+    r_neg = rule('-') >> term;
     r_int = rule(tk_int);
     r_var = rule(tk_ident);
 
@@ -61,6 +71,7 @@ rule prepare_expr_rule(expr_builder &b)
     op_plus  [std::bind(&expr_builder::make_op<plus_node>,         &b, _1)];
     op_minus [std::bind(&expr_builder::make_op<minus_node>,        &b, _1)];
     op_mult  [std::bind(&expr_builder::make_op<mult_node>,         &b, _1)];
+    r_neg   [std::bind(&expr_builder::make_neg,        &b, _1)];
 
     return expr;
 }

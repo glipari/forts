@@ -6,15 +6,6 @@ model model_builder::get_model()
   return mod;
 }
 
-void model_builder::bad_loc(automaton & a, location &l)
-{
-  l.bad = true;
-}
-void model_builder::init_loc(automaton & a, location &l)
-{
-  a.init_loc = make_shared<location>(l);
-}
-
 void model_builder::aton_name(tipa::parser_context &pc)
 {
     auto x = pc.collect_tokens();
@@ -34,7 +25,7 @@ void model_builder::loc_name(tipa::parser_context &pc)
     loc_names.push_back(ln);
 }
 
-//void model_builder::aton_loc_pairs(void(*model_builder::fn)(automaton&, location &))
+//void model_builder::aton_loc_pairs(void(model_builder::*fn)(location &))
 //{
 //    for ( int i = 0; i < aton_names.size(); i++) {
 //      string an = aton_names.at(i);
@@ -46,7 +37,8 @@ void model_builder::loc_name(tipa::parser_context &pc)
 //          aton_matched = true;
 //          for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
 //            if ( ln == jt->name) {  
-//              fn(*it, *jt);
+//              this->*fn(*jt); 
+//              //fn(*it, *jt);
 //              //it->init_loc = make_shared<location>(*jt);
 //              loc_matched = true;
 //              break;
@@ -76,7 +68,7 @@ void model_builder::init_locs(tipa::parser_context &pc)
           aton_matched = true;
           for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
             if ( ln == jt->name) {  
-              it->init_loc = make_shared<location>(*jt);
+              it->init_loc_name = ln;
               loc_matched = true;
               break;
             }

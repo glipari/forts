@@ -27,8 +27,8 @@ void model::print()
   cout << "init := " << endl;
   for ( auto it = automata.begin(); it != automata.end(); it++)
   {
-    //cout << "loc[" << it->name << "]==" << it->init_loc_name <<"& ";
-    cout << "loc[" << it->name << "]==" << it->init_loc->name <<"& ";
+    cout << "loc[" << it->name << "]==" << it->init_loc_name <<"& ";
+    //cout << "loc[" << it->name << "]==" << it->init_loc->name <<"& ";
   }
   if ( init_constraint != nullptr)
     init_constraint->print();

@@ -18,6 +18,7 @@ public:
 /** This class represent a location in the automaton  */
 class location {
 public:
+    bool bad = false;
     std::string name; 
     std::shared_ptr<constraint_node> invariant;
     std::vector<assignment> rates;
@@ -30,6 +31,7 @@ class automaton {
 public:
     std::string name; 
     std::string init_loc_name;
+    //std::shared_ptr<location> init_loc; 
     /** The set of synchronization labels */
     std::vector<std::string> labels;
     std::vector<location> locations;
