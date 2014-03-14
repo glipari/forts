@@ -6,30 +6,121 @@ model model_builder::get_model()
   return mod;
 }
 
+void model_builder::bad_loc(automaton & a, location &l)
+{
+  l.bad = true;
+}
+void model_builder::init_loc(automaton & a, location &l)
+{
+  a.init_loc = make_shared<location>(l);
+}
+
 void model_builder::aton_name(tipa::parser_context &pc)
 {
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw string("Error in collecting variable."); 
     string an = x[x.size()-1].second;
+    cout << "an : " << an << endl;
     aton_names.push_back(an);
 
 }
 
-void model_builder::aton_loc_pair(tipa::parser_context &pc)
+void model_builder::loc_name(tipa::parser_context &pc)
 {
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw string("Error in collecting variable."); 
     string ln = x[x.size()-1].second;
-    string an = aton_names.back();
-    cout << "an : " << an << endl;
     cout << "ln : " << ln << endl;
-    //loc_names.push_back(ln);
-    for ( auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-      if (an == it->name) {
-        it->init_loc_name = ln;
-        cout << it->name << "---" << ln << "---" << it->init_loc_name << endl;
+    loc_names.push_back(ln);
+}
+
+//void model_builder::aton_loc_pairs(void(*model_builder::fn)(automaton&, location &))
+//{
+//    for ( int i = 0; i < aton_names.size(); i++) {
+//      string an = aton_names.at(i);
+//      string ln = loc_names.at(i);
+//      for ( auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
+//        bool aton_matched = false;
+//        bool loc_matched = false;
+//        if (an == it->name) {
+//          aton_matched = true;
+//          for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
+//            if ( ln == jt->name) {  
+//              fn(*it, *jt);
+//              //it->init_loc = make_shared<location>(*jt);
+//              loc_matched = true;
+//              break;
+//            }
+//          }
+//          if ( !loc_matched)
+//            throw string("No location named ") + ln + string(" in automaton ") + an;
+//        }
+//        if (!aton_matched)
+//          throw string("No automaton named ") + an;
+//      }
+//    }
+//    cout << "atone names size : " << aton_names.size() << endl;
+//    aton_names.clear();
+//    loc_names.clear();
+//}
+
+void model_builder::init_locs(tipa::parser_context &pc)
+{
+    for ( int i = 0; i < aton_names.size(); i++) {
+      string an = aton_names.at(i);
+      string ln = loc_names.at(i);
+      for ( auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
+        bool aton_matched = false;
+        bool loc_matched = false;
+        if (an == it->name) {
+          aton_matched = true;
+          for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
+            if ( ln == jt->name) {  
+              it->init_loc = make_shared<location>(*jt);
+              loc_matched = true;
+              break;
+            }
+          }
+          if ( !loc_matched)
+            throw string("No location named ") + ln + string(" in automaton ") + an;
+        }
+        if (!aton_matched)
+          throw string("No automaton named ") + an;
       }
     }
+    cout << "atone names size : " << aton_names.size() << endl;
+    aton_names.clear();
+    loc_names.clear();
+}
+
+void model_builder::bad_locs(tipa::parser_context &pc)
+{
+    for ( int i = 0; i < aton_names.size(); i++) {
+      string an = aton_names.at(i);
+      string ln = loc_names.at(i);
+      cout << "an : " << an << endl;
+      cout << "ln : " << ln << endl;
+      for ( auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
+        bool aton_matched = false;
+        bool loc_matched = false;
+        if (an == it->name) {
+          aton_matched = true;
+          for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
+            if ( ln == jt->name) {  
+              jt->bad = true;
+              loc_matched = true;
+              break;
+            }
+          }
+          if ( !loc_matched)
+            throw string("No location named ") + ln + string(" in automaton ") + an;
+        }
+        if (!aton_matched)
+          throw string("No automaton named ") + an;
+      }
+    }
+    aton_names.clear();
+    loc_names.clear();
 }
 
 void model_builder::the_init_constraint(tipa::parser_context &pc)
@@ -72,17 +163,20 @@ void model_builder::an_automaton(tipa::parser_context &pc)
 
 rule prepare_model_rule(model_builder &m_builder)
 {
-  rule r_mod, r_cvars, r_dvars, r_automaton, r_cvar, r_dvar, dv_lhs, dv_rhs, r_init, r_init_constraint, r_aton_name, r_loc_name, r_aton_loc_pair;
+  rule r_mod, r_cvars, r_dvars, r_automaton, r_cvar, r_dvar, dv_lhs, dv_rhs, r_init, r_init_constraint, r_aton_name, r_loc_name, r_aton_loc_pair, r_bad_locs, r_init_locs;
 
   r_aton_name = rule(tk_ident);
   r_loc_name = rule(tk_ident);
 
   r_aton_loc_pair = keyword("loc") >> rule('[') >> r_aton_name >> rule(']') >> rule('=')>>rule('=') >> r_loc_name;
+  r_init_locs = *(r_aton_loc_pair >> rule('&'));
   r_init_constraint = prepare_constraint_rule(m_builder.c_builder);
 
   r_init = keyword("init") >> rule(':')>>rule('=') 
-            >> *(r_aton_loc_pair >> rule('&')) 
+            >> r_init_locs
             >> r_init_constraint >> rule(';');
+  r_bad_locs = keyword("bad") >> rule(':') >> rule('=')
+    >> -(r_aton_loc_pair >> *(rule('&')>>r_aton_loc_pair)) >> rule(';');
 
   r_cvar = rule(tk_ident);
 
@@ -94,11 +188,13 @@ rule prepare_model_rule(model_builder &m_builder)
   r_dvars = r_dvar >> *(rule(',')>>r_dvar) >> rule(':') >> keyword("discrete") >> rule(';');
   r_automaton = prepare_automaton_rule(m_builder.a_builder);
 
-  r_mod = r_cvars >> -(r_dvars) >> *(r_automaton) >> r_init;
+  r_mod = r_cvars >> -(r_dvars) >> *(r_automaton) >> r_init >> -(r_bad_locs);
   using namespace placeholders;
   r_aton_name [bind(&model_builder::aton_name, &m_builder, _1)];
-  r_loc_name [bind(&model_builder::aton_loc_pair, &m_builder, _1)];
+  r_loc_name [bind(&model_builder::loc_name, &m_builder, _1)];
+  r_init_locs [bind(&model_builder::init_locs, &m_builder, _1)];
   r_init_constraint [bind(&model_builder::the_init_constraint, &m_builder, _1)];
+  r_bad_locs[bind(&model_builder::bad_locs, &m_builder, _1)];
   r_cvar [bind(&model_builder::a_cvar, &m_builder, _1)];
   dv_lhs [bind(&model_builder::dv_lhs, &m_builder, _1)];
   dv_rhs [bind(&model_builder::dv_rhs, &m_builder, _1)];
