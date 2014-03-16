@@ -10,6 +10,7 @@ class edge {
 public:
     std::shared_ptr<constraint_node> guard;
     std::vector<assignment> assignments;
+    std::string sync_label;
     std::string dest;
     void print();
 };
@@ -36,5 +37,7 @@ public:
     std::vector<std::string> labels;
     std::vector<location> locations;
     void print();
+    /** To check if there is inconsistency in the automaton. */
+    bool check_consistency(const CVList &cvl, const DVList &dvl);
 };
 #endif

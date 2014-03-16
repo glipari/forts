@@ -61,10 +61,10 @@ void model_builder::init_locs(tipa::parser_context &pc)
     for ( int i = 0; i < aton_names.size(); i++) {
       string an = aton_names.at(i);
       string ln = loc_names.at(i);
+      bool aton_matched = false;
       for ( auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-        bool aton_matched = false;
-        bool loc_matched = false;
         if (an == it->name) {
+          bool loc_matched = false;
           aton_matched = true;
           for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
             if ( ln == jt->name) {  
@@ -76,9 +76,11 @@ void model_builder::init_locs(tipa::parser_context &pc)
           if ( !loc_matched)
             throw string("No location named ") + ln + string(" in automaton ") + an;
         }
-        if (!aton_matched)
-          throw string("No automaton named ") + an;
+        if ( aton_matched)
+          break;
       }
+      if (!aton_matched)
+        throw string("No automaton named ") + an;
     }
     cout << "atone names size : " << aton_names.size() << endl;
     aton_names.clear();
@@ -92,11 +94,11 @@ void model_builder::bad_locs(tipa::parser_context &pc)
       string ln = loc_names.at(i);
       cout << "an : " << an << endl;
       cout << "ln : " << ln << endl;
+      bool aton_matched = false;
       for ( auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-        bool aton_matched = false;
-        bool loc_matched = false;
         if (an == it->name) {
           aton_matched = true;
+          bool loc_matched = false;
           for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
             if ( ln == jt->name) {  
               jt->bad = true;
@@ -107,9 +109,11 @@ void model_builder::bad_locs(tipa::parser_context &pc)
           if ( !loc_matched)
             throw string("No location named ") + ln + string(" in automaton ") + an;
         }
-        if (!aton_matched)
-          throw string("No automaton named ") + an;
+        if ( aton_matched)
+          break;
       }
+      if (!aton_matched)
+        throw string("No automaton named ") + an;
     }
     aton_names.clear();
     loc_names.clear();

@@ -23,6 +23,14 @@ void edge_builder::the_dest(parser_context &pc)
     e.dest = v;
 }
 
+void edge_builder::the_sync_label(parser_context &pc)
+{
+    auto x = pc.collect_tokens();
+    if (x.size() < 1) throw string("Error in collecting variable."); 
+    string v = x[x.size()-1].second;
+    e.sync_label = v;
+}
+
 rule prepare_assignment_rule(edge_builder &e_builder)
 {
     rule ass = prepare_assignment_rule(e_builder.ass_builder);
@@ -33,19 +41,22 @@ rule prepare_assignment_rule(edge_builder &e_builder)
 
 rule prepare_edge_rule(edge_builder & e_builder)
 {
-    rule r_edge, r_when, r_constraint, r_ass, r_do, r_goto, r_dest;
+    rule r_edge, r_when, r_constraint, r_ass, r_do, r_goto, r_dest, r_sync, r_label;
 
     r_when = keyword("when");
     r_do= keyword("do");
     r_goto= keyword("goto");
     r_dest = rule(tk_ident);
-    r_edge = r_when >> r_constraint >> r_do >> rule('{') >> r_ass >> *(rule(',') >> r_ass) >> rule('}') >> r_goto >> r_dest >> rule(';');
+    r_label = rule(tk_ident);
+    r_sync = keyword("sync") >> r_label;
+    r_edge = r_when >> r_constraint >> -r_sync >> r_do >> rule('{') >> -(r_ass >> *(rule(',') >> r_ass)) >> rule('}') >> r_goto >> r_dest >> rule(';');
     r_ass = prepare_assignment_rule(e_builder);
     r_constraint = prepare_constraint_rule(e_builder.c_builder);
 
     using namespace placeholders;
     r_constraint [bind(&edge_builder::the_guard, &e_builder, _1)];
     r_dest [bind(&edge_builder::the_dest, &e_builder, _1)];
+    r_label [bind(&edge_builder::the_sync_label, &e_builder, _1)];
     return r_edge;
 }
 

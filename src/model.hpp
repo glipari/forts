@@ -12,6 +12,7 @@ public:
   std::shared_ptr<constraint>  init_constraint; 
   std::vector<automaton> automata;
   void print();
+  void check_consistency();
 };
 
 

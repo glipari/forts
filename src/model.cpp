@@ -52,6 +52,12 @@ void model::print()
   cout << ";" << endl;
 }
 
+void model::check_consistency()
+{
+  for ( auto it = automata.begin(); it != automata.end(); it++)
+    it->check_consistency(cvars, dvars);
+}
+
 int myfunction(int a)
 {
     return -1;

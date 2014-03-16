@@ -17,6 +17,7 @@ public:
     void an_assignment(tipa::parser_context &pc);
     void the_guard(tipa::parser_context &pc);
     void the_dest(tipa::parser_context &pc);
+    void the_sync_label(tipa::parser_context &pc);
 };
 
 tipa::rule prepare_edge_rule(edge_builder &e_builder);
