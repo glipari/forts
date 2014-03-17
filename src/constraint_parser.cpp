@@ -1,5 +1,14 @@
 #include "constraint_parser.hpp"
 
+void builder::store_true(parser_context &pc) {
+    auto l = make_shared<expr_leaf_node>(1);
+    auto r = make_shared<expr_leaf_node>(1);
+    st.push(l);
+    st.push(r);
+    auto at_node = make_shared<eq_node>(); 
+    at_nodes.push_back(at_node);
+}
+
 shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
 {
     rule expr, primary, term, 
@@ -53,13 +62,14 @@ shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
 rule prepare_constraint_rule(constraint_builder &b)
 {
     rule constraint, atomic_constraint;
-    rule at_l, at_leq, at_eq, at_geq, at_g;
+    rule at_l, at_leq, at_eq, at_geq, at_g, r_true;
     
     constraint = atomic_constraint >> *( rule('&') > atomic_constraint );
     rule comparison = at_leq | at_geq | at_eq | at_l | at_g;
     rule expr = prepare_expr_rule(b);
+    r_true = rule("true", true);
 
-    atomic_constraint = expr > comparison > expr;
+    atomic_constraint = r_true | (expr > comparison > expr);
     at_l    = rule("<");
     at_leq  = rule("<=");
     at_eq   = rule("==");
@@ -73,6 +83,7 @@ rule prepare_constraint_rule(constraint_builder &b)
     at_eq     [std::bind(&builder::store_comp<eq_node>,       &b, _1)];
     at_geq    [std::bind(&builder::store_comp<geq_node>,      &b, _1)];
     at_g      [std::bind(&builder::store_comp<g_node>,        &b, _1)];
+    r_true    [std::bind(&builder::store_true,                &b, _1)];
 
     return constraint;
 }
@@ -84,12 +95,8 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
   
     stringstream str(expr_input);
 
-    cout << "B 1" << endl;
-
     parser_context pc;
     pc.set_stream(str);
-
-    cout << "B 2" << endl;
 
     bool f = false;
     try {
@@ -97,26 +104,21 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
     } catch (parse_exc &e) {
 	cout << "Parse exception!" << endl;
 	cout << e.what() << endl;
-    } catch (string &s) {
+    } /*catch (string &s) {
 	cout << "Generic string exception!" << endl;
 	cout << s << endl;
     } catch (std::exception &exc) {
 	cout << exc.what() << endl;
 	throw exc;
-    }
+	}*/
     
-    cout << "B 3" << endl;
-
     if (!f) {
 	cout << pc.get_formatted_err_msg();
+	return nullptr;
     } else {
 	auto tr = b.get_tree();
 	return tr;
     }
-
-    cout << "B 4" << endl;
-
-    return nullptr;
 }
 
 

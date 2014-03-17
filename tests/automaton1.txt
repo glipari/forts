@@ -1,0 +1,10 @@
+automaton sched
+
+loc idle: while t1>=2  wait { c1'=0, c2'=0, c3'=0}
+    when p1-T1>=0  do {p1'=0, c1'=C1} goto x1R;
+
+loc x1R2W3W : while c1>=0 & p3-D3<=0 wait { c1'=1, c2'=0, c3'=0}
+    when p3-T3>=0  do {p3'=0, c3'=c3+C3}  goto x1R2W3W;
+
+end
+

@@ -1,7 +1,7 @@
 #+TITLE: todo list for effort
 #+author: Giuseppe Lipari and Youcheng Sun
 
-* TODO As a first step, we do the model [11%]
+* DONE As a first step, we do the model [11%]
   :PROPERTIES:
   :ORDERED:  t
   :END:
@@ -44,7 +44,7 @@
 *** DONE Write a class for representing variables, (discrete, clock or parameters)
 *** DONE Add function check_linearity() to class expression
     This class takes a list of variables, and check the above things
-*** TODO Add a parameter to function compute()
+*** DONE Add a parameter to function compute()
     We additionally give the list of variables that is used to evaluate a value
 *** TODO Write test cases for everything
 

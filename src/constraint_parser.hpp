@@ -28,6 +28,8 @@ public:
         at_nodes.push_back(at_node);
     }
     
+    void store_true(parser_context &pc);
+
     shared_ptr<constraint_node> get_tree() {
 	if ( constraint != nullptr) {
 	    return constraint;
