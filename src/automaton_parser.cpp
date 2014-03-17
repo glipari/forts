@@ -18,7 +18,7 @@ void edge_builder::the_guard(parser_context &pc)
 void edge_builder::the_dest(parser_context &pc)
 {
     auto x = pc.collect_tokens();
-    if (x.size() < 1) throw string("Error in collecting variable."); 
+    if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
     e.dest = v;
 }
@@ -68,7 +68,7 @@ edge build_an_edge(const string &expr_input)
 	cout << "Parse exception!" << endl;
     }
 
-    if (!f) throw pc.get_formatted_err_msg();
+    if (!f) throw parse_exc(pc.get_formatted_err_msg());
     else return e_builder.get_edge();
 }
 
@@ -96,7 +96,7 @@ void location_builder::the_invariant(parser_context &pc)
 void location_builder::the_name(parser_context &pc)
 {
     auto x = pc.collect_tokens();
-    if (x.size() < 1) throw string("Error in collecting variable."); 
+    if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
     loc.name = v;
 }
@@ -155,7 +155,7 @@ location build_a_location(const string &expr_input)
 	cout << "Parse exception!" << endl;
     }
 
-    if (!f) throw pc.get_formatted_err_msg();
+    if (!f) throw parse_exc(pc.get_formatted_err_msg());
     else return loc_builder.get_location();
 }
 

@@ -34,7 +34,8 @@ assignment build_assignment(const std::string &input)
     }
 
     if (!flag) 
-	throw string("Error in parsing assignment: ") + pc.get_formatted_err_msg(); 
+	throw parse_exc("Error in parsing assignment");
+// + pc.get_formatted_err_msg(); 
     else {
 	//a.expr = b.get_tree();
 	return ab.get_assignment();

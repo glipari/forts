@@ -8,16 +8,33 @@ using namespace std;
 TEST_CASE("Test the syntax tree for a constraint", 
 	  "[TestConstraintTree]")
 {
-  string input = "3+2==14";
-  auto at_tree = build_a_constraint_tree(input);
-  DVList dvl;
-  REQUIRE (at_tree->eval(dvl) == false);
-
-  string input2 = "3+x-(2+4)==3-(2+4) & 1 <= 2";
-  auto at_tree2 = build_a_constraint_tree(input2);
-  DVList dvl2;
-  dvl2.push_back(variable("x",0));
-  REQUIRE (at_tree2->eval(dvl2) == true);
+    SECTION("Constraint 1") {
+	try {
+	    string input = "3+2==14";
+	    cout << "1" << endl;
+	    auto at_tree = build_a_constraint_tree(input);
+	    cout << "2" << endl;
+	    DVList dvl;
+	    REQUIRE (at_tree->eval(dvl) == false);
+	    cout << "3" << endl;
+	} catch (std::exception &exc) {
+	    cout << "A standard exception" << endl;
+	}
+    }
+    SECTION("Constraint 2") {
+	try {
+	    string input2 = "3+x-(2+4)==3-(2+4) & 1 <= 2";
+	    cout << "4" << endl;
+	    auto at_tree2 = build_a_constraint_tree(input2);
+	    cout << "5" << endl;
+	    DVList dvl2;
+	    dvl2.push_back(variable("x",0));
+	    cout << "6" << endl;
+	    REQUIRE (at_tree2->eval(dvl2) == true);
+	} catch (std::exception &exc) {
+	    cout << "A standard exception" << endl;
+	}   
+    } 
 }
 
 

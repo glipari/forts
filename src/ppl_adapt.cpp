@@ -9,5 +9,6 @@ PPL::Variable get_variable(const string &var, const CVList &cvl) {
 	    return PPL::Variable(i);
 	i++;
     }
-    throw string("no such a variable ") + string("\"") + var + string("\"") + string(" in the CVList.");
+    auto s = string("no such a variable \"") + var + string("\" in the CVList.");
+    throw s;
 }

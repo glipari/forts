@@ -34,7 +34,6 @@ public:
 	}
 	constraint = make_shared<constraint_node>();
 	for ( auto it = at_nodes.rbegin(); it != at_nodes.rend(); it ++) {
-	    //auto it = at_nodes.back();
 	    auto r = st.top(); st.pop();
 	    auto l = st.top(); st.pop();
 	    (*it)->set_left(l);

@@ -9,7 +9,7 @@ expr_builder::expr_builder ()
 void expr_builder::make_leaf(parser_context &pc)
 {
     auto x = pc.collect_tokens();
-    if (x.size() < 1) throw string("Error in collecting integer.");
+    if (x.size() < 1) throw parse_exc("Error in collecting integer.");
     int v = atoi(x[x.size()-1].second.c_str());
     auto node = make_shared<expr_leaf_node>(v);
     st.push(node);
@@ -18,7 +18,7 @@ void expr_builder::make_leaf(parser_context &pc)
 void expr_builder::make_var(parser_context &pc) 
 {
     auto x = pc.collect_tokens();
-    if (x.size() < 1) throw string("Error in collecting variable."); 
+    if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
     auto node = make_shared<expr_var_node>(v);
     st.push(node);

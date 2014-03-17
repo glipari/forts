@@ -13,7 +13,6 @@ shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
 
     term = primary >> *op_mult;
     op_mult = rule('*') > primary;
-    //op_div = rule('/') > primary;
 
     primary = r_int | r_var | 
 	rule('(') >> expr >> rule(')');
@@ -29,7 +28,6 @@ shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
     op_plus  [std::bind(&expr_builder::make_op<plus_node>,   &b, _1)];
     op_minus [std::bind(&expr_builder::make_op<minus_node>,  &b, _1)];
     op_mult  [std::bind(&expr_builder::make_op<mult_node>,   &b, _1)];
-
   
     stringstream str(expr_input);
 
@@ -41,35 +39,32 @@ shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
 	f = expr.parse(pc);
     } catch (parse_exc &e) {
 	cout << "Parse exception!" << endl;
-    }
+    } 
 
     if (!f) {
 	cout << pc.get_formatted_err_msg();
+	return nullptr;
     } else {
 	auto tr = b.get_tree();
 	return tr;
     }
-
-    return nullptr;
 }
 
 rule prepare_constraint_rule(constraint_builder &b)
 {
-    rule constraint, atomic_constraint; //, expr, primary, term, 
-	// op_plus, op_minus, op_mult, op_div,
-	// r_int, r_var, 
+    rule constraint, atomic_constraint;
     rule at_l, at_leq, at_eq, at_geq, at_g;
     
-    constraint = atomic_constraint >> *( rule('&') >> atomic_constraint);
+    constraint = atomic_constraint >> *( rule('&') > atomic_constraint );
     rule comparison = at_leq | at_geq | at_eq | at_l | at_g;
     rule expr = prepare_expr_rule(b);
 
     atomic_constraint = expr > comparison > expr;
-    at_l    = rule("<", true);
-    at_leq  = rule("<=", true);
-    at_eq   = rule("==", true);
-    at_geq  = rule(">=", true);
-    at_g    = rule(">", true);
+    at_l    = rule("<");
+    at_leq  = rule("<=");
+    at_eq   = rule("==");
+    at_geq  = rule(">=");
+    at_g    = rule(">");
 
     using namespace std::placeholders;
 
@@ -89,15 +84,28 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
   
     stringstream str(expr_input);
 
+    cout << "B 1" << endl;
+
     parser_context pc;
     pc.set_stream(str);
+
+    cout << "B 2" << endl;
 
     bool f = false;
     try {
 	f = constraint.parse(pc);
     } catch (parse_exc &e) {
 	cout << "Parse exception!" << endl;
+	cout << e.what() << endl;
+    } catch (string &s) {
+	cout << "Generic string exception!" << endl;
+	cout << s << endl;
+    } catch (std::exception &exc) {
+	cout << exc.what() << endl;
+	throw exc;
     }
+    
+    cout << "B 3" << endl;
 
     if (!f) {
 	cout << pc.get_formatted_err_msg();
@@ -105,6 +113,8 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
 	auto tr = b.get_tree();
 	return tr;
     }
+
+    cout << "B 4" << endl;
 
     return nullptr;
 }
