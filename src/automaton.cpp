@@ -2,6 +2,32 @@
 
 using namespace std;
 
+Linear_Constraint edge::guard_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const
+{
+  return guard->to_Linear_Constraint(cvl, dvl);
+}
+
+Linear_Constraint edge::ass_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const
+{
+  Linear_Constraint lc;
+
+  for ( auto it = cvl.begin(); it != cvl.end(); it++) {
+    string x = it->name;
+    for ( auto iit = assignments.begin(); iit != assignments.end(); iit++) {
+      if ( x == iit->x) {
+        PPL::Variable v = get_variable(x, cvl);
+        Linear_Expr le = iit->expr->to_Linear_Expr(cvl, dvl);
+        AT_Constraint atc = (v==le);
+        lc.insert(atc);
+        break;
+      }
+    }
+
+  }
+
+  return lc;
+}
+
 void edge::print() 
 {
     std::cout << "when ";
@@ -15,6 +41,39 @@ void edge::print()
     }
     std::cout << " }";
     std::cout << " goto " << dest << ";\n";
+}
+
+Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl)
+{
+  Linear_Constraint lc;
+  for ( auto it = cvl.begin(); it != cvl.end(); it++) {
+    string x = it->name;
+    bool found = false;
+    for ( auto iit = rates.begin(); iit != rates.end(); iit++) {
+      if ( x == iit->x) {
+        PPL::Variable v = get_variable(x, cvl);
+        Linear_Expr le = iit->expr->to_Linear_Expr(cvl, dvl);
+        AT_Constraint atc = (v==le);
+        lc.insert(atc);
+        found = true;
+        break;
+      }
+    }
+    if (found)
+      continue;
+    PPL::Variable v = get_variable(x, cvl);
+    Linear_Expr le;
+    le += 1;
+    AT_Constraint atc = (v==le);
+    lc.insert(atc);
+
+  }
+  return lc;
+}
+
+Linear_Constraint location::invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl)
+{
+  return invariant->to_Linear_Constraint(cvl, dvl);
 }
 
 
@@ -32,6 +91,14 @@ void location::print()
     for (auto it = outgoings.begin(); it != outgoings.end(); it++)
 	it->print();
 }
+
+location & automaton::get_location(std::string ln)
+{
+  for ( auto it = locations.begin(); it != locations.end(); it++)
+    if ( it->name == ln)
+      return *it;
+  throw string("No location named ") + ln;
+} 
 
 void automaton::print()
 {

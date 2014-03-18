@@ -1,6 +1,7 @@
 #include <iostream>
 #include <model.hpp>
 #include "expression.hpp"
+#include "sstate.hpp"
 
 
 int main()

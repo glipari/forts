@@ -12,6 +12,8 @@ public:
     std::vector<assignment> assignments;
     std::string sync_label;
     std::string dest;
+    Linear_Constraint guard_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
+    Linear_Constraint ass_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
     void print();
 };
 
@@ -25,6 +27,8 @@ public:
     std::vector<assignment> rates;
     std::vector<edge> outgoings;
     void print();
+    Linear_Constraint rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl);
+    Linear_Constraint invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl);
 };
 
 /** The class for an automaton  */
@@ -39,5 +43,6 @@ public:
     void print();
     /** To check if there is inconsistency in the automaton. */
     bool check_consistency(const CVList &cvl, const DVList &dvl);
+    location &get_location(std::string ln);
 };
 #endif
