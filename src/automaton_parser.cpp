@@ -87,6 +87,12 @@ edge build_an_edge(const string &expr_input)
 
 location location_builder::get_location() 
 {
+    string ln = loc.name;
+    string input =string("when true do {} goto "); 
+    input += ln;
+    input += ";";
+    edge e = build_an_edge(input);
+    loc.outgoings.push_back(e);
     return loc;
 }
 
