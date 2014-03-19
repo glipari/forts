@@ -8,9 +8,11 @@ namespace PPL = Parma_Polyhedra_Library;
 
 class sstate {
 public:
-  std::vector<std::string> loc_names; 
-  PPL::C_Polyhedron cvx;
-  bool contains(const sstate &ss) const;
+    // for each automaton, the name of the corresponding location
+    std::vector<std::string> loc_names; 
+
+    PPL::C_Polyhedron cvx;
+    bool contains(const sstate &ss) const;
 };
 
 #endif

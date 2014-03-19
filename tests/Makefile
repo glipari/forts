@@ -94,7 +94,8 @@ am_test_OBJECTS = test-test_main.$(OBJEXT) \
 	test-test_constraint_to_ppl.$(OBJEXT) \
 	test-test_ppl_coefficient.$(OBJEXT) \
 	test-test_expr_tree.$(OBJEXT) test-test_automaton.$(OBJEXT) \
-	test-test_model.$(OBJEXT)
+	test-test_model.$(OBJEXT) test-test_sstate.$(OBJEXT) \
+	test-test_SpaceExplorer.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_$(V))
@@ -495,7 +496,9 @@ top_builddir = ..
 top_srcdir = ..
 test_CPPFLAGS = -I../src/ -std=gnu++0x -Wall $(TIPA_CFLAGS)
 test_LDFLAGS = -L../src/ -lefforts -lppl -lgmp $(TIPA_LIBS)
-test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp test_ppl_coefficient.cpp test_expr_tree.cpp test_automaton.cpp test_model.cpp
+test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp test_ppl_coefficient.cpp test_expr_tree.cpp test_automaton.cpp test_model.cpp test_sstate.cpp \
+	       test_SpaceExplorer.cpp
+
 all: all-am
 
 .SUFFIXES:
@@ -550,6 +553,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/test-test_SpaceExplorer.Po
 include ./$(DEPDIR)/test-test_automaton.Po
 include ./$(DEPDIR)/test-test_constraint_to_ppl.Po
 include ./$(DEPDIR)/test-test_constraint_tree.Po
@@ -557,6 +561,7 @@ include ./$(DEPDIR)/test-test_expr_tree.Po
 include ./$(DEPDIR)/test-test_main.Po
 include ./$(DEPDIR)/test-test_model.Po
 include ./$(DEPDIR)/test-test_ppl_coefficient.Po
+include ./$(DEPDIR)/test-test_sstate.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -676,6 +681,34 @@ test-test_model.obj: test_model.cpp
 #	$(AM_V_CXX)source='test_model.cpp' object='test-test_model.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_model.obj `if test -f 'test_model.cpp'; then $(CYGPATH_W) 'test_model.cpp'; else $(CYGPATH_W) '$(srcdir)/test_model.cpp'; fi`
+
+test-test_sstate.o: test_sstate.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_sstate.o -MD -MP -MF $(DEPDIR)/test-test_sstate.Tpo -c -o test-test_sstate.o `test -f 'test_sstate.cpp' || echo '$(srcdir)/'`test_sstate.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_sstate.Tpo $(DEPDIR)/test-test_sstate.Po
+#	$(AM_V_CXX)source='test_sstate.cpp' object='test-test_sstate.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_sstate.o `test -f 'test_sstate.cpp' || echo '$(srcdir)/'`test_sstate.cpp
+
+test-test_sstate.obj: test_sstate.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_sstate.obj -MD -MP -MF $(DEPDIR)/test-test_sstate.Tpo -c -o test-test_sstate.obj `if test -f 'test_sstate.cpp'; then $(CYGPATH_W) 'test_sstate.cpp'; else $(CYGPATH_W) '$(srcdir)/test_sstate.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_sstate.Tpo $(DEPDIR)/test-test_sstate.Po
+#	$(AM_V_CXX)source='test_sstate.cpp' object='test-test_sstate.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_sstate.obj `if test -f 'test_sstate.cpp'; then $(CYGPATH_W) 'test_sstate.cpp'; else $(CYGPATH_W) '$(srcdir)/test_sstate.cpp'; fi`
+
+test-test_SpaceExplorer.o: test_SpaceExplorer.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_SpaceExplorer.o -MD -MP -MF $(DEPDIR)/test-test_SpaceExplorer.Tpo -c -o test-test_SpaceExplorer.o `test -f 'test_SpaceExplorer.cpp' || echo '$(srcdir)/'`test_SpaceExplorer.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_SpaceExplorer.Tpo $(DEPDIR)/test-test_SpaceExplorer.Po
+#	$(AM_V_CXX)source='test_SpaceExplorer.cpp' object='test-test_SpaceExplorer.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_SpaceExplorer.o `test -f 'test_SpaceExplorer.cpp' || echo '$(srcdir)/'`test_SpaceExplorer.cpp
+
+test-test_SpaceExplorer.obj: test_SpaceExplorer.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_SpaceExplorer.obj -MD -MP -MF $(DEPDIR)/test-test_SpaceExplorer.Tpo -c -o test-test_SpaceExplorer.obj `if test -f 'test_SpaceExplorer.cpp'; then $(CYGPATH_W) 'test_SpaceExplorer.cpp'; else $(CYGPATH_W) '$(srcdir)/test_SpaceExplorer.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_SpaceExplorer.Tpo $(DEPDIR)/test-test_SpaceExplorer.Po
+#	$(AM_V_CXX)source='test_SpaceExplorer.cpp' object='test-test_SpaceExplorer.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_SpaceExplorer.obj `if test -f 'test_SpaceExplorer.cpp'; then $(CYGPATH_W) 'test_SpaceExplorer.cpp'; else $(CYGPATH_W) '$(srcdir)/test_SpaceExplorer.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

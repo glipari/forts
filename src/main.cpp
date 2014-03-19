@@ -3,8 +3,7 @@
 #include "expression.hpp"
 #include "sstate.hpp"
 
-
 int main()
 {
-    std::cout << "Hello:" << myfunction(5) << std::endl;
+    //std::cout << "Hello:" << myfunction(5) << std::endl;
 }

@@ -92,6 +92,38 @@ void location::print()
 	it->print();
 }
 
+automaton::automaton() : my_index(0)
+{
+}
+
+
+location::location() : a_index(0)
+{
+}
+
+edge::edge() : a_index(0)
+{
+}
+
+void edge::set_automata_index(int a)
+{
+    a_index = a;
+}
+
+
+void location::set_automata_index(int a)
+{
+    a_index = a;
+    for (auto &e : outgoings) e.set_automata_index(a);
+}
+
+void automaton::set_index(int a)
+{
+    my_index = a;
+    for (auto &l : locations) l.set_automata_index(a);
+}
+
+
 location & automaton::get_location(std::string ln)
 {
   for ( auto it = locations.begin(); it != locations.end(); it++)

@@ -194,7 +194,8 @@ test-test_main.o: test_main.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/c++/4.8/fenv.h /usr/include/fenv.h \
  /usr/include/x86_64-linux-gnu/bits/fenv.h \
- /usr/include/x86_64-linux-gnu/bits/fenvinline.h /usr/include/strings.h
+ /usr/include/x86_64-linux-gnu/bits/fenvinline.h /usr/include/strings.h \
+ ../src/sstate.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -713,3 +714,5 @@ catch.hpp:
 /usr/include/x86_64-linux-gnu/bits/fenvinline.h:
 
 /usr/include/strings.h:
+
+../src/sstate.hpp:
