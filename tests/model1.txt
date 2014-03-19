@@ -4,7 +4,7 @@
 
 automaton sched1
 
-sync : arr1, arr2;
+sync : arr2, arr1, aa1;
 
 loc idle : while c3>=0 & p3-D3<=0 wait { c1'=0, c2'=0, c3'=1}
     when p3-T3>=0  do {p3'=0, c3'=c3+C3}  goto x2R ;

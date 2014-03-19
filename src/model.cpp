@@ -89,10 +89,10 @@ void combine(const location &l,
 			      new_labels.end(),
 			      std::back_inserter(common_labels));
 
-	for (auto &edge : l.outgoings) { 
+	for (auto &e : l.outgoings) { 
 	    // edge is the current outgoing edge in location l
-	    if (edge.sync_label == "" or 
-		not contains(common_labels, edge.sync_label)) {
+	    if (e.sync_label == "" or 
+		not contains(common_labels, e.sync_label)) {
 		// no synchronisation, 
 		// the number of elements in v_edge is duplicated: 
 		// we need to add one element to each vector: it can be 
@@ -100,13 +100,24 @@ void combine(const location &l,
 		// 
 		// plus we add a new vector that contains all 
 		// stuttering except the edge element
+                for ( auto &edge_group : v_edges) {
+                  // duplicate already existing edge groups
+                  vector<edge> duplicated_edge_group = edge_group;
+                  v_edges.push_back(duplicated_edge_group);
+                  // append e to already existing edge groups
+                  edge_group.push_back(e);
+                  // a new edge group with only "e" inside
+                  vector<edge> new_edge_group = {e};
+                  v_edges.push_back(new_edge_group);
+                }
 	    } else {
 		for (auto &edge_group : v_edges) {
 		    for (auto existing_edge : edge_group) {
-			if (edge.sync_label == existing_edge.sync_label) {
+			if (e.sync_label == existing_edge.sync_label) {
 			    // yes they synchronise
 			    // Add this only to the corresponding edge_group
 			    // and skip the rest
+                            edge_group.push_back(e);
 			}
 			// otherwise, do nothing
 		    }
@@ -324,6 +335,7 @@ void model::check_consistency()
     for ( auto it = automata.begin(); it != automata.end(); it++) {
 	it->check_consistency(cvars, dvars);
 	it->set_index(i++);
+        sort(it->labels.begin(), it->labels.end());
     }
 }
 
