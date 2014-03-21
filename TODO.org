@@ -1,6 +1,12 @@
 #+TITLE: todo list for effort
 #+author: Giuseppe Lipari and Youcheng Sun
 
+* TODO Rename classes
+
+* TODO Define class Symbolic State and operations on it
+** DONE The Post operation
+** DONE BFS symbolic state space exploration
+
 * DONE As a first step, we do the model [11%]
   :PROPERTIES:
   :ORDERED:  t

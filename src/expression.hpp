@@ -92,7 +92,6 @@ public:
 	    throw ("Not a linear expression");				\
 	Linear_Expr le;							\
 	bool l = left->has_variable(cvl);				\
-	std::cout << "left is " << l << std::endl;			\
 	if (l)								\
 	    return left->to_Linear_Expr(cvl,dvl) sym right->eval(dvl);	\
 	else								\
