@@ -28,7 +28,18 @@ TEST_CASE("Test transform the rates in a location to a cvx", "[location][rates][
         cvl1.push_back(variable("B"));
         cvl1.push_back(variable("C"));
         dvl1.push_back(variable("x",1));
-        C_Polyhedron cvx_(l.rates_to_Linear_Constraint(cvl1, dvl1));
+        CVList lvars = cvl1;
+        C_Polyhedron cvx_(cvl1.size());
+        cvx_.add_constraints(l.rates_to_Linear_Constraint(cvl1, dvl1,lvars));
+        for ( auto it = lvars.begin(); it != lvars.end(); it++) {
+          PPL::Variable v = get_variable(it->name, cvl1);
+          Linear_Expr le;
+          le += 1;
+          AT_Constraint atc = (v==le);
+          cout << cvx_ << endl;
+          cout << atc << endl;
+          cvx_.add_constraint(atc);
+        }
         REQUIRE ( cvx.contains(cvx_));
         REQUIRE ( cvx_.contains(cvx));
         

@@ -77,118 +77,78 @@ bool contains(const C &c, const X &x)
     return std::find(c.begin(), c.end(), x) != c.end();
 }
 
-void combine(const location &l, 
+std::vector<combined_edge> combined_edge::combine(const edge &e, const vector<string> new_labels)
+{
+    vector<string> common_labels;
+    vector<string> union_labels;
+    std::set_intersection(sync_set.begin(), 
+                          sync_set.end(), 
+                          new_labels.begin(),
+                          new_labels.end(),
+                          std::back_inserter(common_labels));
+    std::set_union(sync_set.begin(), 
+             sync_set.end(), 
+             new_labels.begin(),
+             new_labels.end(),
+             std::back_inserter(union_labels));
+
+    vector<combined_edge> after_combination;
+
+    // "this" can be triggered alone
+    if ( not contains(common_labels, sync_label)) {
+      combined_edge ce = *this;
+      ce.sync_set = union_labels;
+      after_combination.push_back(ce);
+    }
+    // "e" can be triggered alone
+    if ( not contains(common_labels, e.sync_label)) {
+      combined_edge ce;
+      ce.edges.push_back(e);
+      ce.sync_label = e.sync_label;
+      ce.sync_set = union_labels;
+      after_combination.push_back(ce);
+    }
+    // "this" and "e" need to synchronize 
+    if ( contains(common_labels, sync_label)) {
+      if ( e.sync_label == sync_label) {
+        combined_edge ce = *this;
+        ce.edges.push_back(e);
+        ce.sync_set = union_labels;
+        after_combination.push_back(ce);
+      }
+    }
+
+    return after_combination;
+}
+
+void combine(vector<combined_edge> &edge_groups, const location &l, 
 	     const vector<string> new_labels,
-	     vector< vector<edge> > &v_edges, 
-	     vector<string> &synch_labels,
 	     bool first) 
 {
     if (first) {
 	for (auto iit = l.outgoings.begin(); iit != l.outgoings.end(); iit++) {
-	    vector<edge> v;
-	    v.push_back(*iit);
-	    v_edges.push_back(v);
+            combined_edge egroup;
+            egroup.edges.push_back(*iit);
+            //if ( iit->sync_label != "") {
+              egroup.sync_label = (iit->sync_label);
+              egroup.sync_set = new_labels;
+            //}
+            edge_groups.push_back(egroup);
 	}
-	synch_labels = new_labels;
 	return;
-    } else {
-	// this is the intersection of the two sets of synch labels
-	vector<string> common_labels;
-	std::set_intersection(synch_labels.begin(), 
-			      synch_labels.end(), 
-			      new_labels.begin(),
-			      new_labels.end(),
-			      std::back_inserter(common_labels));
-
-        vector< vector<edge> > origin_v_edges = v_edges;
-        //v_edges.clear();
-        vector< vector<edge> > sub_v_edges;
-	for (auto &e : l.outgoings) { 
-	    // edge is the current outgoing edge in location l
-	    if (e.sync_label == "") {// or 
-		//not contains(common_labels, e.sync_label)) {
-		// no synchronisation, 
-		// the number of elements in v_edge is duplicated: 
-		// we need to add one element to each vector: it can be 
-		// a stuttering or one containing the edge
-		// 
-		// plus we add a new vector that contains all 
-		// stuttering except the edge element
-                for ( auto &edge_group : origin_v_edges) {
-                  // duplicate already existing edge groups
-                  //vector<edge> duplicated_edge_group = edge_group;
-                  //sub_v_edges.push_back(duplicated_edge_group);
-                  // append e to already existing edge groups
-                  vector<edge> eg = edge_group;
-                  eg.push_back(e);
-                  sub_v_edges.push_back(eg);
-                  // a new edge group with only "e" inside
-                  vector<edge> new_edge_group = {e};
-                  sub_v_edges.push_back(new_edge_group);
-                }
-	    } else if ( not contains(common_labels, e.sync_label)) {
-              // there is synchronisation,
-              // and it does not synchronize with any previously visited edge
-              vector<edge> new_edge_group = {e};
-              sub_v_edges.push_back(new_edge_group);
-              // "e" can be appended to an edge group such that all edges inside it have empty synch label ""
-              for (auto &edge_group : origin_v_edges) {
-                bool empty_sync = true;
-                for (auto &e1 : edge_group)
-                  if (e1.sync_label != "") {
-                    empty_sync = false;
-                    break;
-                  }
-                if (empty_sync) {
-                  vector<edge> eg = edge_group;
-                  eg.push_back(e);
-                  sub_v_edges.push_back(eg);
-                }
-              }
-            }
-            else {
-		for (auto &edge_group : origin_v_edges) {
-		    for (auto existing_edge : edge_group) {
-			if (e.sync_label == existing_edge.sync_label) {
-			    // yes they synchronise
-			    // Add this only to the corresponding edge_group
-			    // and skip the rest
-                            //edge_group.push_back(e);
-                            vector<edge> eg = edge_group;
-                            eg.push_back(e);
-                            sub_v_edges.push_back(eg);
-                            // remove the half synchronized edge group in v_edges
-                            auto xit = v_edges.begin();
-                            while (xit != v_edges.end()) {
-                              bool existing = false;
-                              for ( auto &xxit : *xit) {
-                                if (xxit.sync_label == existing_edge.sync_label)
-                                  existing = true;
-                                if (existing) break;
-                              }
-                              if (existing) v_edges.erase(xit);
-                              else xit ++;
-                            }
-                            break;
-			}
-			// otherwise, do nothing
-		    }
-		}
-	    }
-	}
-        // store all new combinations into v_edges
-        for (auto &xx : sub_v_edges)
-          v_edges.push_back(xx);
+    } 
+    vector<combined_edge> copy = edge_groups;
+    edge_groups.clear();
+    // to combine every outgoing from "l" with every "edge group"
+    for ( auto &egroup : copy) {
+      for ( auto it = l.outgoings.begin(); it != l.outgoings.end(); it++) {
+        vector<combined_edge> com = egroup.combine(*it, new_labels);
+        for ( auto &eg : com)
+          edge_groups.push_back(eg);
+      }
     }
-    vector<string> result;
-    std::set_union(synch_labels.begin(), 
-		   synch_labels.end(), 
-		   new_labels.begin(),
-		   new_labels.end(),
-		   std::back_inserter(result));
-    synch_labels = result;
-}
 
+}
 
 vector<sstate> model::Post(const sstate& ss)
 {
@@ -198,40 +158,19 @@ vector<sstate> model::Post(const sstate& ss)
     vector<string> synch_labels; 
 
     int a_index;
-    vector< vector<edge> > edge_groups;
+    vector<combined_edge> edge_groups;
     for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
         a_index = loc_it - ss.loc_names.begin();
 	location &l = automata[a_index].get_location(*loc_it);
         vector<string> new_labels = automata[a_index].labels;
-        combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
+        combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
+        //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
     }
-        cout << "-----------------------------"<< endl;
-        cout << "Start from : "; 
-        for ( auto &y : ss.loc_names)
-          cout << y ;
-        cout << endl;
-        for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++){
-          for ( auto iit = it->begin(); iit != it->end(); iit++)
-            iit->print();
-          cout << endl;
-        }
-          
-        cout << "-----------------------------"<< endl;
 
     for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
 	sstate nss = ss;
-	discrete_step(nss, *it);
-        //cout <<"after a discrete step : " << endl;
-        //for ( auto &l : nss.loc_names)
-        //  cout<<l;
-        //cout << endl;
-        //cout << nss.cvx << endl;
+	discrete_step(nss, it->edges);
 	continuous_step(nss);
-        //cout <<"after a continuous step : " << endl;
-        //for ( auto &l : nss.loc_names)
-        //  cout<<l;
-        //cout << endl;
-        //cout << nss.cvx << endl;
 	sstates.push_back(nss);
     }
 
@@ -272,12 +211,10 @@ void model::SpaceExplorer()
 	    vector<sstate> nsstates = Post(*it); 
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
 		if ( iit->cvx.is_empty()) continue;
-		if ( is_bad(*iit))
+		if ( is_bad(*iit)) {
+
 		    throw ("A bad location is reached ... ");
-        for ( auto &l : iit->loc_names)
-          cout<<l;
-        cout << endl;
-        cout << iit->cvx << endl;
+                }
 		if ( contained_in(*iit, current)) continue;
 		if ( contained_in(*iit, next)) continue;
 		if ( contained_in(*iit, Space)) continue;
@@ -385,101 +322,3 @@ void model::check_consistency()
     }
 }
 
-//void combine(const location &l, 
-//	     const vector<string> new_labels,
-//	     vector< vector<edge> > &v_edges, 
-//	     vector<string> &synch_labels,
-//	     bool first) 
-//{
-//    if (first) {
-//	for (auto iit = l.outgoings.begin(); iit != l.outgoings.end(); iit++) {
-//	    vector<edge> v;
-//	    v.push_back(*iit);
-//	    v_edges.push_back(v);
-//	}
-//	synch_labels = new_labels;
-//	return;
-//    } else {
-//	// this is the intersection of the two sets of synch labels
-//	vector<string> common_labels;
-//	std::set_intersection(synch_labels.begin(), 
-//			      synch_labels.end(), 
-//			      new_labels.begin(),
-//			      new_labels.end(),
-//			      std::back_inserter(common_labels));
-//
-//        vector< vector<edge> > origin_v_edges = v_edges;
-//        v_edges.clear();
-//	for (auto &e : l.outgoings) { 
-//            vector< vector<edge> > sub_v_edges;
-//	    // edge is the current outgoing edge in location l
-//	    if (e.sync_label == "") {// or 
-//		//not contains(common_labels, e.sync_label)) {
-//		// no synchronisation, 
-//		// the number of elements in v_edge is duplicated: 
-//		// we need to add one element to each vector: it can be 
-//		// a stuttering or one containing the edge
-//		// 
-//		// plus we add a new vector that contains all 
-//		// stuttering except the edge element
-//                for ( auto &edge_group : origin_v_edges) {
-//                  // duplicate already existing edge groups
-//                  vector<edge> duplicated_edge_group = edge_group;
-//                  sub_v_edges.push_back(duplicated_edge_group);
-//                  // append e to already existing edge groups
-//                  vector<edge> eg = edge_group;
-//                  eg.push_back(e);
-//                  sub_v_edges.push_back(eg);
-//                  // a new edge group with only "e" inside
-//                  vector<edge> new_edge_group = {e};
-//                  sub_v_edges.push_back(new_edge_group);
-//                }
-//	    } else if ( not contains(common_labels, e.sync_label)) {
-//              // there is synchronisation,
-//              // and it does not synchronize with any previously visited edge
-//              vector<edge> new_edge_group = {e};
-//              sub_v_edges.push_back(new_edge_group);
-//              // "e" can be appended to an edge group such that all edges inside it have empty synch label ""
-//              for (auto &edge_group : origin_v_edges) {
-//                bool empty_sync = true;
-//                for (auto &e1 : edge_group)
-//                  if (e1.sync_label != "") {
-//                    empty_sync = false;
-//                    break;
-//                  }
-//                if (empty_sync) {
-//                  vector<edge> eg = edge_group;
-//                  eg.push_back(e);
-//                  sub_v_edges.push_back(eg);
-//                }
-//              }
-//            }
-//            else {
-//		for (auto &edge_group : origin_v_edges) {
-//		    for (auto existing_edge : edge_group) {
-//			if (e.sync_label == existing_edge.sync_label) {
-//			    // yes they synchronise
-//			    // Add this only to the corresponding edge_group
-//			    // and skip the rest
-//                            //edge_group.push_back(e);
-//                            vector<edge> eg = edge_group;
-//                            eg.push_back(e);
-//                            sub_v_edges.push_back(eg);
-//                            break;
-//			}
-//			// otherwise, do nothing
-//		    }
-//		}
-//	    }
-//            for (auto &xx : sub_v_edges)
-//              v_edges.push_back(xx);
-//	}
-//    }
-//    vector<string> result;
-//    std::set_union(synch_labels.begin(), 
-//		   synch_labels.end(), 
-//		   new_labels.begin(),
-//		   new_labels.end(),
-//		   std::back_inserter(result));
-//    synch_labels = result;
-//}

@@ -43,29 +43,25 @@ void edge::print()
     std::cout << " goto " << dest << ";\n";
 }
 
-Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl)
+Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList &lvars)
 {
   Linear_Constraint lc;
   for ( auto it = cvl.begin(); it != cvl.end(); it++) {
     string x = it->name;
-    bool found = false;
     for ( auto iit = rates.begin(); iit != rates.end(); iit++) {
       if ( x == iit->x) {
         PPL::Variable v = get_variable(x, cvl);
         Linear_Expr le = iit->expr->to_Linear_Expr(cvl, dvl);
         AT_Constraint atc = (v==le);
         lc.insert(atc);
-        found = true;
+        for ( auto lt = lvars.begin(); lt != lvars.end(); lt++)
+          if ( x==lt->name) {
+            lvars.erase(lt);
+            break;
+          }
         break;
       }
     }
-    if (found)
-      continue;
-    PPL::Variable v = get_variable(x, cvl);
-    Linear_Expr le;
-    le += 1;
-    AT_Constraint atc = (v==le);
-    lc.insert(atc);
 
   }
   return lc;

@@ -43,7 +43,7 @@ public:
     void set_automata_index(int a);
 
     void print();
-    Linear_Constraint rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl);
+    Linear_Constraint rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList& lvars);
     Linear_Constraint invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl);
 };
 

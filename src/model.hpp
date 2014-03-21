@@ -8,6 +8,16 @@
 
 typedef constraint_node constraint;
 
+class combined_edge {
+public:
+  std::vector<edge> edges;
+  std::string sync_label;
+  // The sync label set where the non empty sync_label is from
+  std::vector<std::string> sync_set;
+  std::vector<combined_edge> combine(const edge &e, const std::vector<std::string> e_syncs);
+
+};
+
 class model {
 public:
     CVList cvars;
