@@ -77,6 +77,16 @@ bool contains(const C &c, const X &x)
     return std::find(c.begin(), c.end(), x) != c.end();
 }
 
+bool combined_edge::operator == (const combined_edge &ce) const
+{
+  if (edges.size() != ce.edges.size())  return false;
+  if ( sync_label != ce.sync_label) return false;
+  for ( int i = 0; i < edges.size(); i++)
+    if ( edges[i].index != ce.edges[i].index)
+      return false;
+  return true;
+}
+
 std::vector<combined_edge> combined_edge::combine(const edge &e, const vector<string> new_labels)
 {
     vector<string> common_labels;
@@ -144,7 +154,8 @@ void combine(vector<combined_edge> &edge_groups, const location &l,
       for ( auto it = l.outgoings.begin(); it != l.outgoings.end(); it++) {
         vector<combined_edge> com = egroup.combine(*it, new_labels);
         for ( auto &eg : com)
-          edge_groups.push_back(eg);
+          if ( not contains(edge_groups, eg))
+            edge_groups.push_back(eg);
       }
     }
 

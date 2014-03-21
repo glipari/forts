@@ -13,6 +13,7 @@ public:
 
     PPL::C_Polyhedron cvx;
     bool contains(const sstate &ss) const;
+    void print();
 };
 
 #endif

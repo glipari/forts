@@ -15,6 +15,7 @@ public:
   // The sync label set where the non empty sync_label is from
   std::vector<std::string> sync_set;
   std::vector<combined_edge> combine(const edge &e, const std::vector<std::string> e_syncs);
+  bool operator == (const combined_edge &ce) const;
 
 };
 

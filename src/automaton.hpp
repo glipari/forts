@@ -2,12 +2,16 @@
 #define _AUTOMATON_HPP_
 
 #include <constraint.hpp>
+#include <unique_index.hpp>
 
 /**
    This class represents an edge in the automaton
 */
 class edge {
 public:
+    /** Each edge is assigned a unique index. */
+    int index;
+
     /** Automaton index */
     int a_index;
 

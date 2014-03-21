@@ -99,6 +99,7 @@ location::location() : a_index(0)
 
 edge::edge() : a_index(0)
 {
+  index = UniqueIndex::get_next_index();
 }
 
 void edge::set_automata_index(int a)
