@@ -4,5 +4,5 @@ int UniqueIndex::index = 0;
 
 int UniqueIndex::get_next_index()
 {
-	return index++;
+    return index++;
 }

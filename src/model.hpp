@@ -1,23 +1,23 @@
 #ifndef _MODEL_HPP_
 #define _MODEL_HPP_
 
-#include "automaton.hpp"
 #include "sstate.hpp"
-#include  <vector>
-#include  <list>
+#include "combined_edge.hpp"
 
 typedef constraint_node constraint;
 
-class combined_edge {
-public:
-  std::vector<edge> edges;
-  std::string sync_label;
-  // The sync label set where the non empty sync_label is from
-  std::vector<std::string> sync_set;
-  std::vector<combined_edge> combine(const edge &e, const std::vector<std::string> e_syncs);
-  bool operator == (const combined_edge &ce) const;
+// class Combined_edge {
+// public:
+//     std::vector<edge> edges;
+//     std::string sync_label;
+//     // The sync label set where the non empty sync_label is from
+//     std::vector<std::string> sync_set;
 
-};
+//     Combined_edge();
+    
+//     std::vector<Combined_edge> combine(const edge &e, const std::vector<std::string> e_syncs);
+//     bool operator == (const Combined_edge &ce) const;
+// };
 
 class model {
 public:
