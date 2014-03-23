@@ -4,6 +4,8 @@
 #include <expression.hpp>
 #include <model.hpp>
 
+#include "combined_edge.hpp"
+
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
@@ -51,14 +53,14 @@ void model::continuous_step(sstate &ss)
     ss.cvx.intersection_assign(invariant_cvx);
 }
 
-void model::discrete_step(sstate &ss, const vector<edge> &edges)
+// TODO : remember to change the e parameter into a const reference
+void model::discrete_step(sstate &ss, Combined_edge &edges)
 {
-    //ss.loc_names.clear();
     PPL::C_Polyhedron guard_cvx(cvars.size());
     PPL::C_Polyhedron ass_cvx(cvars.size());
     Variables_Set vs;
 
-    for (auto &e : edges) {
+    for (auto &e : edges.get_edges()) {
 	ss.loc_names[e.a_index] = e.dest;
 	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
 	for (auto &a : e.assignments)
@@ -78,12 +80,12 @@ void combine(vector<Combined_edge> &edge_groups, const location &l,
 {
     if (first) {
 	for (auto iit = l.outgoings.begin(); iit != l.outgoings.end(); iit++) {
-            Combined_edge egroup;
-            egroup.edges.push_back(*iit);
-            //if ( iit->sync_label != "") {
-              egroup.sync_label = (iit->sync_label);
-              egroup.sync_set = new_labels;
-            //}
+            Combined_edge egroup(*iit, iit->sync_label, new_labels);
+            // egroup.edges.push_back(*iit);
+            // //if ( iit->sync_label != "") {
+            //   egroup.sync_label = (iit->sync_label);
+            //   egroup.sync_set = new_labels;
+            // //}
             edge_groups.push_back(egroup);
 	}
 	return;
@@ -99,7 +101,6 @@ void combine(vector<Combined_edge> &edge_groups, const location &l,
             edge_groups.push_back(eg);
       }
     }
-
 }
 
 vector<sstate> model::Post(const sstate& ss)
@@ -118,10 +119,9 @@ vector<sstate> model::Post(const sstate& ss)
         combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
         //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
     }
-
     for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
 	sstate nss = ss;
-	discrete_step(nss, it->edges);
+	discrete_step(nss, *it);
 	continuous_step(nss);
 	sstates.push_back(nss);
     }

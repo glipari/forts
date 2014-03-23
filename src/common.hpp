@@ -5,6 +5,12 @@
 #include <string>
 #include <algorithm> 
 
+template<class C, class X>
+bool contains(const C &c, const X &x) 
+{
+    return std::find(c.begin(), c.end(), x) != c.end();
+}
+
 // A VARIABLE is a pair (variable name, integer valuation)
 // typedef pair<string, int> VARIABLE; 
 struct variable {
@@ -16,11 +22,6 @@ struct variable {
     void set_val(int v) { valuation = v;}
 };
 
-template<class C, class X>
-bool contains(const C &c, const X &x) 
-{
-    return std::find(c.begin(), c.end(), x) != c.end();
-}
 
 // The variable table for discrete variables
 typedef std::list<variable> DVList;

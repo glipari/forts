@@ -127,7 +127,9 @@ am_libefforts_la_OBJECTS = libefforts_la-common.lo \
 	libefforts_la-assignment_parser.lo libefforts_la-automaton.lo \
 	libefforts_la-expression_parser.lo libefforts_la-constraint.lo \
 	libefforts_la-automaton_parser.lo \
-	libefforts_la-model_parser.lo libefforts_la-sstate.lo
+	libefforts_la-model_parser.lo libefforts_la-sstate.lo \
+	libefforts_la-unique_index.lo libefforts_la-combined_edge.lo \
+	libefforts_la-edge.lo
 libefforts_la_OBJECTS = $(am_libefforts_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -330,7 +332,7 @@ libefforts_la_CPPFLAGS = -I. -std=gnu++0x -Wall -I/usr/include/ $(TIPA_CFLAGS)
 libefforts_la_SOURCES = common.cpp model.cpp constraint_parser.cpp \
 	ppl_adapt.cpp expression.cpp assignment_parser.cpp automaton.cpp \
 	expression_parser.cpp constraint.cpp automaton_parser.cpp model_parser.cpp \
-	sstate.cpp
+	sstate.cpp unique_index.cpp combined_edge.cpp edge.cpp
 
 libefforts_la_LIBADD = -lppl -lgmp $(TIPA_LIBS)
 efforts_CPPFLAGS = -I. -std=gnu++0x -Wall $(TIPA_CFLAGS)
@@ -472,15 +474,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-assignment_parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-automaton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-automaton_parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-combined_edge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-constraint.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-constraint_parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-edge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-expression.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-expression_parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-model.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-model_parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-ppl_adapt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-sstate.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libefforts_la-unique_index.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -586,6 +591,27 @@ libefforts_la-sstate.lo: sstate.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sstate.cpp' object='libefforts_la-sstate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-sstate.lo `test -f 'sstate.cpp' || echo '$(srcdir)/'`sstate.cpp
+
+libefforts_la-unique_index.lo: unique_index.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libefforts_la-unique_index.lo -MD -MP -MF $(DEPDIR)/libefforts_la-unique_index.Tpo -c -o libefforts_la-unique_index.lo `test -f 'unique_index.cpp' || echo '$(srcdir)/'`unique_index.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libefforts_la-unique_index.Tpo $(DEPDIR)/libefforts_la-unique_index.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unique_index.cpp' object='libefforts_la-unique_index.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-unique_index.lo `test -f 'unique_index.cpp' || echo '$(srcdir)/'`unique_index.cpp
+
+libefforts_la-combined_edge.lo: combined_edge.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libefforts_la-combined_edge.lo -MD -MP -MF $(DEPDIR)/libefforts_la-combined_edge.Tpo -c -o libefforts_la-combined_edge.lo `test -f 'combined_edge.cpp' || echo '$(srcdir)/'`combined_edge.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libefforts_la-combined_edge.Tpo $(DEPDIR)/libefforts_la-combined_edge.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='combined_edge.cpp' object='libefforts_la-combined_edge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-combined_edge.lo `test -f 'combined_edge.cpp' || echo '$(srcdir)/'`combined_edge.cpp
+
+libefforts_la-edge.lo: edge.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libefforts_la-edge.lo -MD -MP -MF $(DEPDIR)/libefforts_la-edge.Tpo -c -o libefforts_la-edge.lo `test -f 'edge.cpp' || echo '$(srcdir)/'`edge.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libefforts_la-edge.Tpo $(DEPDIR)/libefforts_la-edge.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='edge.cpp' object='libefforts_la-edge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libefforts_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libefforts_la-edge.lo `test -f 'edge.cpp' || echo '$(srcdir)/'`edge.cpp
 
 efforts-main.o: main.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(efforts_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT efforts-main.o -MD -MP -MF $(DEPDIR)/efforts-main.Tpo -c -o efforts-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp

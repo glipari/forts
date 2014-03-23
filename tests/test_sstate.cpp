@@ -9,7 +9,8 @@ using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace std;
 
 
-TEST_CASE("Test transform the rates in a location to a cvx", "[location][rates][cvx]")
+TEST_CASE("Test transform the rates in a location to a cvx", 
+	  "[location][rates][cvx]")
 {
     SECTION("First simple test on transforming rates to a Linear_Constraint") {
 	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10 do {B'=0} goto loc2; \n when B>=10 do {A'=0} goto loc1;";
@@ -42,7 +43,6 @@ TEST_CASE("Test transform the rates in a location to a cvx", "[location][rates][
         }
         REQUIRE ( cvx.contains(cvx_));
         REQUIRE ( cvx_.contains(cvx));
-        
     }
 }
 
