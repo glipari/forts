@@ -6,20 +6,19 @@ using namespace tipa;
 void assignment_builder::var_name(tipa::parser_context &pc) 
 {
     auto v = pc.collect_tokens();
-    a.x = v[v.size()-1].second;
+    var = v[v.size()-1].second;
 }
 
-assignment assignment_builder::get_assignment() 
+Assignment assignment_builder::get_assignment() 
 {
-    a.expr = b.get_tree();
-    return a;
+    auto expr = b.get_tree();
+    return Assignment(var, expr);
 }
 
-assignment build_assignment(const std::string &input)
+Assignment build_assignment(const std::string &input)
 {
     assignment_builder ab;
     rule ass = prepare_assignment_rule(ab);
-
 
     stringstream str(input);
 
@@ -34,13 +33,9 @@ assignment build_assignment(const std::string &input)
     }
 
     if (!flag) 
-	throw parse_exc("Error in parsing assignment");
-// + pc.get_formatted_err_msg(); 
-    else {
-	//a.expr = b.get_tree();
+	throw parse_exc("Error in parsing assignment : " + pc.get_formatted_err_msg()); 
+    else 
 	return ab.get_assignment();
-    }
-    
 }
 
 rule prepare_assignment_rule(assignment_builder &ab)

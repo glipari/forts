@@ -11,7 +11,7 @@
  */
 class expr_builder {
 protected:
-    std::stack< std::shared_ptr<expr_tree_node> > st;
+    std::stack< std::shared_ptr<const expr_tree_node> > st;
 public:
     expr_builder();
     void make_leaf(tipa::parser_context &pc);
@@ -20,16 +20,16 @@ public:
     void make_op(tipa::parser_context &pc) {
 	auto r = st.top(); st.pop();
 	auto l = st.top(); st.pop();
-	auto n = std::make_shared<T>();
-	n->set_left(l);
-	n->set_right(r);
+	auto n = std::make_shared<T>(l, r);
+	// n->set_left(l);
+	// n->set_right(r);
 	st.push(n);
     }
     
     void make_neg(tipa::parser_context &pc);
     void make_var(tipa::parser_context &pc);
     int get_size();
-    std::shared_ptr<expr_tree_node> get_tree();
+    std::shared_ptr<const expr_tree_node> get_tree();
 };
 
 /** 
@@ -44,7 +44,7 @@ tipa::rule prepare_expr_rule(expr_builder &b);
    expression tree. This function uses the "prepare_expr_rule" to
    prepare the grammar to parse the string.
  */
-std::shared_ptr<expr_tree_node> build_expression(const std::string &expr_input);
+std::shared_ptr<const expr_tree_node> build_expression(const std::string &expr_input);
 
 
 #endif

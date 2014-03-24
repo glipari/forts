@@ -13,12 +13,18 @@
  */
 class expr_tree_node {
 public : 
-    virtual int eval(const DVList &dvl) = 0; 
-    virtual bool has_variable(const CVList &cvl) = 0; 
-    virtual bool check_linearity(const CVList &cvl) = 0; 
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) = 0;
+    expr_tree_node(const expr_tree_node &e) = delete;
+    expr_tree_node& operator=(const expr_tree_node &e) = delete;
+
+    expr_tree_node() {}
+
+    virtual int eval(const DVList &dvl) const = 0; 
+    virtual bool has_variable(const CVList &cvl) const = 0; 
+    virtual bool check_linearity(const CVList &cvl) const = 0; 
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const = 0;
+    virtual void print() const = 0;
+
     virtual ~expr_tree_node() {}
-    virtual void print() = 0;
 };
 
 /**
@@ -31,12 +37,16 @@ public :
  */
 class expr_op_node : public expr_tree_node {
 protected:
-    std::shared_ptr<expr_tree_node> left;
-    std::shared_ptr<expr_tree_node> right;
+    std::shared_ptr<const expr_tree_node> left;
+    std::shared_ptr<const expr_tree_node> right;
+
 public:
-    virtual bool has_variable(const CVList &cvl);
-    void set_left(std::shared_ptr<expr_tree_node> l);
-    void set_right(std::shared_ptr<expr_tree_node> r);
+    expr_op_node(std::shared_ptr<const expr_tree_node> &l, std::shared_ptr<const expr_tree_node> &r) :
+	left(l), right(r) {}
+
+    virtual bool has_variable(const CVList &cvl) const;
+    // void set_left(std::shared_ptr<expr_tree_node> l);
+    // void set_right(std::shared_ptr<expr_tree_node> r);
 };
 
 /**
@@ -46,12 +56,14 @@ class expr_var_node : public expr_tree_node {
     std::string name;
     int value;
 public:
+
     expr_var_node(const std::string &n);
-    virtual int eval(const DVList &dvl);
-    virtual bool has_variable(const CVList &cvl);
-    virtual bool check_linearity(const CVList &cvl);
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl);
-    virtual void print();
+
+    virtual int eval(const DVList &dvl) const ;
+    virtual bool has_variable(const CVList &cvl) const ;
+    virtual bool check_linearity(const CVList &cvl) const ;
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const;
+    virtual void print() const;
 };
 
 /**
@@ -62,24 +74,25 @@ class expr_leaf_node : public expr_tree_node {
 public:
     expr_leaf_node(int v);
 
-    virtual int eval(const DVList &dvl);
-    virtual bool has_variable(const CVList &cvl);
-    virtual bool check_linearity(const CVList &cvl);
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl);
-    virtual void print();
+    virtual int eval(const DVList &dvl) const;
+    virtual bool has_variable(const CVList &cvl) const;
+    virtual bool check_linearity(const CVList &cvl) const;
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const;
+    virtual void print() const;
 };
 
 #define NNLinear_EXPR_OP_NODE_CLASS(xxx,sym)				\
     class xxx##_node : public expr_op_node {				\
     public:								\
-									\
-    virtual int eval(const DVList &dvl) {				\
+    xxx##_node(std::shared_ptr<const expr_tree_node> &l, std::shared_ptr<const expr_tree_node> &r) : \
+        expr_op_node(l,r) {}						\
+    virtual int eval(const DVList &dvl) const {				\
         int l = left->eval(dvl);					\
         int r = right->eval(dvl);					\
         return l sym r;							\
     }									\
 									\
-    virtual bool check_linearity(const CVList &cvl) {			\
+    virtual bool check_linearity(const CVList &cvl) const {		\
         bool r = right->has_variable(cvl);				\
         bool l = left->has_variable(cvl);				\
         if (r && l)							\
@@ -87,7 +100,7 @@ public:
         return right->check_linearity(cvl) && left->check_linearity(cvl); \
     }									\
 									\
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) { \
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const { \
 	if ( !check_linearity(cvl))					\
 	    throw ("Not a linear expression");				\
 	Linear_Expr le;							\
@@ -97,7 +110,7 @@ public:
 	else								\
 	    return left->eval(dvl) sym right->to_Linear_Expr(cvl, dvl); \
     }									\
-    virtual void print() {                                              \
+    virtual void print() const {					\
       left->print();                                                    \
       std::cout << #sym;                                                 \
       right->print();                                                   \
@@ -107,28 +120,30 @@ public:
 #define LINEAR_EXPR_OP_NODE_CLASS(xxx,sym)				\
     class xxx##_node : public expr_op_node {				\
     public:								\
+    xxx##_node(std::shared_ptr<const expr_tree_node> &l, std::shared_ptr<const expr_tree_node> &r) : \
+        expr_op_node(l,r) {}						\
 									\
-    virtual int eval(const DVList &dvl) {				\
+    virtual int eval(const DVList &dvl) const {				\
         int l = left->eval(dvl);					\
         int r = right->eval(dvl);					\
         return l sym r;							\
     }									\
 									\
-    virtual bool check_linearity(const CVList &cvl) {			\
+    virtual bool check_linearity(const CVList &cvl) const {		\
         bool r = right->check_linearity(cvl);				\
         bool l = left->check_linearity(cvl);				\
         return r && l;							\
     }									\
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) { \
+    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const { \
 	Linear_Expr le , l , r;						\
 	l = left->to_Linear_Expr(cvl,dvl);				\
 	r = right->to_Linear_Expr(cvl,dvl);				\
 	return l sym r;							\
     }									\
-    virtual void print() {                                              \
-      left->print();                                                    \
-      std::cout << #sym ;                                                 \
-      right->print();                                                   \
+    virtual void print() const {					\
+	left->print();							\
+	std::cout << #sym ;						\
+	    right->print();						\
     }                                                                   \
     };                                        
 

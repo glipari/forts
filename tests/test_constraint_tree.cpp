@@ -42,31 +42,30 @@ TEST_CASE("Test parsing assignment", "[assignment][parser]")
 {
     SECTION("First simple test") {
 	string input = "x' = x + 1";
-	assignment a = build_assignment(input);
-	REQUIRE(a.x == "x");
+	Assignment a = build_assignment(input);
+	REQUIRE(a.get_var() == "x");
 	CVList cvl;
 	cvl.push_back(variable("x", 0));
-	REQUIRE(a.expr->eval(cvl) == 1);
+	REQUIRE(a.eval(cvl) == 1);
     }
     SECTION("An error is raised") {
 	string input = "y = x + z";
-	assignment a;
-	CHECK_THROWS(a = build_assignment(input));	
+	CHECK_THROWS(Assignment a = build_assignment(input));	
     }
 }
 
 TEST_CASE("Test the syntax tree for constraint \"true\"", 
 	  "[true][TestConstraintTree]")
 {
-  string input = "true";
-  auto at_tree = build_a_constraint_tree(input);
-  DVList dvl;
-  REQUIRE (at_tree->eval(dvl) == true);
-  at_tree->print();
+    string input = "true";
+    auto at_tree = build_a_constraint_tree(input);
+    DVList dvl;
+    REQUIRE (at_tree->eval(dvl) == true);
+    at_tree->print();
 
-  string input2 = "3+x-(2+4)==3-(2+4) & -x <= 2 & true";
-  auto at_tree2 = build_a_constraint_tree(input2);
-  DVList dvl2;
-  dvl2.push_back(variable("x",0));
-  REQUIRE (at_tree2->eval(dvl2) == true);
+    string input2 = "3+x-(2+4)==3-(2+4) & -x <= 2 & true";
+    auto at_tree2 = build_a_constraint_tree(input2);
+    DVList dvl2;
+    dvl2.push_back(variable("x",0));
+    REQUIRE (at_tree2->eval(dvl2) == true);
 }

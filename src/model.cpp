@@ -64,7 +64,7 @@ void model::discrete_step(sstate &ss, Combined_edge &edges)
 	ss.loc_names[e.a_index] = e.dest;
 	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
 	for (auto &a : e.assignments)
-	    vs.insert(get_variable(a.x, cvars));
+	    vs.insert(get_variable(a.get_var(), cvars));
 	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
     }
     ss.cvx.intersection_assign(guard_cvx);

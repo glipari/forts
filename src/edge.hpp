@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <constraint.hpp>
+#include <assignment.hpp>
 
 /**
    This class represents an edge in the automaton
@@ -18,7 +19,7 @@ public:
     int a_index;
 
     std::shared_ptr<constraint_node> guard;
-    std::vector<assignment> assignments;
+    std::vector<Assignment> assignments;
     std::string sync_label;
     std::string dest;
 

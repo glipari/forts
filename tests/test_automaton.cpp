@@ -15,15 +15,15 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
 	string input = "when A>=10*B & C <=x*3+2 do {x' = x + 1, y'=y+10} goto loc1;";
 	edge e = build_an_edge(input);
         REQUIRE(e.dest == "loc1");
-        assignment a = e.assignments.at(0);
-        assignment b = e.assignments.at(1);
-	REQUIRE(a.x == "x");
-	REQUIRE(b.x == "y");
+        Assignment a = e.assignments.at(0);
+        Assignment b = e.assignments.at(1);
+	REQUIRE(a.get_var() == "x");
+	REQUIRE(b.get_var() == "y");
 	CVList cvl;
 	cvl.push_back(variable("x", 0));
 	cvl.push_back(variable("y", 1));
-	REQUIRE(a.expr->eval(cvl) == 1);
-	REQUIRE(b.expr->eval(cvl) == 11);
+	REQUIRE(a.eval(cvl) == 1);
+	REQUIRE(b.eval(cvl) == 11);
 
         auto it = e.guard;
         it->print();
@@ -48,8 +48,8 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
     }
     SECTION("An error is raised") {
 	string input = "y = x + z";
-	assignment a;
-	CHECK_THROWS(a = build_assignment(input));	
+	//Assignment a;
+	CHECK_THROWS(Assignment a = build_assignment(input));	
     }
 }
 
@@ -62,15 +62,15 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         //l.print();
 
         REQUIRE(l.name == "loc0");
-        assignment a = l.rates.at(0);
+        Assignment a = l.rates.at(0);
         //cout << a.x << endl;
-        assignment b = l.rates.at(1);
+        Assignment b = l.rates.at(1);
         //cout << b.x << endl;
-	REQUIRE(a.x == "A");
-	REQUIRE(b.x == "B");
+	REQUIRE(a.get_var() == "A");
+	REQUIRE(b.get_var() == "B");
 	CVList cvl;
-	REQUIRE(a.expr->eval(cvl) == 0);
-	REQUIRE(b.expr->eval(cvl) == 1);
+	REQUIRE(a.eval(cvl) == 0);
+	REQUIRE(b.eval(cvl) == 1);
 
         auto it = l.invariant;
         Variable A(0), B(1), C(2);
@@ -92,9 +92,9 @@ TEST_CASE("Test parsing a location", "[location][parser]")
 
         edge e0 = l.outgoings.at(0);
         REQUIRE ( e0.dest == "loc2");
-        assignment ass0 =  e0.assignments.at(0);
-        REQUIRE ( ass0.expr->eval(dvl1) == 0);
-        REQUIRE ( ass0.x == "B");
+        Assignment ass0 =  e0.assignments.at(0);
+        REQUIRE ( ass0.eval(dvl1) == 0);
+        REQUIRE ( ass0.get_var() == "B");
 
         auto guard = e0.guard;
         Constraint_System g_css0;
@@ -108,8 +108,8 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         REQUIRE ( e1.dest == "loc1");
 
         ass0 =  e1.assignments.at(0);
-        REQUIRE ( ass0.expr->eval(dvl1) == 0);
-        REQUIRE ( ass0.x == "A");
+        REQUIRE ( ass0.eval(dvl1) == 0);
+        REQUIRE ( ass0.get_var() == "A");
         
         guard = e1.guard;
         Constraint_System g_css;

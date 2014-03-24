@@ -9,7 +9,7 @@ void builder::store_true(parser_context &pc) {
     at_nodes.push_back(at_node);
 }
 
-shared_ptr<expr_tree_node> build_an_expr_tree(string expr_input)
+shared_ptr<const expr_tree_node> build_an_expr_tree(string expr_input)
 {
     rule expr, primary, term, 
 	op_plus, op_minus, op_mult, //op_div,

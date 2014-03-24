@@ -13,7 +13,7 @@ using namespace tipa;
  */
 std::shared_ptr<constraint_node> build_a_constraint_tree(std::string expr_input);
 
-std::shared_ptr<expr_tree_node> build_an_expr_tree(const std::string &expr_input);
+std::shared_ptr<const expr_tree_node> build_an_expr_tree(const std::string &expr_input);
 
 class builder : public expr_builder {
     vector< shared_ptr<atomic_constraint_node> > at_nodes;

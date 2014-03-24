@@ -5,31 +5,31 @@ using namespace std;
 
 Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList &lvars)
 {
-  Linear_Constraint lc;
-  for ( auto it = cvl.begin(); it != cvl.end(); it++) {
-    string x = it->name;
-    for ( auto iit = rates.begin(); iit != rates.end(); iit++) {
-      if ( x == iit->x) {
-        PPL::Variable v = get_variable(x, cvl);
-        Linear_Expr le = iit->expr->to_Linear_Expr(cvl, dvl);
-        AT_Constraint atc = (v==le);
-        lc.insert(atc);
-        for ( auto lt = lvars.begin(); lt != lvars.end(); lt++)
-          if ( x==lt->name) {
-            lvars.erase(lt);
-            break;
-          }
-        break;
-      }
-    }
+    Linear_Constraint lc;
+    for ( auto it = cvl.begin(); it != cvl.end(); it++) {
+	string x = it->name;
+	for ( auto iit = rates.begin(); iit != rates.end(); iit++) {
+	    if ( x == iit->get_var()) {
+		PPL::Variable v = get_variable(x, cvl);
+		Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
+		AT_Constraint atc = (v==le);
+		lc.insert(atc);
+		for ( auto lt = lvars.begin(); lt != lvars.end(); lt++)
+		    if ( x==lt->name) {
+			lvars.erase(lt);
+			break;
+		    }
+		break;
+	    }
+	}
 
-  }
-  return lc;
+    }
+    return lc;
 }
 
 Linear_Constraint location::invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl)
 {
-  return invariant->to_Linear_Constraint(cvl, dvl);
+    return invariant->to_Linear_Constraint(cvl, dvl);
 }
 
 

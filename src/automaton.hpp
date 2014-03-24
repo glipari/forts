@@ -15,7 +15,7 @@ public:
     bool bad = false;
     std::string name; 
     std::shared_ptr<constraint_node> invariant;
-    std::vector<assignment> rates;
+    std::vector<Assignment> rates;
     std::vector<edge> outgoings;
 
     location();

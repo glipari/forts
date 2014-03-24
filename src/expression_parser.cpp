@@ -26,10 +26,10 @@ void expr_builder::make_var(parser_context &pc)
     
 void expr_builder::make_neg(tipa::parser_context &pc) {
     auto r = st.top(); st.pop();
-    auto l = std::make_shared<expr_leaf_node>(0);
-    auto n = std::make_shared<minus_node>();
-    n->set_left(l);
-    n->set_right(r);
+    std::shared_ptr<const expr_tree_node> l = std::make_shared<expr_leaf_node>(0);
+    std::shared_ptr<const expr_tree_node> n = std::make_shared<minus_node>(l, r);
+    // n->set_left(l);
+    // n->set_right(r);
     st.push(n);
 }
 
@@ -38,7 +38,7 @@ int expr_builder::get_size()
     return st.size();
 }
     
-shared_ptr<expr_tree_node> expr_builder::get_tree() 
+shared_ptr<const expr_tree_node> expr_builder::get_tree() 
 {
     return st.top();
 }
@@ -76,7 +76,7 @@ rule prepare_expr_rule(expr_builder &b)
     return expr;
 }
 
-shared_ptr<expr_tree_node> build_expression(const string &expr_input)
+shared_ptr<const expr_tree_node> build_expression(const string &expr_input)
 {
     expr_builder b;
     rule expr = prepare_expr_rule(b);
