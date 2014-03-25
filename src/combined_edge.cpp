@@ -15,6 +15,11 @@ bool Combined_edge::operator == (const Combined_edge &ce) const
     for (unsigned i = 0; i < edges.size(); i++)
 	if ( edges[i].index != ce.edges[i].index)
 	    return false;
+    if ( sync_set.size() != ce.sync_set.size())
+      return false;
+    for (unsigned i = 0; i < sync_set.size(); i++)
+	if ( sync_set[i] != ce.sync_set[i])
+	    return false;
     return true;
 }
 
@@ -45,7 +50,7 @@ std::vector<Combined_edge> Combined_edge::combine(const edge &e,
     }
     // "e" can be triggered alone
     if (not contains(common_labels, e.sync_label)) {
-	Combined_edge ce(e, sync_label, union_labels);
+	Combined_edge ce(e, e.sync_label, union_labels);
 	// ce.edges.push_back(e);
 	// ce.sync_label = e.sync_label;
 	// ce.sync_set = union_labels;
