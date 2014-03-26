@@ -18,7 +18,7 @@ int Assignment::eval(const CVList &cvl) const
 }
 
 
-void Assignment::print() 
+void Assignment::print() const
 {
     std::cout << x;
     std::cout << "'=";

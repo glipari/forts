@@ -14,9 +14,9 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
     SECTION("First simple test") {
 	string input = "when A>=10*B & C <=x*3+2 do {x' = x + 1, y'=y+10} goto loc1;";
 	edge e = build_an_edge(input);
-        REQUIRE(e.dest == "loc1");
-        Assignment a = e.assignments.at(0);
-        Assignment b = e.assignments.at(1);
+        REQUIRE(e.get_dest() == "loc1");
+        Assignment a = e.get_assignment_at(0);
+        Assignment b = e.get_assignment_at(1);
 	REQUIRE(a.get_var() == "x");
 	REQUIRE(b.get_var() == "y");
 	CVList cvl;
@@ -25,8 +25,8 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
 	REQUIRE(a.eval(cvl) == 1);
 	REQUIRE(b.eval(cvl) == 11);
 
-        auto it = e.guard;
-        it->print();
+        auto g = e.get_guard();
+	g.print();
         cout << endl;
         Variable A(0), B(1), C(2);
         Constraint_System css;
@@ -40,7 +40,7 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
         cvl1.push_back(variable("C"));
         dvl1.push_back(variable("x",1));
         cout << cvx << endl;
-        Linear_Constraint lc = it->to_Linear_Constraint(cvl1, dvl1); 
+        Linear_Constraint lc = e.guard_to_Linear_Constraint(cvl1, dvl1); 
         C_Polyhedron poly(lc);
         REQUIRE ( cvx.contains(poly));
         REQUIRE ( poly.contains(cvx));
@@ -85,37 +85,37 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         cvl1.push_back(variable("C"));
         dvl1.push_back(variable("x",1));
         cout << cvx << endl;
-        Linear_Constraint lc = it->to_Linear_Constraint(cvl1, dvl1); 
+        Linear_Constraint lc = it.to_Linear_Constraint(cvl1, dvl1); 
         C_Polyhedron poly(lc);
         REQUIRE ( cvx.contains(poly));
         REQUIRE ( poly.contains(cvx));
 
         edge e0 = l.outgoings.at(0);
-        REQUIRE ( e0.dest == "loc2");
-        Assignment ass0 =  e0.assignments.at(0);
+        REQUIRE ( e0.get_dest() == "loc2");
+        Assignment ass0 =  e0.get_assignment_at(0);
         REQUIRE ( ass0.eval(dvl1) == 0);
         REQUIRE ( ass0.get_var() == "B");
 
-        auto guard = e0.guard;
+        auto guard = e0.get_guard();
         Constraint_System g_css0;
         g_css0.insert( B==10);
         C_Polyhedron g_cvx0(g_css0);
-        C_Polyhedron g_poly0(guard->to_Linear_Constraint(cvl1,dvl1));
+        C_Polyhedron g_poly0(e0.guard_to_Linear_Constraint(cvl1,dvl1));
         REQUIRE ( g_cvx0.contains(g_poly0));
         REQUIRE ( g_poly0.contains(g_cvx0));
 
         edge e1 = l.outgoings.at(1);
-        REQUIRE ( e1.dest == "loc1");
+        REQUIRE ( e1.get_dest() == "loc1");
 
-        ass0 =  e1.assignments.at(0);
+        ass0 =  e1.get_assignment_at(0);
         REQUIRE ( ass0.eval(dvl1) == 0);
         REQUIRE ( ass0.get_var() == "A");
         
-        guard = e1.guard;
+        guard = e1.get_guard();
         Constraint_System g_css;
         g_css.insert( B>=10);
         C_Polyhedron g_cvx(g_css);
-        C_Polyhedron g_poly(guard->to_Linear_Constraint(cvl1,dvl1));
+        C_Polyhedron g_poly(guard.to_Linear_Constraint(cvl1,dvl1));
         cout << "g poly " << g_poly << endl;
         cout << "g cvx " << g_cvx << endl;
         REQUIRE ( g_cvx.contains(g_poly));

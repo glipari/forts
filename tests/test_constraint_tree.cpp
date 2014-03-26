@@ -15,7 +15,7 @@ TEST_CASE("Test the syntax tree for a constraint",
 	    auto at_tree = build_a_constraint_tree(input);
 	    cout << "2" << endl;
 	    DVList dvl;
-	    REQUIRE (at_tree->eval(dvl) == false);
+	    REQUIRE (at_tree.eval(dvl) == false);
 	    cout << "3" << endl;
 	} catch (std::exception &exc) {
 	    cout << "A standard exception" << endl;
@@ -30,7 +30,7 @@ TEST_CASE("Test the syntax tree for a constraint",
 	    DVList dvl2;
 	    dvl2.push_back(variable("x",0));
 	    cout << "6" << endl;
-	    REQUIRE (at_tree2->eval(dvl2) == true);
+	    REQUIRE (at_tree2.eval(dvl2) == true);
 	} catch (std::exception &exc) {
 	    cout << "A standard exception" << endl;
 	}   
@@ -60,12 +60,12 @@ TEST_CASE("Test the syntax tree for constraint \"true\"",
     string input = "true";
     auto at_tree = build_a_constraint_tree(input);
     DVList dvl;
-    REQUIRE (at_tree->eval(dvl) == true);
-    at_tree->print();
+    REQUIRE (at_tree.eval(dvl) == true);
+    at_tree.print();
 
     string input2 = "3+x-(2+4)==3-(2+4) & -x <= 2 & true";
     auto at_tree2 = build_a_constraint_tree(input2);
     DVList dvl2;
     dvl2.push_back(variable("x",0));
-    REQUIRE (at_tree2->eval(dvl2) == true);
+    REQUIRE (at_tree2.eval(dvl2) == true);
 }

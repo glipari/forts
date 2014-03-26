@@ -11,25 +11,50 @@
    This class represents an edge in the automaton
 */
 class edge {
-public:
     /** Each edge is assigned a unique index. */
     int index;
 
     /** Automaton index */
     int a_index;
 
-    std::shared_ptr<constraint_node> guard;
+    //std::shared_ptr<const constraint_node> guard;
+    const std::string dest;
+    const std::string sync_label;
+    const constraint_node guard;
     std::vector<Assignment> assignments;
-    std::string sync_label;
-    std::string dest;
 
-    edge();
+public:
+
+    edge(const std::string &destination, 
+	 const std::string &label,
+	 const constraint_node &guard_constraint,
+	 const std::vector<Assignment> &ass_list);
 
     Linear_Constraint guard_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
     Linear_Constraint ass_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
-    void print();
+
+    PPL::Variables_Set get_assignment_vars(const CVList &cvars) const;
+
+    void print() const;
+
+    int get_automaton_index() const { return a_index; }
+    std::string get_dest() const { return dest; }
+    std::string get_label() const { return sync_label; }
+    int get_index() const { return index; }
 
     void set_automata_index(int a);
+
+
+// for debugging and testing
+
+    Assignment get_assignment_at(int i) const {
+	return assignments.at(i);
+    }
+
+    constraint_node get_guard() const {
+	return guard;
+    }
+
 };
 
 

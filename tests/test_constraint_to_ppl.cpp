@@ -18,7 +18,7 @@ TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.",
   cvl1st.push_back(variable(string("x")));
   cvl1st.push_back(variable(string("y")));
   cvl1st.push_back(variable(string("z")));
-  Linear_Constraint lc1st = at_tree1st->to_Linear_Constraint(cvl1st, dvl1st);
+  Linear_Constraint lc1st = at_tree1st.to_Linear_Constraint(cvl1st, dvl1st);
 
   cout << "lc1st: " << lc1st << endl;
 
@@ -41,7 +41,7 @@ TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.",
   dvl2nd.push_back(variable("dline1",10));
   cvl2nd.push_back(variable(string("x")));
   cvl2nd.push_back(variable(string("wcet1")));
-  Linear_Constraint lc2nd = at_tree2nd->to_Linear_Constraint(cvl2nd, dvl2nd);
+  Linear_Constraint lc2nd = at_tree2nd.to_Linear_Constraint(cvl2nd, dvl2nd);
 
   cout << "lc2nd: " << lc2nd << endl;
 

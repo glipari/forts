@@ -1,34 +1,35 @@
 #include <automaton_parser.hpp>
 
+using namespace std;
+
 edge edge_builder::get_edge() 
 {
-    return e;
+    return edge(dest, label, guard, ass);
 }
 
 void edge_builder::an_assignment(parser_context &pc)
 {
-    e.assignments.push_back(ass_builder.get_assignment());
+    ass.push_back(ass_builder.get_assignment());
 }
 
 void edge_builder::the_guard(parser_context &pc)
 {
-    e.guard = c_builder.get_tree();
+    guard = c_builder.get_tree();
 }
 
 void edge_builder::the_dest(parser_context &pc)
 {
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
-    string v = x[x.size()-1].second;
-    e.dest = v;
+    dest = x[x.size()-1].second;
+//    e.dest = v;
 }
 
 void edge_builder::the_sync_label(parser_context &pc)
 {
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw string("Error in collecting variable."); 
-    string v = x[x.size()-1].second;
-    e.sync_label = v;
+    label = x[x.size()-1].second;
 }
 
 rule prepare_assignment_rule(edge_builder &e_builder)
@@ -66,11 +67,11 @@ edge build_an_edge(const string &expr_input)
 {
     edge_builder e_builder;
     rule r_edge = prepare_edge_rule(e_builder);
-
+    
     using namespace std::placeholders;
-
+    
     stringstream str(expr_input);
-
+    
     parser_context pc;
     pc.set_stream(str);
 

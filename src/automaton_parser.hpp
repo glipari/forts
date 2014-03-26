@@ -9,15 +9,21 @@ edge build_an_edge(const std::string &str);
 
 class edge_builder {
 public:
-    edge e;
+    //edge e;
     assignment_builder ass_builder;
     constraint_builder c_builder;
-    edge get_edge();
+
+    std::string dest;
+    std::string label;
+    constraint_node guard;
+    std::vector<Assignment> ass;
 
     void an_assignment(tipa::parser_context &pc);
     void the_guard(tipa::parser_context &pc);
     void the_dest(tipa::parser_context &pc);
     void the_sync_label(tipa::parser_context &pc);
+
+    edge get_edge();
 };
 
 tipa::rule prepare_edge_rule(edge_builder &e_builder);

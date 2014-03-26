@@ -61,10 +61,12 @@ void model::discrete_step(sstate &ss, Combined_edge &edges)
     Variables_Set vs;
 
     for (auto &e : edges.get_edges()) {
-	ss.loc_names[e.a_index] = e.dest;
+	ss.loc_names[e.get_automaton_index()] = e.get_dest();
 	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
-	for (auto &a : e.assignments)
-	    vs.insert(get_variable(a.get_var(), cvars));
+	Variables_Set vs2 = e.get_assignment_vars(cvars);
+	vs.insert(vs2.begin(), vs2.end());
+	// for (auto &a : e.assignments)
+	//     vs.insert(get_variable(a.get_var(), cvars));
 	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
     }
     ss.cvx.intersection_assign(guard_cvx);
@@ -80,7 +82,7 @@ void combine(vector<Combined_edge> &edge_groups, const location &l,
 {
     if (first) {
 	for (auto iit = l.outgoings.begin(); iit != l.outgoings.end(); iit++) {
-            Combined_edge egroup(*iit, iit->sync_label, new_labels);
+            Combined_edge egroup(*iit, iit->get_label(), new_labels);
             // egroup.edges.push_back(*iit);
             // //if ( iit->sync_label != "") {
             //   egroup.sync_label = (iit->sync_label);
@@ -141,7 +143,7 @@ sstate model::init_sstate()
 	ln += it->init_loc_name;
     }
     cout << "init name " << ln << endl; 
-    init.cvx = C_Polyhedron(init_constraint->to_Linear_Constraint(cvars, dvars));
+    init.cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
     cout << "cvx : " << init.cvx << endl;
     continuous_step(init);
     cout << "cvx after continuous step : " << init.cvx << endl;
@@ -242,8 +244,8 @@ void model::print()
 	cout << "loc[" << it->name << "]==" << it->init_loc_name <<"& ";
 	//cout << "loc[" << it->name << "]==" << it->init_loc->name <<"& ";
     }
-    if ( init_constraint != nullptr)
-	init_constraint->print();
+    // if ( init_constraint != nullptr)
+	init_constraint.print();
     cout << ";" << endl;
     cout << "bad := ";
     bool first_bad = true;

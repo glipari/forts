@@ -1,5 +1,7 @@
 #include "constraint_parser.hpp"
 
+using namespace std;
+
 void builder::store_true(parser_context &pc) {
     auto l = make_shared<expr_leaf_node>(1);
     auto r = make_shared<expr_leaf_node>(1);
@@ -7,6 +9,24 @@ void builder::store_true(parser_context &pc) {
     st.push(r);
     auto at_node = make_shared<eq_node>(); 
     at_nodes.push_back(at_node);
+}
+
+constraint_node builder::get_tree() 
+{
+    // if ( constraint != nullptr) {
+    //     return constraint;
+    // }
+    // constraint = make_shared<constraint_node>();
+    for ( auto it = at_nodes.rbegin(); it != at_nodes.rend(); it ++) {
+	auto r = st.top(); st.pop();
+	auto l = st.top(); st.pop();
+	(*it)->set_left(l);
+	(*it)->set_right(r);
+    }
+    
+    for ( auto it = at_nodes.begin(); it != at_nodes.end(); it ++)
+	constraint.append_atomic_constraint(*it);
+    return constraint;
 }
 
 shared_ptr<const expr_tree_node> build_an_expr_tree(string expr_input)
@@ -88,7 +108,7 @@ rule prepare_constraint_rule(constraint_builder &b)
     return constraint;
 }
 
-shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
+constraint_node build_a_constraint_tree(string expr_input)
 {
     builder b;
     rule constraint = prepare_constraint_rule(b);
@@ -113,8 +133,7 @@ shared_ptr<constraint_node> build_a_constraint_tree(string expr_input)
 	}*/
     
     if (!f) {
-	cout << pc.get_formatted_err_msg();
-	return nullptr;
+	throw string("Error, could not parse constraint: ") + pc.get_formatted_err_msg();
     } else {
 	auto tr = b.get_tree();
 	return tr;

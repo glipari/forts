@@ -24,7 +24,7 @@ public:
     // evaluates the expression (mainly for debugging)
     int eval(const CVList &cvl) const;
 
-    void print();
+    void print() const;
 };
 
 

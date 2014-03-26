@@ -29,7 +29,7 @@ public:
     CVList cvars;
     DVList dvars;
 
-    std::shared_ptr<constraint> init_constraint; 
+    constraint init_constraint; 
     std::vector<automaton>      automata;
 
     void print();

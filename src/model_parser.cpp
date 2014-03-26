@@ -1,5 +1,7 @@
 #include "model_parser.hpp"
 
+using namespace std;
+
 model model_builder::get_model()
 {
   return mod;
