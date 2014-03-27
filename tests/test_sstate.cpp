@@ -16,7 +16,7 @@ TEST_CASE("Test transform the rates in a location to a cvx",
 	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10 do {B'=0} goto loc2; \n when B>=10 do {A'=0} goto loc1;";
 	location l = build_a_location(input);
 
-        auto it = l.invariant;
+        auto it = l.get_invariant();
         Variable A(0), B(1), C(2);
         Constraint_System css;
         css.insert(A == 0);
@@ -33,13 +33,13 @@ TEST_CASE("Test transform the rates in a location to a cvx",
         C_Polyhedron cvx_(cvl1.size());
         cvx_.add_constraints(l.rates_to_Linear_Constraint(cvl1, dvl1,lvars));
         for ( auto it = lvars.begin(); it != lvars.end(); it++) {
-          PPL::Variable v = get_variable(it->name, cvl1);
-          Linear_Expr le;
-          le += 1;
-          AT_Constraint atc = (v==le);
-          cout << cvx_ << endl;
-          cout << atc << endl;
-          cvx_.add_constraint(atc);
+	    PPL::Variable v = get_variable(it->name, cvl1);
+	    Linear_Expr le;
+	    le += 1;
+	    AT_Constraint atc = (v==le);
+	    cout << cvx_ << endl;
+	    cout << atc << endl;
+	    cvx_.add_constraint(atc);
         }
         REQUIRE ( cvx.contains(cvx_));
         REQUIRE ( cvx_.contains(cvx));

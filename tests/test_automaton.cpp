@@ -61,10 +61,10 @@ TEST_CASE("Test parsing a location", "[location][parser]")
 	location l = build_a_location(input);
         //l.print();
 
-        REQUIRE(l.name == "loc0");
-        Assignment a = l.rates.at(0);
+        REQUIRE(l.get_name() == "loc0");
+        Assignment a = l.get_rates().at(0);
         //cout << a.x << endl;
-        Assignment b = l.rates.at(1);
+        Assignment b = l.get_rates().at(1);
         //cout << b.x << endl;
 	REQUIRE(a.get_var() == "A");
 	REQUIRE(b.get_var() == "B");
@@ -72,7 +72,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
 	REQUIRE(a.eval(cvl) == 0);
 	REQUIRE(b.eval(cvl) == 1);
 
-        auto it = l.invariant;
+        auto it = l.get_invariant();
         Variable A(0), B(1), C(2);
         Constraint_System css;
         css.insert(A >= 10*B);
@@ -90,7 +90,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         REQUIRE ( cvx.contains(poly));
         REQUIRE ( poly.contains(cvx));
 
-        Edge e0 = l.outgoings.at(0);
+        Edge e0 = l.get_edges().at(0);
         REQUIRE ( e0.get_dest() == "loc2");
         Assignment ass0 =  e0.get_assignment_at(0);
         REQUIRE ( ass0.eval(dvl1) == 0);
@@ -104,7 +104,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         REQUIRE ( g_cvx0.contains(g_poly0));
         REQUIRE ( g_poly0.contains(g_cvx0));
 
-        Edge e1 = l.outgoings.at(1);
+        Edge e1 = l.get_edges().at(1);
         REQUIRE ( e1.get_dest() == "loc1");
 
         ass0 =  e1.get_assignment_at(0);

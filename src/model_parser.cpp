@@ -68,7 +68,7 @@ void model_builder::init_locs(tipa::parser_context &pc)
 		bool loc_matched = false;
 		aton_matched = true;
 		for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
-		    if ( ln == jt->name) {  
+		    if ( ln == jt->get_name()) {  
 			it->init_loc_name = ln;
 			loc_matched = true;
 			break;
@@ -101,8 +101,8 @@ void model_builder::bad_locs(tipa::parser_context &pc)
 		aton_matched = true;
 		bool loc_matched = false;
 		for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
-		    if ( ln == jt->name) {  
-			jt->bad = true;
+		    if ( ln == jt->get_name()) {  
+			jt->set_bad(true);
 			loc_matched = true;
 			break;
 		    }

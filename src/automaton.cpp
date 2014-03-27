@@ -2,8 +2,7 @@
 
 using namespace std;
 
-
-Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList &lvars)
+Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList &lvars) const
 {
     Linear_Constraint lc;
     for ( auto it = cvl.begin(); it != cvl.end(); it++) {
@@ -14,9 +13,9 @@ Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const 
 		Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
 		AT_Constraint atc = (v==le);
 		lc.insert(atc);
-		for ( auto lt = lvars.begin(); lt != lvars.end(); lt++)
+		for (auto lt = lvars.begin(); lt != lvars.end(); lt++)
 		    if ( x==lt->name) {
-			lvars.erase(lt);
+			lvars.erase(lt); 
 			break;
 		    }
 		break;
@@ -27,13 +26,12 @@ Linear_Constraint location::rates_to_Linear_Constraint(const CVList &cvl, const 
     return lc;
 }
 
-Linear_Constraint location::invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl)
+Linear_Constraint location::invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const
 {
     return invariant.to_Linear_Constraint(cvl, dvl);
 }
 
-
-void location::print() 
+void location::print() const
 {
     std::cout << "loc " << name << ": while ";
     invariant.print();
@@ -53,10 +51,22 @@ automaton::automaton() : my_index(0)
 }
 
 
-location::location() : a_index(0)
+// location::location() : a_index(0)
+// {
+// }
+
+location::location(bool b, const std::string &n, 
+		   const constraint_node &inv,
+		   const vector<Assignment> &rt, 
+		   const vector<Edge> &ed) :
+    a_index(0),
+    bad(b),
+    name(n),
+    invariant(inv),
+    rates(rt),
+    outgoings(ed)
 {
 }
-
 
 void location::set_automata_index(int a)
 {
@@ -70,11 +80,11 @@ void automaton::set_index(int a)
     for (auto &l : locations) l.set_automata_index(a);
 }
 
-
+// TODO: change exception type
 location & automaton::get_location(std::string ln)
 {
     for ( auto it = locations.begin(); it != locations.end(); it++)
-	if ( it->name == ln)
+	if ( it->get_name() == ln)
 	    return *it;
     throw string("No location named ") + ln;
 } 
@@ -102,9 +112,10 @@ bool automaton::check_consistency(const CVList &cvl, const DVList &dvl)
 {
     for (auto it = locations.begin(); it != locations.end(); it++) {
 	/** Check consistency of the invariant in each location. */
-	it->invariant.to_Linear_Constraint(cvl, dvl);
+	it->invariant_to_Linear_Constraint(cvl, dvl);
 
-	for (auto iit = it->outgoings.begin(); iit != it->outgoings.end(); iit++){
+	std::vector<Edge> outgoings = it->get_edges();
+	for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++){
 
 	    /** Check consistency of the guard in each edge. */
 	    //auto tt = iit->guard;
@@ -114,7 +125,7 @@ bool automaton::check_consistency(const CVList &cvl, const DVList &dvl)
 	    string dest = iit->get_dest();
 	    bool dest_matched = false;
 	    for ( auto tt = locations.begin(); tt != locations.end(); tt++)
-		if ( dest == tt->name) {
+		if ( dest == tt->get_name()) {
 		    dest_matched = true;
 		    break;
 		}

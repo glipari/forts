@@ -8,7 +8,6 @@
 
 /** This class represent a location in the automaton  */
 class location {
-public:
     /** Automaton index */
     int a_index;
 
@@ -18,13 +17,28 @@ public:
     std::vector<Assignment> rates;
     std::vector<Edge> outgoings;
 
-    location();
+    //location();
+
+public:
+
+    location(bool b, const std::string &n, 
+	     const constraint_node &inv,
+	     const std::vector<Assignment> &rt, 
+	     const std::vector<Edge> &ed); 
 
     void set_automata_index(int a);
 
-    void print();
-    Linear_Constraint rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList& lvars);
-    Linear_Constraint invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl);
+    std::string get_name() const { return name; }
+    std::vector<Edge> get_edges() const { return outgoings; }
+    std::vector<Assignment> get_rates() const { return rates; }
+    constraint_node get_invariant() const { return invariant; }
+    int get_automaton_index() const { return a_index; }
+    bool is_bad() const { return bad; }
+    void set_bad(bool b) { bad = b; } 
+
+    void print() const ;
+    Linear_Constraint rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList& lvars) const;
+    Linear_Constraint invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
 };
 
 /** The class for an automaton  */
@@ -43,6 +57,8 @@ public:
 
 
     automaton();
+
+    std::string get_name() const { return name; }
 
     void set_index(int i);
 

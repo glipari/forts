@@ -42,11 +42,11 @@ void model::continuous_step(sstate &ss)
 
     // If a variable's rate is not specified in the location, it's assumed to be 1
     for ( auto it = lvars.begin(); it != lvars.end(); it++) {
-      PPL::Variable v = get_variable(it->name, cvars);
-      Linear_Expr le;
-      le += 1;
-      AT_Constraint atc = (v==le);
-      rates_cvx.add_constraint(atc);
+	PPL::Variable v = get_variable(it->name, cvars);
+	Linear_Expr le;
+	le += 1;
+	AT_Constraint atc = (v==le);
+	rates_cvx.add_constraint(atc);
     }
     ss.cvx.time_elapse_assign(rates_cvx);
     // 2) intersect with invariant
@@ -81,7 +81,8 @@ void combine(vector<Combined_edge> &edge_groups, const location &l,
 	     bool first) 
 {
     if (first) {
-	for (auto iit = l.outgoings.begin(); iit != l.outgoings.end(); iit++) {
+	vector<Edge> outgoings = l.get_edges();
+	for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
             Combined_edge egroup(*iit, iit->get_label(), new_labels);
             // egroup.edges.push_back(*iit);
             // //if ( iit->sync_label != "") {
@@ -95,8 +96,9 @@ void combine(vector<Combined_edge> &edge_groups, const location &l,
     vector<Combined_edge> copy = edge_groups;
     edge_groups.clear();
     // to combine every outgoing from "l" with every "edge group"
+    vector<Edge> outgoings = l.get_edges();
     for ( auto &egroup : copy) {
-      for ( auto it = l.outgoings.begin(); it != l.outgoings.end(); it++) {
+      for ( auto it = outgoings.begin(); it != outgoings.end(); it++) {
         vector<Combined_edge> com = egroup.combine(*it, new_labels);
         for ( auto &eg : com)
           if ( not contains(edge_groups, eg))
@@ -192,7 +194,7 @@ bool model::is_bad(const sstate &ss)
 {
     for (auto it = ss.loc_names.begin(); it != ss.loc_names.end(); it++) {
 	location &l = automata[it - ss.loc_names.begin()].get_location(*it);
-	if (l.bad)
+	if (l.is_bad())
 	    return true;
     }
     return false;
@@ -252,13 +254,13 @@ void model::print()
     for ( auto it = automata.begin(); it != automata.end(); it++)
     {
 	for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
-	    if ( jt->bad)  {
+	    if ( jt->is_bad())  {
 		if (first_bad) {
-		    cout << "loc[" << it->name << "]==" << jt->name;
+		    cout << "loc[" << it->get_name() << "]==" << jt->get_name();
 		    first_bad = false;
 		}
 		else {
-		    cout << "& loc[" << it->name << "]==" << jt->name;
+		    cout << "& loc[" << it->get_name() << "]==" << jt->get_name();
 		}
 	    }
 	}

@@ -94,31 +94,30 @@ location location_builder::get_location()
     //input += ";";
     //edge e = build_an_edge(input);
     //loc.outgoings.push_back(e);
-    return loc;
+    return location(bad, name, invariant, rates, outgoings);
 }
 
 void location_builder::a_rate(parser_context &pc)
 {
-    loc.rates.push_back(rate_builder.get_assignment());
+    rates.push_back(rate_builder.get_assignment());
 }
 
 void location_builder::an_outgoing(parser_context &pc)
 {
-    loc.outgoings.push_back(outgoing_builder.get_edge());
+    outgoings.push_back(outgoing_builder.get_edge());
     outgoing_builder = edge_builder();
 }
 
 void location_builder::the_invariant(parser_context &pc)
 {
-    loc.invariant = invariant_builder.get_tree();
+    invariant = invariant_builder.get_tree();
 }
 
 void location_builder::the_name(parser_context &pc)
 {
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
-    string v = x[x.size()-1].second;
-    loc.name = v;
+    name = x[x.size()-1].second;
 }
 
 rule prepare_rate_rule(location_builder &loc_builder)

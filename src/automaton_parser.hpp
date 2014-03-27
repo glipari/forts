@@ -31,10 +31,17 @@ tipa::rule prepare_assignment_rule(edge_builder &e_builder);
 
 class location_builder {
 public:
-    location loc;
+    // location loc;
+    bool bad = false;
+    std::string name; 
+    constraint_node invariant;
+    std::vector<Assignment> rates;
+    std::vector<Edge> outgoings;
+
     assignment_builder rate_builder;
     constraint_builder invariant_builder;
     edge_builder outgoing_builder;
+
     location get_location();
 
     void a_rate(tipa::parser_context &pc);
