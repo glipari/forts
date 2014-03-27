@@ -42,7 +42,7 @@ public:
     constraint_builder invariant_builder;
     edge_builder outgoing_builder;
 
-    location get_location();
+    Location get_location();
 
     void a_rate(tipa::parser_context &pc);
     void an_outgoing(tipa::parser_context &pc);
@@ -53,7 +53,7 @@ public:
 tipa::rule prepare_location_rule(location_builder &loc_builder);
 tipa::rule prepare_rate_rule(location_builder &loc_builder);
 tipa::rule prepare_outgoing_rule(location_builder &loc_builder);
-location build_a_location(const std::string &str);
+Location build_a_location(const std::string &str);
 
 class automaton_builder {
 public:

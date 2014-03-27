@@ -14,7 +14,7 @@ TEST_CASE("Test transform the rates in a location to a cvx",
 {
     SECTION("First simple test on transforming rates to a Linear_Constraint") {
 	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10 do {B'=0} goto loc2; \n when B>=10 do {A'=0} goto loc1;";
-	location l = build_a_location(input);
+	Location l = build_a_location(input);
 
         auto it = l.get_invariant();
         Variable A(0), B(1), C(2);

@@ -86,7 +86,7 @@ Edge build_an_edge(const string &expr_input)
     else return e_builder.get_edge();
 }
 
-location location_builder::get_location() 
+Location location_builder::get_location() 
 {
     //string ln = loc.name;
     //string input =string("when true do {} goto "); 
@@ -94,7 +94,7 @@ location location_builder::get_location()
     //input += ";";
     //edge e = build_an_edge(input);
     //loc.outgoings.push_back(e);
-    return location(bad, name, invariant, rates, outgoings);
+    return Location(bad, name, invariant, rates, outgoings);
 }
 
 void location_builder::a_rate(parser_context &pc)
@@ -160,7 +160,7 @@ rule prepare_location_rule(location_builder & loc_builder)
     return r_loc;
 }
 
-location build_a_location(const string &expr_input)
+Location build_a_location(const string &expr_input)
 {
     location_builder loc_builder;
     rule r_loc = prepare_location_rule(loc_builder);

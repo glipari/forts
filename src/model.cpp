@@ -15,7 +15,7 @@ PPL::C_Polyhedron model::get_invariant_cvx(sstate &ss)
     for ( auto it = automata.begin(); it != automata.end(); it++){
 	Linear_Constraint lc;
 	string ln = ss.loc_names[it-automata.begin()];
-	location &l = it->get_location(ln);
+	Location &l = it->get_location(ln);
 
 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
     }
@@ -31,7 +31,7 @@ void model::continuous_step(sstate &ss)
     for ( auto it = automata.begin(); it != automata.end(); it++){
 	Linear_Constraint lc;
 	string ln = ss.loc_names[it-automata.begin()];
-	location &l = it->get_location(ln);
+	Location &l = it->get_location(ln);
 
 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
 	rates_cvx.add_constraints(l.rates_to_Linear_Constraint(cvars, dvars, lvars));
@@ -76,7 +76,7 @@ void model::discrete_step(sstate &ss, Combined_edge &edges)
 }
 
 
-void combine(vector<Combined_edge> &edge_groups, const location &l, 
+void combine(vector<Combined_edge> &edge_groups, const Location &l, 
 	     const vector<string> new_labels,
 	     bool first) 
 {
@@ -118,7 +118,7 @@ vector<sstate> model::Post(const sstate& ss)
     vector<Combined_edge> edge_groups;
     for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
         a_index = loc_it - ss.loc_names.begin();
-	location &l = automata[a_index].get_location(*loc_it);
+	Location &l = automata[a_index].get_location(*loc_it);
         vector<string> new_labels = automata[a_index].labels;
         combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
         //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
@@ -193,7 +193,7 @@ void model::SpaceExplorer()
 bool model::is_bad(const sstate &ss)
 {
     for (auto it = ss.loc_names.begin(); it != ss.loc_names.end(); it++) {
-	location &l = automata[it - ss.loc_names.begin()].get_location(*it);
+	Location &l = automata[it - ss.loc_names.begin()].get_location(*it);
 	if (l.is_bad())
 	    return true;
     }

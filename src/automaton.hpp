@@ -7,7 +7,7 @@
 
 
 /** This class represent a location in the automaton  */
-class location {
+class Location {
     /** Automaton index */
     int a_index;
 
@@ -21,7 +21,7 @@ class location {
 
 public:
 
-    location(bool b, const std::string &n, 
+    Location(bool b, const std::string &n, 
 	     const constraint_node &inv,
 	     const std::vector<Assignment> &rt, 
 	     const std::vector<Edge> &ed); 
@@ -53,7 +53,7 @@ public:
     /** The set of synchronization labels */
     std::vector<std::string> labels;
     /** The set of locations */
-    std::vector<location>    locations;
+    std::vector<Location>    locations;
 
 
     automaton();
@@ -65,6 +65,6 @@ public:
     void print();
     /** To check if there is inconsistency in the automaton. */
     bool     check_consistency(const CVList &cvl, const DVList &dvl);
-    location &get_location(std::string ln);
+    Location &get_location(std::string ln);
 };
 #endif
