@@ -107,7 +107,7 @@ void combine(vector<Combined_edge> &edge_groups, const location &l,
 
 vector<sstate> model::Post(const sstate& ss)
 {
-    vector< vector<edge> > v_edges;
+    vector< vector<Edge> > v_edges;
     vector<sstate> v_ss;
     vector<sstate> &sstates = v_ss;
     vector<string> synch_labels; 

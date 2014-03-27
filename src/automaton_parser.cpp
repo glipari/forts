@@ -2,9 +2,9 @@
 
 using namespace std;
 
-edge edge_builder::get_edge() 
+Edge edge_builder::get_edge() 
 {
-    return edge(dest, label, guard, ass);
+    return Edge(dest, label, guard, ass);
 }
 
 void edge_builder::an_assignment(parser_context &pc)
@@ -63,7 +63,7 @@ rule prepare_edge_rule(edge_builder & e_builder)
     return r_edge;
 }
 
-edge build_an_edge(const string &expr_input)
+Edge build_an_edge(const string &expr_input)
 {
     edge_builder e_builder;
     rule r_edge = prepare_edge_rule(e_builder);

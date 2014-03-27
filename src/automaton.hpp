@@ -16,7 +16,7 @@ public:
     std::string name; 
     constraint_node invariant;
     std::vector<Assignment> rates;
-    std::vector<edge> outgoings;
+    std::vector<Edge> outgoings;
 
     location();
 

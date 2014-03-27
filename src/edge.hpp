@@ -9,8 +9,11 @@
 
 /**
    This class represents an edge in the automaton
+   
+   TODO: what does it mean to copy an edge? what happens to 
+   index and a_index? 
 */
-class edge {
+class Edge {
     /** Each edge is assigned a unique index. */
     int index;
 
@@ -25,7 +28,7 @@ class edge {
 
 public:
 
-    edge(const std::string &destination, 
+    Edge(const std::string &destination, 
 	 const std::string &label,
 	 const constraint_node &guard_constraint,
 	 const std::vector<Assignment> &ass_list);

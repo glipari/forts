@@ -13,7 +13,7 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
 {
     SECTION("First simple test") {
 	string input = "when A>=10*B & C <=x*3+2 do {x' = x + 1, y'=y+10} goto loc1;";
-	edge e = build_an_edge(input);
+	Edge e = build_an_edge(input);
         REQUIRE(e.get_dest() == "loc1");
         Assignment a = e.get_assignment_at(0);
         Assignment b = e.get_assignment_at(1);
@@ -90,7 +90,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         REQUIRE ( cvx.contains(poly));
         REQUIRE ( poly.contains(cvx));
 
-        edge e0 = l.outgoings.at(0);
+        Edge e0 = l.outgoings.at(0);
         REQUIRE ( e0.get_dest() == "loc2");
         Assignment ass0 =  e0.get_assignment_at(0);
         REQUIRE ( ass0.eval(dvl1) == 0);
@@ -104,7 +104,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         REQUIRE ( g_cvx0.contains(g_poly0));
         REQUIRE ( g_poly0.contains(g_cvx0));
 
-        edge e1 = l.outgoings.at(1);
+        Edge e1 = l.outgoings.at(1);
         REQUIRE ( e1.get_dest() == "loc1");
 
         ass0 =  e1.get_assignment_at(0);

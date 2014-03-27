@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Combined_edge::Combined_edge(const edge &e, const std::string &sync, 
+Combined_edge::Combined_edge(const Edge &e, const std::string &sync, 
 			     const vector<string> &labels) :
     edges{e}, sync_label(sync), sync_set(labels)
 {
@@ -23,7 +23,7 @@ bool Combined_edge::operator == (const Combined_edge &ce) const
     return true;
 }
 
-std::vector<Combined_edge> Combined_edge::combine(const edge &e, 
+std::vector<Combined_edge> Combined_edge::combine(const Edge &e, 
 						  const vector<string> new_labels)
 {
     vector<string> common_labels;

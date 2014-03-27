@@ -5,7 +5,7 @@
 #include <constraint_parser.hpp>
 #include <assignment_parser.hpp>
 
-edge build_an_edge(const std::string &str);
+Edge build_an_edge(const std::string &str);
 
 class edge_builder {
 public:
@@ -23,7 +23,7 @@ public:
     void the_dest(tipa::parser_context &pc);
     void the_sync_label(tipa::parser_context &pc);
 
-    edge get_edge();
+    Edge get_edge();
 };
 
 tipa::rule prepare_edge_rule(edge_builder &e_builder);
