@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <ppl.hh>
+
 namespace PPL = Parma_Polyhedra_Library;
 
 class sstate {

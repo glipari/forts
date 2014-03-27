@@ -46,9 +46,9 @@ void Location::print() const
 	it->print();
 }
 
-automaton::automaton() : my_index(0)
-{
-}
+// automaton::automaton() : my_index(0)
+// {
+// }
 
 
 // Location::Location() : a_index(0)
@@ -74,6 +74,19 @@ void Location::set_automata_index(int a)
     for (auto &e : outgoings) e.set_automata_index(a);
 }
 
+automaton::automaton(const std::string &n,
+		     const  std::vector<std::string> &lbls,
+		     const std::vector<Location> locs
+    ) :
+    my_index(0),
+    name(n),
+    init_loc_name(""),
+    labels(lbls),
+    locations(locs)
+{
+    sort(labels.begin(), labels.end());
+}
+
 void automaton::set_index(int a)
 {
     my_index = a;
@@ -89,7 +102,7 @@ Location & automaton::get_location(std::string ln)
     throw string("No location named ") + ln;
 } 
 
-void automaton::print()
+void automaton::print() const 
 {
     std::cout << "automaton " << name << std::endl;
     std::cout << "sync: ";
@@ -108,7 +121,7 @@ void automaton::print()
 
 
 // TODO: change throw to something different than string
-bool automaton::check_consistency(const CVList &cvl, const DVList &dvl)
+bool automaton::check_consistency(const CVList &cvl, const DVList &dvl) const 
 {
     for (auto it = locations.begin(); it != locations.end(); it++) {
 	/** Check consistency of the invariant in each location. */

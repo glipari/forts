@@ -57,7 +57,11 @@ Location build_a_location(const std::string &str);
 
 class automaton_builder {
 public:
-    automaton aton;
+    //automaton aton;
+    std::vector<std::string> labels;
+    std::vector<Location>    locations;
+    std::string name;
+
     location_builder l_builder;
 
     void a_label(tipa::parser_context &pc);

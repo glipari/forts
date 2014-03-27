@@ -16,34 +16,46 @@ class Location {
     constraint_node invariant;
     std::vector<Assignment> rates;
     std::vector<Edge> outgoings;
-
-    //location();
-
 public:
-
+    // constructor
     Location(bool b, const std::string &n, 
 	     const constraint_node &inv,
 	     const std::vector<Assignment> &rt, 
 	     const std::vector<Edge> &ed); 
 
+    // used to set the index of the automaton that this location
+    // belongs to.
     void set_automata_index(int a);
 
+    // the location name (local to the automaton)
     std::string get_name() const { return name; }
+    // the set of outgoing edges
     std::vector<Edge> get_edges() const { return outgoings; }
+    // the set of assignments for the rates
     std::vector<Assignment> get_rates() const { return rates; }
+    // the location invariant
     constraint_node get_invariant() const { return invariant; }
+
+    // returns the index of the automaton that this location belongs
+    // to
     int get_automaton_index() const { return a_index; }
+
+    // returns true if this is a "bad" location 
     bool is_bad() const { return bad; }
+    // sets the bad locations
     void set_bad(bool b) { bad = b; } 
 
+    // prints the content of the automaton (for debugging)
     void print() const ;
+
+    // returns the polyhedron that represents the rates
     Linear_Constraint rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList& lvars) const;
+    // returns the polyhedron that represent the invariant
     Linear_Constraint invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
 };
 
 /** The class for an automaton  */
 class automaton {
-public:
     /** my index, init to 0, then modified in the model */
     int my_index;
     /** The name of this automaton */
@@ -55,16 +67,24 @@ public:
     /** The set of locations */
     std::vector<Location>    locations;
 
-
-    automaton();
-
-    std::string get_name() const { return name; }
-
+public:
+    automaton(const std::string &n, 
+	      const std::vector<std::string> &lbls,
+	      const std::vector<Location> locs
+	);
+    
+    void set_init_location(const std::string &init) { init_loc_name = init; }
     void set_index(int i);
 
-    void print();
+    std::string get_init_location() const { return init_loc_name; }
+    int         get_index() const { return my_index; }
+    std::string get_name() const { return name; }
+    std::vector<std::string> get_labels() const { return labels; }
+    Location&   get_location(std::string ln);
+
+    std::vector<Location> get_all_locations() const { return locations; }
+    void print() const;
     /** To check if there is inconsistency in the automaton. */
-    bool     check_consistency(const CVList &cvl, const DVList &dvl);
-    Location &get_location(std::string ln);
+    bool      check_consistency(const CVList &cvl, const DVList &dvl) const;
 };
 #endif

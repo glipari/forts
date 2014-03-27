@@ -64,12 +64,13 @@ void model_builder::init_locs(tipa::parser_context &pc)
 	string ln = loc_names.at(i);
 	bool aton_matched = false;
 	for (auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-	    if (an == it->name) {
+	    if (an == it->get_name()) {
 		bool loc_matched = false;
 		aton_matched = true;
-		for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
+		vector<Location> locations = it->get_all_locations();
+		for ( auto jt = locations.begin(); jt != locations.end(); jt++) {
 		    if ( ln == jt->get_name()) {  
-			it->init_loc_name = ln;
+			it->set_init_location(ln);
 			loc_matched = true;
 			break;
 		    }
@@ -97,10 +98,11 @@ void model_builder::bad_locs(tipa::parser_context &pc)
 	cout << "ln : " << ln << endl;
 	bool aton_matched = false;
 	for (auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-	    if (an == it->name) {
+	    if (an == it->get_name()) {
 		aton_matched = true;
 		bool loc_matched = false;
-		for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
+		vector<Location> locations = it->get_all_locations();
+		for ( auto jt = locations.begin(); jt != locations.end(); jt++) {
 		    if ( ln == jt->get_name()) {  
 			jt->set_bad(true);
 			loc_matched = true;
@@ -154,7 +156,7 @@ void model_builder::an_automaton(tipa::parser_context &pc)
 {
     automaton aton = a_builder.get_automaton();
     mod.automata.push_back(aton);
-    cout << "automaton name : " << aton.name << endl;
+    cout << "automaton name : " << aton.get_name() << endl;
     a_builder = automaton_builder();
 }
 

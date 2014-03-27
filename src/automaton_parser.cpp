@@ -185,29 +185,27 @@ Location build_a_location(const string &expr_input)
 
 automaton automaton_builder::get_automaton()
 {
-    return aton;
+    return automaton(name, labels, locations);
 }
 
 void automaton_builder::the_name(parser_context &pc)
 {
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
-    string v = x[x.size()-1].second;
-    aton.name = v;
+    name = x[x.size()-1].second;
 }
 
 void automaton_builder::a_label(parser_context &pc)
 {
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
-    string v = x[x.size()-1].second;
-    aton.labels.push_back(v);
+    labels.push_back(x[x.size()-1].second);
 }
 
 void automaton_builder::a_location(parser_context &pc)
 {
-  aton.locations.push_back(l_builder.get_location());
-  l_builder = location_builder();
+    locations.push_back(l_builder.get_location());
+    l_builder = location_builder();
 }
 
 rule prepare_automaton_rule(automaton_builder & a_builder)

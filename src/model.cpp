@@ -119,7 +119,7 @@ vector<sstate> model::Post(const sstate& ss)
     for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
         a_index = loc_it - ss.loc_names.begin();
 	Location &l = automata[a_index].get_location(*loc_it);
-        vector<string> new_labels = automata[a_index].labels;
+        vector<string> new_labels = automata[a_index].get_labels();
         combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
         //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
     }
@@ -140,9 +140,9 @@ sstate model::init_sstate()
     cout << "inside init_state()" << endl;
     string ln="";
     for ( auto it = automata.begin(); it != automata.end(); it++) {
-	cout << "loc name " << it->init_loc_name << endl;
-	init.loc_names.push_back(it->init_loc_name);
-	ln += it->init_loc_name;
+	cout << "loc name " << it->get_init_location() << endl;
+	init.loc_names.push_back(it->get_init_location());
+	ln += it->get_init_location();
     }
     cout << "init name " << ln << endl; 
     init.cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
@@ -220,7 +220,7 @@ static void remove_included_sstates_in_a_list(const sstate &ss, list<sstate> &ls
     }
 }
 
-void model::print()
+void model::print() const
 {
     for (auto it = cvars.begin(); it != cvars.end(); it++)
     {
@@ -241,20 +241,17 @@ void model::print()
     }
     cout << endl;
     cout << "init := " << endl;
-    for ( auto it = automata.begin(); it != automata.end(); it++)
-    {
-	cout << "loc[" << it->name << "]==" << it->init_loc_name <<"& ";
-	//cout << "loc[" << it->name << "]==" << it->init_loc->name <<"& ";
+    for ( auto it = automata.begin(); it != automata.end(); it++) {
+	cout << "loc[" << it->get_name() << "]==" << it->get_init_location() <<"& ";
     }
-    // if ( init_constraint != nullptr)
-	init_constraint.print();
+    init_constraint.print();
     cout << ";" << endl;
     cout << "bad := ";
     bool first_bad = true;
-    for ( auto it = automata.begin(); it != automata.end(); it++)
-    {
-	for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
-	    if ( jt->is_bad())  {
+    for ( auto it = automata.begin(); it != automata.end(); it++) {
+	vector<Location> locations = it->get_all_locations();
+	for ( auto jt = locations.begin(); jt != locations.end(); jt++) {
+	    if (jt->is_bad())  {
 		if (first_bad) {
 		    cout << "loc[" << it->get_name() << "]==" << jt->get_name();
 		    first_bad = false;
@@ -268,13 +265,13 @@ void model::print()
     cout << ";" << endl;
 }
 
-void model::check_consistency()
+void model::check_consistency() 
 {
     int i = 0;
     for ( auto it = automata.begin(); it != automata.end(); it++) {
 	it->check_consistency(cvars, dvars);
 	it->set_index(i++);
-        sort(it->labels.begin(), it->labels.end());
+        //sort(it->labels.begin(), it->labels.end());
     }
 }
 
