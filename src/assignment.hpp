@@ -18,11 +18,11 @@ public:
 
     std::string get_var() const;
     
-    Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const;
+    Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const;
     // Prints the value of this expression
 
     // evaluates the expression (mainly for debugging)
-    int eval(const CVList &cvl) const;
+    int eval(const Valuations &cvl) const;
 
     void print() const;
 };

@@ -7,12 +7,12 @@ Assignment::Assignment(const std::string &var, std::shared_ptr<const expr_tree_n
 
 std::string Assignment::get_var() const { return x; }
 
-Linear_Expr Assignment::to_Linear_Expr(const CVList &cvl, const DVList &dvl) const
+Linear_Expr Assignment::to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const
 {
     return expr->to_Linear_Expr(cvl, dvl);
 }
 
-int Assignment::eval(const CVList &cvl) const
+int Assignment::eval(const Valuations &cvl) const
 {
     return expr->eval(cvl);
 }

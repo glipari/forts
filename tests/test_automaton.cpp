@@ -19,9 +19,9 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
         Assignment b = e.get_assignment_at(1);
 	REQUIRE(a.get_var() == "x");
 	REQUIRE(b.get_var() == "y");
-	CVList cvl;
-	cvl.push_back(variable("x", 0));
-	cvl.push_back(variable("y", 1));
+	Valuations cvl;
+	cvl.insert(make_pair("x", 0));
+	cvl.insert(make_pair("y", 1));
 	REQUIRE(a.eval(cvl) == 1);
 	REQUIRE(b.eval(cvl) == 11);
 
@@ -33,12 +33,12 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
         css.insert(A >= 10*B);
         css.insert(C <= 5);
         C_Polyhedron cvx (css);
-        CVList cvl1;
-        DVList dvl1;
-        cvl1.push_back(variable("A"));
-        cvl1.push_back(variable("B"));
-        cvl1.push_back(variable("C"));
-        dvl1.push_back(variable("x",1));
+        VariableList cvl1;
+        Valuations dvl1;
+        cvl1.insert("A");
+        cvl1.insert("B");
+        cvl1.insert("C");
+        dvl1.insert(make_pair("x",1));
         cout << cvx << endl;
         Linear_Constraint lc = e.guard_to_Linear_Constraint(cvl1, dvl1); 
         C_Polyhedron poly(lc);
@@ -68,7 +68,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         //cout << b.x << endl;
 	REQUIRE(a.get_var() == "A");
 	REQUIRE(b.get_var() == "B");
-	CVList cvl;
+	Valuations cvl;
 	REQUIRE(a.eval(cvl) == 0);
 	REQUIRE(b.eval(cvl) == 1);
 
@@ -78,12 +78,12 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         css.insert(A >= 10*B);
         css.insert(C <= 5);
         C_Polyhedron cvx (css);
-        CVList cvl1;
-        DVList dvl1;
-        cvl1.push_back(variable("A"));
-        cvl1.push_back(variable("B"));
-        cvl1.push_back(variable("C"));
-        dvl1.push_back(variable("x",1));
+        VariableList cvl1;
+        Valuations dvl1;
+        cvl1.insert("A");
+        cvl1.insert("B");
+        cvl1.insert("C");
+        dvl1.insert(make_pair("x",1));
         cout << cvx << endl;
         Linear_Constraint lc = it.to_Linear_Constraint(cvl1, dvl1); 
         C_Polyhedron poly(lc);

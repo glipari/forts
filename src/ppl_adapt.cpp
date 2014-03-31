@@ -2,10 +2,10 @@
 
 using namespace std;
 
-PPL::Variable get_variable(const string &var, const CVList &cvl) {
+PPL::Variable get_ppl_variable(const VariableList &cvl, const string &var) {
     int i = 0;
-    for ( auto it = cvl.begin(); it != cvl.end(); it ++) {
-	if (it->name == var)
+    for (auto const &x : cvl) {
+	if (x == var)
 	    return PPL::Variable(i);
 	i++;
     }

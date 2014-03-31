@@ -1,13 +1,13 @@
 #+TITLE: todo list for effort
 #+author: Giuseppe Lipari and Youcheng Sun
 
-* TODO Rename classes
+* DONE Rename classes
 
-* TODO Define class Symbolic State and operations on it
+* DONE Define class Symbolic State and operations on it
 ** DONE The Post operation
 ** DONE BFS symbolic state space exploration
 
-* DONE As a first step, we do the model [11%]
+* DONE As a first step, we do the model [100%]
   :PROPERTIES:
   :ORDERED:  t
   :END:
@@ -29,7 +29,7 @@
    - A comparison between two expressions
 *** DONE Write a method eval()
 *** DONE Write test cases
-** TODO Write classes for the different variables
+** DONE Write classes for the different variables
     We treat three different types of variables:
     1) Discrete variables
     2) Parameters 
@@ -52,7 +52,7 @@
     This class takes a list of variables, and check the above things
 *** DONE Add a parameter to function compute()
     We additionally give the list of variables that is used to evaluate a value
-*** TODO Write test cases for everything
+*** DONE Write test cases for everything
 
 
 ** DONE Write a class Constraint
@@ -65,19 +65,48 @@
    substituted during transformation
 
 ** DONE PPL
-*** TODO Write a function to transform a Constraint into a PPL polyhedron, or octogonal shape, or DBM
-*** TODO Write tests   
+*** DONE Write a function to transform a Constraint into a PPL polyhedron, or octogonal shape, or DBM
+*** DONE Write tests   
    
-** TODO Write a class Update 
+** DONE Write a class Update 
    It is an assignment 
    It contains a variable and an expression
 
-** TODO Write class Variable 
+** DONE Write class Variable 
    represents a clock
 
-** TODO Write class DiscreteVariable
+** DONE Write class DiscreteVariable
    Represent a discrete variable
 
 
 
   
+
+
+* TODO Combined Location 
+  Represents a location in the combined automata
+  It has a signature
+
+
+** TODO Class LocationSignature
+   It is a sort of summary of the location, easy to check and compute.
+   An example of interface
+#+BEGIN_SRC c++
+class LocationSignature {
+    ...
+public:
+    LocationSignature(const vector<Location> &loc, const vector<DVar> &values);
+    bool operator==(const LocationSignature &l);
+    bool operator<(const LocationSignature &l);
+    bool operator<=(const LocationSignature &l);
+    bool operator!=(const LocationSignature &l)
+
+};
+#+END_SRC
+
+** TODO Class CombinedLocation 
+   This has a list of location, one per each automaton in the model,
+   and a set of discrete variables names/values. It stores (caches)
+   combined edges, each one of them stores (caches) the polyhedra for
+   the guards. It also caches the polyhedra for the invariants. 
+   

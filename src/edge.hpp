@@ -20,7 +20,6 @@ class Edge {
     /** Automaton index */
     int a_index;
 
-    //std::shared_ptr<const constraint_node> guard;
     const std::string dest;
     const std::string sync_label;
     const constraint_node guard;
@@ -33,10 +32,10 @@ public:
 	 const constraint_node &guard_constraint,
 	 const std::vector<Assignment> &ass_list);
 
-    Linear_Constraint guard_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
-    Linear_Constraint ass_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
+    Linear_Constraint guard_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
+    Linear_Constraint ass_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
 
-    PPL::Variables_Set get_assignment_vars(const CVList &cvars) const;
+    PPL::Variables_Set get_assignment_vars(const VariableList &cvars) const;
 
     void print() const;
 
@@ -46,7 +45,6 @@ public:
     int get_index() const { return index; }
 
     void set_automata_index(int a);
-
 
 // for debugging and testing
 

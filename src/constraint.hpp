@@ -14,9 +14,9 @@ protected:
     std::shared_ptr<const expr_tree_node> left;
     std::shared_ptr<const expr_tree_node> right;
 public :
-    virtual bool eval(const DVList &dvl) const = 0;
+    virtual bool eval(const Valuations &dvl) const = 0;
     virtual void print() const = 0;
-    virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) const = 0;
+    virtual AT_Constraint to_AT_Constraint(const VariableList &cvl, const Valuations &dvl) const = 0;
   
     void set_left(std::shared_ptr<const expr_tree_node> &l);
     void set_right(std::shared_ptr<const expr_tree_node> &r);
@@ -25,12 +25,12 @@ public :
 #define ATOMIC_CONSTRAINT_NODE_CLASS(xxx,sym)				\
     class xxx##_node : public atomic_constraint_node {			\
     public:								\
-    virtual bool eval(const DVList &dvl) const {			\
+    virtual bool eval(const Valuations &dvl) const {			\
         int l = left->eval(dvl);					\
         int r = right->eval(dvl);					\
         return l sym r;							\
     }									\
-    virtual AT_Constraint to_AT_Constraint(const CVList &cvl, const DVList &dvl) const { \
+    virtual AT_Constraint to_AT_Constraint(const VariableList &cvl, const Valuations &dvl) const { \
         Linear_Expr l = left->to_Linear_Expr(cvl, dvl);			\
         Linear_Expr r = right->to_Linear_Expr(cvl, dvl);		\
         AT_Constraint c;						\
@@ -54,9 +54,9 @@ class constraint_node {
 protected:
     std::vector< std::shared_ptr<atomic_constraint_node> > ats;
 public:
-    bool eval(const DVList &dvl) const;
+    bool eval(const Valuations &dvl) const;
     void append_atomic_constraint(std::shared_ptr<atomic_constraint_node> at);
-    Linear_Constraint to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
+    Linear_Constraint to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
     void print() const;
 };
 

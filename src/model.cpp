@@ -27,7 +27,7 @@ void model::continuous_step(sstate &ss)
     // 1) To do time_elapse_assign
     PPL::C_Polyhedron rates_cvx(cvars.size());
     PPL::C_Polyhedron invariant_cvx(cvars.size());
-    CVList lvars = cvars;
+    VariableList lvars = cvars;
     for ( auto it = automata.begin(); it != automata.end(); it++){
 	Linear_Constraint lc;
 	string ln = ss.loc_names[it-automata.begin()];
@@ -42,7 +42,7 @@ void model::continuous_step(sstate &ss)
 
     // If a variable's rate is not specified in the location, it's assumed to be 1
     for ( auto it = lvars.begin(); it != lvars.end(); it++) {
-	PPL::Variable v = get_variable(it->name, cvars);
+	PPL::Variable v = get_ppl_variable(cvars, *it);
 	Linear_Expr le;
 	le += 1;
 	AT_Constraint atc = (v==le);
@@ -226,14 +226,14 @@ void model::print() const
     {
 	if (it != cvars.begin())
 	    cout << ",";
-	cout << it->name;
+	cout << *it;
     }
     cout << ": continous;" << endl;
     for (auto it = dvars.begin(); it != dvars.end(); it++)
     {
 	if (it != dvars.begin())
 	    cout << ",";
-	cout << it->name;
+	cout << it->first << " = " << it->second;
     }
     cout << ": discrete;" << endl;
     for (auto it = automata.begin(); it != automata.end(); it++) {

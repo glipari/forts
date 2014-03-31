@@ -18,10 +18,10 @@ public :
 
     expr_tree_node() {}
 
-    virtual int eval(const DVList &dvl) const = 0; 
-    virtual bool has_variable(const CVList &cvl) const = 0; 
-    virtual bool check_linearity(const CVList &cvl) const = 0; 
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const = 0;
+    virtual int eval(const Valuations &dvl) const = 0; 
+    virtual bool has_variable(const VariableList &cvl) const = 0; 
+    virtual bool check_linearity(const VariableList &cvl) const = 0; 
+    virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const = 0;
     virtual void print() const = 0;
 
     virtual ~expr_tree_node() {}
@@ -44,7 +44,7 @@ public:
     expr_op_node(std::shared_ptr<const expr_tree_node> &l, std::shared_ptr<const expr_tree_node> &r) :
 	left(l), right(r) {}
 
-    virtual bool has_variable(const CVList &cvl) const;
+    virtual bool has_variable(const VariableList &cvl) const;
     // void set_left(std::shared_ptr<expr_tree_node> l);
     // void set_right(std::shared_ptr<expr_tree_node> r);
 };
@@ -59,10 +59,10 @@ public:
 
     expr_var_node(const std::string &n);
 
-    virtual int eval(const DVList &dvl) const ;
-    virtual bool has_variable(const CVList &cvl) const ;
-    virtual bool check_linearity(const CVList &cvl) const ;
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const;
+    virtual int eval(const Valuations &dvl) const ;
+    virtual bool has_variable(const VariableList &cvl) const ;
+    virtual bool check_linearity(const VariableList &cvl) const ;
+    virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const;
     virtual void print() const;
 };
 
@@ -74,10 +74,10 @@ class expr_leaf_node : public expr_tree_node {
 public:
     expr_leaf_node(int v);
 
-    virtual int eval(const DVList &dvl) const;
-    virtual bool has_variable(const CVList &cvl) const;
-    virtual bool check_linearity(const CVList &cvl) const;
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const;
+    virtual int eval(const Valuations &dvl) const;
+    virtual bool has_variable(const VariableList &cvl) const;
+    virtual bool check_linearity(const VariableList &cvl) const;
+    virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const;
     virtual void print() const;
 };
 
@@ -86,13 +86,13 @@ public:
     public:								\
     xxx##_node(std::shared_ptr<const expr_tree_node> &l, std::shared_ptr<const expr_tree_node> &r) : \
         expr_op_node(l,r) {}						\
-    virtual int eval(const DVList &dvl) const {				\
+    virtual int eval(const Valuations &dvl) const {				\
         int l = left->eval(dvl);					\
         int r = right->eval(dvl);					\
         return l sym r;							\
     }									\
 									\
-    virtual bool check_linearity(const CVList &cvl) const {		\
+    virtual bool check_linearity(const VariableList &cvl) const {		\
         bool r = right->has_variable(cvl);				\
         bool l = left->has_variable(cvl);				\
         if (r && l)							\
@@ -100,7 +100,7 @@ public:
         return right->check_linearity(cvl) && left->check_linearity(cvl); \
     }									\
 									\
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const { \
+    virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const { \
 	if ( !check_linearity(cvl))					\
 	    throw ("Not a linear expression");				\
 	Linear_Expr le;							\
@@ -123,18 +123,18 @@ public:
     xxx##_node(std::shared_ptr<const expr_tree_node> &l, std::shared_ptr<const expr_tree_node> &r) : \
         expr_op_node(l,r) {}						\
 									\
-    virtual int eval(const DVList &dvl) const {				\
+    virtual int eval(const Valuations &dvl) const {				\
         int l = left->eval(dvl);					\
         int r = right->eval(dvl);					\
         return l sym r;							\
     }									\
 									\
-    virtual bool check_linearity(const CVList &cvl) const {		\
+    virtual bool check_linearity(const VariableList &cvl) const {		\
         bool r = right->check_linearity(cvl);				\
         bool l = left->check_linearity(cvl);				\
         return r && l;							\
     }									\
-    virtual Linear_Expr to_Linear_Expr(const CVList &cvl, const DVList &dvl) const { \
+    virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const { \
 	Linear_Expr le , l , r;						\
 	l = left->to_Linear_Expr(cvl,dvl);				\
 	r = right->to_Linear_Expr(cvl,dvl);				\

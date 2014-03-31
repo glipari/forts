@@ -10,14 +10,14 @@ TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.",
 {
   string input1st = "2*x==y & x - (0+ z) >= 0 & c*y<=a*z - b";
   auto at_tree1st = build_a_constraint_tree(input1st);
-  CVList cvl1st;
-  DVList dvl1st;
-  dvl1st.push_back(variable("a",4));
-  dvl1st.push_back(variable("b",2));
-  dvl1st.push_back(variable("c",3));
-  cvl1st.push_back(variable(string("x")));
-  cvl1st.push_back(variable(string("y")));
-  cvl1st.push_back(variable(string("z")));
+  VariableList cvl1st;
+  Valuations dvl1st;
+  dvl1st.insert(make_pair("a",4));
+  dvl1st.insert(make_pair("b",2));
+  dvl1st.insert(make_pair("c",3));
+  cvl1st.insert("x");
+  cvl1st.insert("y");
+  cvl1st.insert("z");
   Linear_Constraint lc1st = at_tree1st.to_Linear_Constraint(cvl1st, dvl1st);
 
   cout << "lc1st: " << lc1st << endl;
@@ -36,18 +36,20 @@ TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.",
 
   string input2nd = "2*x + 2*1 - (3-wcet1) == 0 & 2*wcet1<= dline1";
   auto at_tree2nd = build_a_constraint_tree(input2nd);
-  CVList cvl2nd;
-  DVList dvl2nd;
-  dvl2nd.push_back(variable("dline1",10));
-  cvl2nd.push_back(variable(string("x")));
-  cvl2nd.push_back(variable(string("wcet1")));
+  VariableList cvl2nd;
+  Valuations dvl2nd;
+  dvl2nd.insert(make_pair("dline1",10));
+  cvl2nd.insert("x");
+  cvl2nd.insert("wcet1");
   Linear_Constraint lc2nd = at_tree2nd.to_Linear_Constraint(cvl2nd, dvl2nd);
 
   cout << "lc2nd: " << lc2nd << endl;
 
   Constraint_System css2nd;
-  css2nd.insert(2*x+y-1==0);
-  css2nd.insert(2*y <= 10);
+  css2nd.insert(2*y+x-1==0);
+  css2nd.insert(2*x <= 10);
+
+  cout << "css2nd: " << css2nd << endl;
 
   C_Polyhedron poly_css2nd(css2nd);
   C_Polyhedron poly_lc2nd(lc2nd);

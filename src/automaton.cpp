@@ -2,31 +2,33 @@
 
 using namespace std;
 
-Linear_Constraint Location::rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList &lvars) const
+Linear_Constraint Location::rates_to_Linear_Constraint(const VariableList &cvl, 
+						       const Valuations &dvl, 
+						       VariableList &lvars) const
 {
     Linear_Constraint lc;
-    for ( auto it = cvl.begin(); it != cvl.end(); it++) {
-	string x = it->name;
+    for ( auto const &x : cvl) {
+	//string x = it->name;
 	for ( auto iit = rates.begin(); iit != rates.end(); iit++) {
-	    if ( x == iit->get_var()) {
-		PPL::Variable v = get_variable(x, cvl);
+	    if (x == iit->get_var()) {
+		PPL::Variable v = get_ppl_variable(cvl, x);
 		Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
 		AT_Constraint atc = (v==le);
 		lc.insert(atc);
 		for (auto lt = lvars.begin(); lt != lvars.end(); lt++)
-		    if ( x==lt->name) {
-			lvars.erase(lt); 
+		    if ( x == *lt) {
+			lvars.erase(lt);
 			break;
 		    }
 		break;
 	    }
 	}
-
     }
     return lc;
 }
 
-Linear_Constraint Location::invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const
+Linear_Constraint Location::invariant_to_Linear_Constraint(const VariableList &cvl, 
+							   const Valuations &dvl) const
 {
     return invariant.to_Linear_Constraint(cvl, dvl);
 }
@@ -121,7 +123,7 @@ void automaton::print() const
 
 
 // TODO: change throw to something different than string
-bool automaton::check_consistency(const CVList &cvl, const DVList &dvl) const 
+bool automaton::check_consistency(const VariableList &cvl, const Valuations &dvl) const 
 {
     for (auto it = locations.begin(); it != locations.end(); it++) {
 	/** Check consistency of the invariant in each location. */

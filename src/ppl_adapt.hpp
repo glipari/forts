@@ -13,7 +13,7 @@ typedef PPL::Linear_Expression   Linear_Expr;
 
 // returns the PPL variable associated to the string in CVList
 // I do not like this function, it assumes the CVList is properly ordered... 
-PPL::Variable get_variable(const std::string &var, const CVList &cvl);
+PPL::Variable get_ppl_variable(const VariableList &cvl, const std::string &var);
 
 
 #endif

@@ -11,7 +11,7 @@ void atomic_constraint_node::set_right(std::shared_ptr<const expr_tree_node> &r)
 }
 
 
-bool constraint_node::eval(const DVList &dvl) const
+bool constraint_node::eval(const Valuations &dvl) const
 {
     for (auto it = ats.begin(); it != ats.end(); it++) {
 	if (!(*it)->eval(dvl)) {
@@ -26,7 +26,8 @@ void constraint_node::append_atomic_constraint(std::shared_ptr<atomic_constraint
     ats.push_back(at);
 }
 
-Linear_Constraint constraint_node::to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const
+Linear_Constraint constraint_node::to_Linear_Constraint(const VariableList &cvl, 
+							const Valuations &dvl) const
 {
     Linear_Constraint c;
     for ( auto it = ats.begin(); it != ats.end(); it ++)

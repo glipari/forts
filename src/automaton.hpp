@@ -49,9 +49,9 @@ public:
     void print() const ;
 
     // returns the polyhedron that represents the rates
-    Linear_Constraint rates_to_Linear_Constraint(const CVList &cvl, const DVList &dvl, CVList& lvars) const;
+    Linear_Constraint rates_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl, VariableList& lvars) const;
     // returns the polyhedron that represent the invariant
-    Linear_Constraint invariant_to_Linear_Constraint(const CVList &cvl, const DVList &dvl) const;
+    Linear_Constraint invariant_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
 };
 
 /** The class for an automaton  */
@@ -85,6 +85,6 @@ public:
     std::vector<Location> get_all_locations() const { return locations; }
     void print() const;
     /** To check if there is inconsistency in the automaton. */
-    bool      check_consistency(const CVList &cvl, const DVList &dvl) const;
+    bool      check_consistency(const VariableList &cvl, const Valuations &dvl) const;
 };
 #endif

@@ -14,9 +14,9 @@ class Combined_edge;
 class model {
 public:
     // continuous vars for this model
-    CVList cvars;
+    VariableList cvars;
     // discrete variables for this model
-    DVList dvars;
+    Valuations dvars;
 
     // the initial constraints
     constraint              init_constraint; 

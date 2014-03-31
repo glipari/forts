@@ -11,6 +11,8 @@ public:
     constraint_builder c_builder;
     std::vector<std::string> aton_names; 
     std::vector<std::string> loc_names; 
+    std::string last_dvar_name;
+
     void aton_name(tipa::parser_context &pc);
     void loc_name(tipa::parser_context &pc);
     //void aton_loc_pairs(void(model_builder::*fn)(location &));

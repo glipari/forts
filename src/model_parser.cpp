@@ -133,7 +133,7 @@ void model_builder::a_cvar(tipa::parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
-    mod.cvars.push_back(variable(v));
+    mod.cvars.insert(v); // push_back(variable(v));
 }
 
 void model_builder::dv_lhs(tipa::parser_context &pc)
@@ -141,7 +141,8 @@ void model_builder::dv_lhs(tipa::parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
-    mod.dvars.push_back(variable(v));
+    mod.dvars.insert(make_pair(v, 0));//push_back(variable(v));
+    last_dvar_name = v;
 }
 
 void model_builder::dv_rhs(tipa::parser_context &pc)
@@ -149,7 +150,8 @@ void model_builder::dv_rhs(tipa::parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
-    mod.dvars.back().set_val(atoi(v.c_str()));
+    //mod.dvars.back().set_val(atoi(v.c_str()));
+    set_valuation(mod.dvars, last_dvar_name, atoi(v.c_str()));
 }
 
 void model_builder::an_automaton(tipa::parser_context &pc)
