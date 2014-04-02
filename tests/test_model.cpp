@@ -24,6 +24,6 @@ TEST_CASE("First test on parsing a model", "[model][printer]")
         cout << str1 << endl;
         build_a_model(str1);
         MODEL.check_consistency();
-        MODEL.print();
+        //MODEL.print();
     }
 }

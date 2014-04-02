@@ -60,7 +60,7 @@ void model_builder::init_locs(tipa::parser_context &pc)
 {
     for (unsigned i = 0; i < aton_names.size(); i++) {
         // throws if not found
-	automaton autom = MODEL.get_automaton_by_name(aton_names.at(i));
+	automaton &autom = MODEL.get_automaton_by_name(aton_names.at(i));
 	// throws if not found
 	autom.set_init_location(loc_names.at(i)); 
 	cout << "Setting init location for automaton " 

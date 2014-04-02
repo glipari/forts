@@ -17,12 +17,15 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
 	std::ifstream ifs1("test.imi");
         std::string str1((std::istreambuf_iterator<char>(ifs1)), std::istreambuf_iterator<char>()); 
         std::cout << str1 << endl;
-        for (auto it = str1.begin(); it != str1.end(); it++)
-          if (*it == '\n')
-            *it = ' ';
-        cout << str1 << endl;
+	cout << "##############################################" << endl; 
+        //for (auto it = str1.begin(); it != str1.end(); it++)
+        //  if (*it == '\n')
+        //    *it = ' ';
+        //cout << str1 << endl;
         build_a_model(str1);
         MODEL.check_consistency();
+
+	cout << "##########  NOW PRINTING THE MODEL  ##################" << endl;
         MODEL.print();
         cout << "haha" << endl;
         sstate init = MODEL.init_sstate();

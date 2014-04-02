@@ -113,7 +113,7 @@ Location & automaton::get_location_by_name(std::string ln)
 
 void automaton::set_init_location(const std::string &init)
 { 
-    Location &l = get_location_by_name(init);
+    Location &l = get_location_by_name(init); // checks that the location exists
     init_loc_name = init; 
 }
 
