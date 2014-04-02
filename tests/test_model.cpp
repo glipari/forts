@@ -14,6 +14,7 @@ TEST_CASE("First test on parsing a model", "[model][printer]")
 {
 
     SECTION("Read a model from a file") {
+	Model::reset();
 	std::ifstream ifs1("model1.txt");
         std::string str1((std::istreambuf_iterator<char>(ifs1)), std::istreambuf_iterator<char>()); 
         std::cout << str1 << endl;
@@ -21,8 +22,8 @@ TEST_CASE("First test on parsing a model", "[model][printer]")
           if (*it == '\n')
             *it = ' ';
         cout << str1 << endl;
-        model mod1 = build_a_model(str1);
-        mod1.check_consistency();
-        mod1.print();
+        build_a_model(str1);
+        MODEL.check_consistency();
+        MODEL.print();
     }
 }

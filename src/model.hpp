@@ -30,11 +30,15 @@ class Model {
 
     Model();
 
+    static Model *the_instance; 
+
 public:
     Model(const Model &other) = delete;
     Model &operator=(const Model &other) = delete;
 
     static Model& get_instance(); 
+
+    static void reset(); 
 
     void print() const;
     void check_consistency();

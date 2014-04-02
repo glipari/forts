@@ -63,6 +63,10 @@ void model_builder::init_locs(tipa::parser_context &pc)
 	automaton autom = MODEL.get_automaton_by_name(aton_names.at(i));
 	// throws if not found
 	autom.set_init_location(loc_names.at(i)); 
+	cout << "Setting init location for automaton " 
+	     << autom.get_name() << " == " 
+	     << loc_names.at(i) << " / " 
+	     << autom.get_init_location() << endl;	    
     }
     // 	for (auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
     // 	    if (an == it->get_name()) {
@@ -130,7 +134,7 @@ void model_builder::the_init_constraint(tipa::parser_context &pc)
 {
     MODEL.set_init(c_builder.get_tree());
     // mod.init_constraint = c_builder.get_tree();
-    //c_builder = constraint_builder();
+    c_builder = constraint_builder();
 }
 
 void model_builder::a_cvar(tipa::parser_context &pc)

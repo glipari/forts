@@ -13,6 +13,7 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
 {
 
     SECTION("Explore the sstate space") {
+	Model::reset();
 	std::ifstream ifs1("test.imi");
         std::string str1((std::istreambuf_iterator<char>(ifs1)), std::istreambuf_iterator<char>()); 
         std::cout << str1 << endl;
@@ -20,27 +21,27 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
           if (*it == '\n')
             *it = ' ';
         cout << str1 << endl;
-        model mod1 = build_a_model(str1);
-        mod1.check_consistency();
-        mod1.print();
+        build_a_model(str1);
+        MODEL.check_consistency();
+        MODEL.print();
         cout << "haha" << endl;
-        sstate init = mod1.init_sstate();
+        sstate init = MODEL.init_sstate();
         string ln="";
-        for ( auto it = init.loc_names.begin(); it != init.loc_names.end(); it++)
+        for (auto it = init.loc_names.begin(); it != init.loc_names.end(); it++)
           ln += *it;
         cout << ln << endl;
         //REQUIRE(ln=="idle");
         cout << "123"<< endl;
         cout << init.cvx << endl;
         cout << "123"<< endl;
-        vector<sstate> vss = mod1.Post(init);
+        vector<sstate> vss = MODEL.Post(init);
         for ( auto it = vss.begin(); it != vss.end(); it++) {
-          ln="";
-          for ( auto iit = it->loc_names.begin(); iit != it->loc_names.end(); iit++)
-            ln += *iit;
-          cout << ln << endl;
-          cout << it->cvx << endl;
+	    ln="";
+	    for ( auto iit = it->loc_names.begin(); iit != it->loc_names.end(); iit++)
+		ln += *iit;
+	    cout << ln << endl;
+	    cout << it->cvx << endl;
         }
-        mod1.SpaceExplorer();
+        MODEL.SpaceExplorer();
     }
 }

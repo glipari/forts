@@ -9,6 +9,12 @@
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
+Model *Model::the_instance = nullptr;
+
+Model::Model()
+{
+}
+
 PPL::C_Polyhedron Model::get_invariant_cvx(sstate &ss)
 {
     PPL::C_Polyhedron invariant_cvx(cvars.size());
@@ -25,8 +31,15 @@ PPL::C_Polyhedron Model::get_invariant_cvx(sstate &ss)
 
 Model &Model::get_instance()
 {
-    static Model m;
-    return m;
+//    static Model m;
+    if (the_instance == nullptr) the_instance = new Model();
+    return *the_instance;
+}
+
+void Model::reset() 
+{
+    delete the_instance;
+    the_instance = new Model();
 }
 
 void Model::continuous_step(sstate &ss)
