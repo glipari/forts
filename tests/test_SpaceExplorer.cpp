@@ -9,8 +9,6 @@
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace std;
 
-
-
 TEST_CASE("First test on SpaceExplorer", "[model][Space]")
 {
 

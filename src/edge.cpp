@@ -2,6 +2,7 @@
 
 #include "edge.hpp"
 #include "unique_index.hpp"
+#include "automaton.hpp"
 
 using namespace std;
 
@@ -11,7 +12,10 @@ Edge::Edge(const std::string &destination,
 	   const std::vector<Assignment> &ass_list) :
     index(UniqueIndex::get_next_index()),
     a_index(0),
+    aut(nullptr),
+    src_location(nullptr),
     dest(destination),
+    dst_location(nullptr),
     sync_label(label),
     guard(guard_constraint),
     assignments(ass_list)
@@ -70,9 +74,18 @@ void Edge::print() const
     std::cout << " goto " << dest << ";\n";
 }
 
-
-void Edge::set_automata_index(int a)
-{
-    a_index = a;
+void Edge::set_src_location(Location &l) 
+{ 
+    src_location = &l;
+    aut = &(l.get_automaton()); 
+    a_index = aut->get_index();
+    
+    dst_location = &aut->get_location(dest);
 }
+
+
+// void Edge::set_automata_index(int a)
+// {
+//     a_index = a;
+// }
 

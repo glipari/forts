@@ -10,6 +10,7 @@
 class Location {
     /** Automaton index */
     int a_index;
+    automaton *aut;
 
     bool bad = false;
     std::string name; 
@@ -25,7 +26,9 @@ public:
 
     // used to set the index of the automaton that this location
     // belongs to.
-    void set_automata_index(int a);
+    //void set_automata_index(int a);
+    void set_automaton(automaton &a);
+    automaton &get_automaton() { return *aut; }
 
     // the location name (local to the automaton)
     std::string get_name() const { return name; }
@@ -38,7 +41,7 @@ public:
 
     // returns the index of the automaton that this location belongs
     // to
-    int get_automaton_index() const { return a_index; }
+    //int get_automaton_index() const { return a_index; }
 
     // returns true if this is a "bad" location 
     bool is_bad() const { return bad; }

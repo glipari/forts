@@ -61,7 +61,7 @@ Location::Location(bool b, const std::string &n,
 		   const constraint_node &inv,
 		   const vector<Assignment> &rt, 
 		   const vector<Edge> &ed) :
-    a_index(0),
+    aut(nullptr),
     bad(b),
     name(n),
     invariant(inv),
@@ -70,10 +70,16 @@ Location::Location(bool b, const std::string &n,
 {
 }
 
-void Location::set_automata_index(int a)
+/*void Location::set_automata_index(int a)
 {
     a_index = a;
     for (auto &e : outgoings) e.set_automata_index(a);
+    }*/
+
+void Location::set_automaton(automaton &a) 
+{
+    aut = &a;
+    for (auto &e : outgoings) e.set_src_location(*this);
 }
 
 automaton::automaton(const std::string &n,
@@ -92,7 +98,7 @@ automaton::automaton(const std::string &n,
 void automaton::set_index(int a)
 {
     my_index = a;
-    for (auto &l : locations) l.set_automata_index(a);
+    for (auto &l : locations) l.set_automaton(*this);
 }
 
 // TODO: change exception type
@@ -103,6 +109,8 @@ Location & automaton::get_location(std::string ln)
 	    return *it;
     throw string("No location named ") + ln;
 } 
+
+
 
 void automaton::print() const 
 {
