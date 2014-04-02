@@ -11,8 +11,9 @@ typedef constraint_node constraint;
 
 class Combined_edge;
 
-class model {
-public:
+#define MODEL Model::get_instance()
+
+class Model {
     // continuous vars for this model
     VariableList cvars;
     // discrete variables for this model
@@ -24,8 +25,24 @@ public:
     // the set of automatons
     std::vector<automaton>  automata;
 
+    /** The symbolic state space */
+    std::list<sstate> Space;
+
+    Model();
+
+public:
+    Model(const Model &other) = delete;
+    Model &operator=(const Model &other) = delete;
+
+    static Model& get_instance(); 
+
     void print() const;
     void check_consistency();
+
+    void add_automaton(const automaton &a); 
+    void set_init(const constraint &ini); 
+    void add_cvar(const std::string &cv); 
+    void add_dvar(const std::string &dv, int value); 
 
     // Given a initial sstate, performs a continuous step
     void continuous_step(sstate &ss);
@@ -44,9 +61,8 @@ public:
     // if the current state is bad
     bool is_bad(const sstate &ss);
 
-    /** The symbolic state space */
-    std::list<sstate> Space;
-
+    // throws an exception if the automaton is not found
+    automaton& get_automaton_by_name(const std::string name);
     /** 
 	To explore Space according to breadth first search.  
 

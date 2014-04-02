@@ -6,7 +6,7 @@
 
 class model_builder {
 public:
-    model mod;
+    //Model mod;
     automaton_builder a_builder;
     constraint_builder c_builder;
     std::vector<std::string> aton_names; 
@@ -23,10 +23,12 @@ public:
     void dv_lhs(tipa::parser_context &pc);
     void dv_rhs(tipa::parser_context &pc);
     void an_automaton(tipa::parser_context &pc);
-    model get_model();
+    //Model get_model();
+
 };
 
 rule prepare_model_rule(model_builder &m_builder);
-model build_a_model(const std::string &pc);
+// model
+void build_a_model(const std::string &pc);
 
 #endif

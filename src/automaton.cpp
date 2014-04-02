@@ -102,14 +102,20 @@ void automaton::set_index(int a)
 }
 
 // TODO: change exception type
-Location & automaton::get_location(std::string ln)
+Location & automaton::get_location_by_name(std::string ln)
 {
     for ( auto it = locations.begin(); it != locations.end(); it++)
 	if ( it->get_name() == ln)
 	    return *it;
-    throw string("No location named ") + ln;
+    throw string("No location named ") + ln + string(" in automaton ") + get_name();
 } 
 
+
+void automaton::set_init_location(const std::string &init)
+{ 
+    Location &l = get_location_by_name(init);
+    init_loc_name = init; 
+}
 
 
 void automaton::print() const 

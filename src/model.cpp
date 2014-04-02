@@ -9,20 +9,27 @@
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
-PPL::C_Polyhedron model::get_invariant_cvx(sstate &ss)
+PPL::C_Polyhedron Model::get_invariant_cvx(sstate &ss)
 {
     PPL::C_Polyhedron invariant_cvx(cvars.size());
     for ( auto it = automata.begin(); it != automata.end(); it++){
 	Linear_Constraint lc;
 	string ln = ss.loc_names[it-automata.begin()];
-	Location &l = it->get_location(ln);
+	Location &l = it->get_location_by_name(ln);
 
 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
     }
     return invariant_cvx;
 }
 
-void model::continuous_step(sstate &ss)
+
+Model &Model::get_instance()
+{
+    static Model m;
+    return m;
+}
+
+void Model::continuous_step(sstate &ss)
 {
     // 1) To do time_elapse_assign
     PPL::C_Polyhedron rates_cvx(cvars.size());
@@ -31,7 +38,7 @@ void model::continuous_step(sstate &ss)
     for ( auto it = automata.begin(); it != automata.end(); it++){
 	Linear_Constraint lc;
 	string ln = ss.loc_names[it-automata.begin()];
-	Location &l = it->get_location(ln);
+	Location &l = it->get_location_by_name(ln);
 
 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
 	rates_cvx.add_constraints(l.rates_to_Linear_Constraint(cvars, dvars, lvars));
@@ -54,7 +61,7 @@ void model::continuous_step(sstate &ss)
 }
 
 // TODO : remember to change the e parameter into a const reference
-void model::discrete_step(sstate &ss, Combined_edge &edges)
+void Model::discrete_step(sstate &ss, Combined_edge &edges)
 {
     PPL::C_Polyhedron guard_cvx(cvars.size());
     PPL::C_Polyhedron ass_cvx(cvars.size());
@@ -107,7 +114,7 @@ void combine(vector<Combined_edge> &edge_groups, const Location &l,
     }
 }
 
-vector<sstate> model::Post(const sstate& ss)
+vector<sstate> Model::Post(const sstate& ss)
 {
     vector< vector<Edge> > v_edges;
     vector<sstate> v_ss;
@@ -118,7 +125,7 @@ vector<sstate> model::Post(const sstate& ss)
     vector<Combined_edge> edge_groups;
     for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
         a_index = loc_it - ss.loc_names.begin();
-	Location &l = automata[a_index].get_location(*loc_it);
+	Location &l = automata[a_index].get_location_by_name(*loc_it);
         vector<string> new_labels = automata[a_index].get_labels();
         combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
         //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
@@ -133,7 +140,7 @@ vector<sstate> model::Post(const sstate& ss)
     return sstates;
 }
 
-sstate model::init_sstate()
+sstate Model::init_sstate()
 {
     cout << "inside init_state()" << endl;
     sstate init;
@@ -155,7 +162,7 @@ sstate model::init_sstate()
 static bool contained_in(const sstate &ss, const list<sstate> &lss);
 static void remove_included_sstates_in_a_list(const sstate &ss, list<sstate> &lss);
 
-void model::SpaceExplorer()
+void Model::SpaceExplorer()
 {
     sstate init = init_sstate();
     list<sstate> next;
@@ -190,10 +197,10 @@ void model::SpaceExplorer()
     }
 }
 
-bool model::is_bad(const sstate &ss)
+bool Model::is_bad(const sstate &ss)
 {
     for (auto it = ss.loc_names.begin(); it != ss.loc_names.end(); it++) {
-	Location &l = automata[it - ss.loc_names.begin()].get_location(*it);
+	Location &l = automata[it - ss.loc_names.begin()].get_location_by_name(*it);
 	if (l.is_bad())
 	    return true;
     }
@@ -220,7 +227,7 @@ static void remove_included_sstates_in_a_list(const sstate &ss, list<sstate> &ls
     }
 }
 
-void model::print() const
+void Model::print() const
 {
     for (auto it = cvars.begin(); it != cvars.end(); it++)
     {
@@ -265,7 +272,27 @@ void model::print() const
     cout << ";" << endl;
 }
 
-void model::check_consistency() 
+void Model::add_automaton(const automaton &a)
+{
+    automata.push_back(a);
+}
+
+void Model::set_init(const constraint &ini)
+{
+    init_constraint = ini;
+}
+
+void Model::add_cvar(const std::string &cv)
+{
+    cvars.insert(cv);
+}
+
+void Model::add_dvar(const std::string &dv, int value)
+{
+    dvars.insert(make_pair(dv, value));
+}
+
+void Model::check_consistency() 
 {
     int i = 0;
     for ( auto it = automata.begin(); it != automata.end(); it++) {
@@ -273,5 +300,13 @@ void model::check_consistency()
 	it->set_index(i++);
         //sort(it->labels.begin(), it->labels.end());
     }
+}
+
+automaton& Model::get_automaton_by_name(const std::string name)
+{
+    for (auto &a : automata) {
+	if (a.get_name() == name) return a;
+    }
+    throw string("Automaton ") + name + " not found";
 }
 

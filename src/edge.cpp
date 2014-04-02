@@ -80,7 +80,7 @@ void Edge::set_src_location(Location &l)
     aut = &(l.get_automaton()); 
     a_index = aut->get_index();
     
-    dst_location = &aut->get_location(dest);
+    dst_location = &aut->get_location_by_name(dest);
 }
 
 

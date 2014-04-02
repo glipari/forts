@@ -76,14 +76,14 @@ public:
 	      const std::vector<Location> locs
 	);
     
-    void set_init_location(const std::string &init) { init_loc_name = init; }
+    void set_init_location(const std::string &init);
     void set_index(int i);
 
     std::string get_init_location() const { return init_loc_name; }
     int         get_index() const { return my_index; }
     std::string get_name() const { return name; }
     std::vector<std::string> get_labels() const { return labels; }
-    Location&   get_location(std::string ln);
+    Location&   get_location_by_name(std::string ln);
 
     std::vector<Location> get_all_locations() const { return locations; }
     void print() const;
