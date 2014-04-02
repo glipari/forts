@@ -36,34 +36,40 @@ public:
     Model(const Model &other) = delete;
     Model &operator=(const Model &other) = delete;
 
+    // singleton
     static Model& get_instance(); 
-
+    // reset the singleton
     static void reset(); 
-
+    // print (for debugging)
     void print() const;
+    // checks that everything is ok
     void check_consistency();
 
+    // building functions 
     void add_automaton(const automaton &a); 
     void set_init(const constraint &ini); 
     void add_cvar(const std::string &cv); 
     void add_dvar(const std::string &dv, int value); 
 
-    // Given a initial sstate, performs a continuous step
-    void continuous_step(Symbolic_State &ss);
-    // given an initial sstate and a combined edge, performs a discrete step
+    VariableList get_cvars() const { return cvars; }
+
+    // TBM: Given a initial sstate, performs a continuous step
+    // void continuous_step(Symbolic_State &ss);
+    // TBM: given an initial sstate and a combined edge, performs a discrete step
     void discrete_step(Symbolic_State &ss, Combined_edge &edges);
 
+    // Maybe will become private:
     // performs a step in the exploration of the state space
     std::vector<Symbolic_State> Post(const Symbolic_State& ss);
 
-    // ????
-    PPL::C_Polyhedron get_invariant_cvx(Symbolic_State &ss);
+    // TBM 
+    // PPL::C_Polyhedron get_invariant_cvx(Symbolic_State &ss);
 
-    // the initial state
+    // Initial symbolic state
     Symbolic_State init_sstate();
 
-    // if the current state is bad
-    bool is_bad(const Symbolic_State &ss);
+    // TBM: if the current state is bad
+    //bool is_bad(const Symbolic_State &ss);
 
     // throws an exception if the automaton is not found
     automaton& get_automaton_by_name(const std::string name);

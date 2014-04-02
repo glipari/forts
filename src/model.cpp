@@ -15,18 +15,18 @@ Model::Model()
 {
 }
 
-PPL::C_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
-{
-    PPL::C_Polyhedron invariant_cvx(cvars.size());
-    for ( auto it = automata.begin(); it != automata.end(); it++){
-	Linear_Constraint lc;
-	string ln = ss.loc_names[it-automata.begin()];
-	Location &l = it->get_location_by_name(ln);
+// PPL::C_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
+// {
+//     PPL::C_Polyhedron invariant_cvx(cvars.size());
+//     for ( auto it = automata.begin(); it != automata.end(); it++){
+// 	Linear_Constraint lc;
+// 	string ln = ss.loc_names[it-automata.begin()];
+// 	Location &l = it->get_location_by_name(ln);
 
-	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
-    }
-    return invariant_cvx;
-}
+// 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
+//     }
+//     return invariant_cvx;
+// }
 
 
 Model &Model::get_instance()
@@ -42,133 +42,109 @@ void Model::reset()
     the_instance = new Model();
 }
 
-void Model::continuous_step(Symbolic_State &ss)
-{
-    // 1) To do time_elapse_assign
-    PPL::C_Polyhedron rates_cvx(cvars.size());
-    PPL::C_Polyhedron invariant_cvx(cvars.size());
-    VariableList lvars = cvars;
-    for ( auto it = automata.begin(); it != automata.end(); it++){
-	Linear_Constraint lc;
-	string ln = ss.loc_names[it-automata.begin()];
-	Location &l = it->get_location_by_name(ln);
+// void Model::continuous_step(Symbolic_State &ss)
+// {
+//     // 1) To do time_elapse_assign
+//     PPL::C_Polyhedron rates_cvx(cvars.size());
+//     PPL::C_Polyhedron invariant_cvx(cvars.size());
+//     VariableList lvars = cvars;
+//     for ( auto it = automata.begin(); it != automata.end(); it++){
+// 	Linear_Constraint lc;
+// 	string ln = ss.loc_names[it-automata.begin()];
+// 	Location &l = it->get_location_by_name(ln);
 
-	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
-	rates_cvx.add_constraints(l.rates_to_Linear_Constraint(cvars, dvars, lvars));
-        //cout << "rates : " << rates_cvx << endl;
-        //cout << "invariant : " << invariant_cvx << endl;
+// 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
+// 	rates_cvx.add_constraints(l.rates_to_Linear_Constraint(cvars, dvars, lvars));
+//         //cout << "rates : " << rates_cvx << endl;
+//         //cout << "invariant : " << invariant_cvx << endl;
     
-    }
+//     }
 
-    // If a variable's rate is not specified in the location, it's assumed to be 1
-    for ( auto it = lvars.begin(); it != lvars.end(); it++) {
-	PPL::Variable v = get_ppl_variable(cvars, *it);
-	Linear_Expr le;
-	le += 1;
-	AT_Constraint atc = (v==le);
-	rates_cvx.add_constraint(atc);
-    }
-    ss.cvx.time_elapse_assign(rates_cvx);
-    // 2) intersect with invariant
-    ss.cvx.intersection_assign(invariant_cvx);
-}
+//     // If a variable's rate is not specified in the location, it's assumed to be 1
+//     for ( auto it = lvars.begin(); it != lvars.end(); it++) {
+// 	PPL::Variable v = get_ppl_variable(cvars, *it);
+// 	Linear_Expr le;
+// 	le += 1;
+// 	AT_Constraint atc = (v==le);
+// 	rates_cvx.add_constraint(atc);
+//     }
+//     ss.cvx.time_elapse_assign(rates_cvx);
+//     // 2) intersect with invariant
+//     ss.cvx.intersection_assign(invariant_cvx);
+// }
 
 // TODO : remember to change the e parameter into a const reference
 void Model::discrete_step(Symbolic_State &ss, Combined_edge &edges)
 {
-    PPL::C_Polyhedron guard_cvx(cvars.size());
-    PPL::C_Polyhedron ass_cvx(cvars.size());
-    Variables_Set vs;
+    // PPL::C_Polyhedron guard_cvx(cvars.size());
+    // PPL::C_Polyhedron ass_cvx(cvars.size());
+    // Variables_Set vs;
 
-    for (auto &e : edges.get_edges()) {
-	ss.loc_names[e.get_automaton_index()] = e.get_dest();
-	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
-	Variables_Set vs2 = e.get_assignment_vars(cvars);
-	vs.insert(vs2.begin(), vs2.end());
-	// for (auto &a : e.assignments)
-	//     vs.insert(get_variable(a.get_var(), cvars));
-	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
-    }
-    ss.cvx.intersection_assign(guard_cvx);
-    ss.cvx.unconstrain(vs);
-    ss.cvx.intersection_assign(ass_cvx);
-    ss.cvx.intersection_assign(get_invariant_cvx(ss));
+    // for (auto &e : edges.get_edges()) {
+    // 	ss.loc_names[e.get_automaton_index()] = e.get_dest();
+    // 	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
+    // 	Variables_Set vs2 = e.get_assignment_vars(cvars);
+    // 	vs.insert(vs2.begin(), vs2.end());
+    // 	// for (auto &a : e.assignments)
+    // 	//     vs.insert(get_variable(a.get_var(), cvars));
+    // 	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
+    // }
+    // ss.cvx.intersection_assign(guard_cvx);
+    // ss.cvx.unconstrain(vs);
+    // ss.cvx.intersection_assign(ass_cvx);
+    // ss.cvx.intersection_assign(get_invariant_cvx(ss));
+    ss.discrete_step(edges);
 }
 
 
-void combine(vector<Combined_edge> &edge_groups, const Location &l, 
-	     const vector<string> new_labels,
-	     bool first) 
-{
-    if (first) {
-	vector<Edge> outgoings = l.get_edges();
-	for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
-            Combined_edge egroup(*iit, iit->get_label(), new_labels);
-            // egroup.edges.push_back(*iit);
-            // //if ( iit->sync_label != "") {
-            //   egroup.sync_label = (iit->sync_label);
-            //   egroup.sync_set = new_labels;
-            // //}
-            edge_groups.push_back(egroup);
-	}
-	return;
-    } 
-    vector<Combined_edge> copy = edge_groups;
-    edge_groups.clear();
-    // to combine every outgoing from "l" with every "edge group"
-    vector<Edge> outgoings = l.get_edges();
-    for ( auto &egroup : copy) {
-      for ( auto it = outgoings.begin(); it != outgoings.end(); it++) {
-        vector<Combined_edge> com = egroup.combine(*it, new_labels);
-        for ( auto &eg : com)
-          if ( not contains(edge_groups, eg))
-            edge_groups.push_back(eg);
-      }
-    }
-}
 
 vector<Symbolic_State> Model::Post(const Symbolic_State& ss)
 {
-    vector< vector<Edge> > v_edges;
-    vector<Symbolic_State> v_ss;
-    vector<Symbolic_State> &sstates = v_ss;
-    vector<string> synch_labels; 
+    // vector< vector<Edge> > v_edges;
+    // vector<Symbolic_State> v_ss;
+    // vector<Symbolic_State> &sstates = v_ss;
+    // vector<string> synch_labels; 
 
-    int a_index;
-    vector<Combined_edge> edge_groups;
-    for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
-        a_index = loc_it - ss.loc_names.begin();
-	Location &l = automata[a_index].get_location_by_name(*loc_it);
-        vector<string> new_labels = automata[a_index].get_labels();
-        combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
-        //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
-    }
-    for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
-	Symbolic_State nss = ss;
-	discrete_step(nss, *it);
-	continuous_step(nss);
-	sstates.push_back(nss);
-    }
+    // int a_index;
+    // vector<Combined_edge> edge_groups;
+    // for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
+    //     a_index = loc_it - ss.loc_names.begin();
+    // 	Location &l = automata[a_index].get_location_by_name(*loc_it);
+    //     vector<string> new_labels = automata[a_index].get_labels();
+    //     combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
+    //     //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
+    // }
+    // for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
+    // 	Symbolic_State nss = ss;
+    // 	discrete_step(nss, *it);
+    // 	continuous_step(nss);
+    // 	sstates.push_back(nss);
+    // }
 
-    return sstates;
+    return ss.post();
 }
 
 Symbolic_State Model::init_sstate()
 {
-    cout << "inside init_state()" << endl;
-    Symbolic_State init;
-    cout << "inside init_state()" << endl;
+    //cout << "inside init_state()" << endl;
+    //Symbolic_State init;
+    //cout << "inside init_state()" << endl;
+    vector<Location *> locs;
+    
+
     string ln="";
-    for ( auto it = automata.begin(); it != automata.end(); it++) {
+    for (auto it = automata.begin(); it != automata.end(); it++) {
 	cout << "loc name " << it->get_init_location() << endl;
-	init.loc_names.push_back(it->get_init_location());
+	//init.loc_names.push_back(it->get_init_location());
+	locs.push_back(&(it->get_location_by_name(it->get_init_location())));
 	ln += it->get_init_location();
     }
     cout << "init name " << ln << endl; 
-    init.cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
-    cout << "cvx : " << init.cvx << endl;
-    continuous_step(init);
-    cout << "cvx after continuous step : " << init.cvx << endl;
+    //init.cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
+    //cout << "cvx : " << init.cvx << endl;
+    Symbolic_State init(locs, dvars);
+    init.continuous_step();
+    //cout << "cvx after continuous step : " << init.cvx << endl;
     return init;
 }
 
@@ -186,9 +162,8 @@ void Model::SpaceExplorer()
 	for ( auto it = current.begin(); it != current.end(); it++) {
 	    vector<Symbolic_State> nsstates = Post(*it); 
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
-		if ( iit->cvx.is_empty()) continue;
-		if ( is_bad(*iit)) {
-
+		if ( iit->is_empty()) continue;
+		if ( iit->is_bad()) {
 		    throw ("A bad location is reached ... ");
                 }
 		if ( contained_in(*iit, current)) continue;
@@ -210,15 +185,15 @@ void Model::SpaceExplorer()
     }
 }
 
-bool Model::is_bad(const Symbolic_State &ss)
-{
-    for (auto it = ss.loc_names.begin(); it != ss.loc_names.end(); it++) {
-	Location &l = automata[it - ss.loc_names.begin()].get_location_by_name(*it);
-	if (l.is_bad())
-	    return true;
-    }
-    return false;
-}
+// bool Model::is_bad(const Symbolic_State &ss)
+// {
+//     for (auto it = ss.loc_names.begin(); it != ss.loc_names.end(); it++) {
+// 	Location &l = automata[it - ss.loc_names.begin()].get_location_by_name(*it);
+// 	if (l.is_bad())
+// 	    return true;
+//     }
+//     return false;
+// }
 
 static bool contained_in(const Symbolic_State &ss, const list<Symbolic_State> &lss)
 {

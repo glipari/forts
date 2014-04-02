@@ -4,16 +4,44 @@
 #include <string>
 #include <vector>
 #include <ppl.hh>
+#include <common.hpp>
 
 namespace PPL = Parma_Polyhedra_Library;
 
-class Symbolic_State {
-public:
-    // for each automaton, the name of the corresponding location
-    std::vector<std::string> loc_names; 
+class Location;
+class Combined_edge;
 
+class Symbolic_State {
+    // for each automaton, the name of the corresponding location
+    //std::vector<std::string> loc_names;
+
+    // for each automaton, a pointer to the corresponding location
+    std::vector<Location *> locations;
+    Valuations dvars;
     PPL::C_Polyhedron cvx;
+    
+    //PPL::C_Polyhedron invariant_cvx;
+
+
+public:
+
+    Symbolic_State(std::vector<Location *> &locations, 
+		   const Valuations &dvars);
+
+    // return true if it contains a bad state
+    bool is_bad() const ; 
+
+    void continuous_step();
+    void discrete_step(Combined_edge &edges);
+
+    PPL::C_Polyhedron get_invariant_cvx();
+
+    std::vector<Symbolic_State> post() const;
+
     bool contains(const Symbolic_State &ss) const;
+
+    bool is_empty() const; 
+
     void print();
 };
 

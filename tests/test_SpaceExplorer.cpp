@@ -30,20 +30,21 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
         cout << "haha" << endl;
         Symbolic_State init = MODEL.init_sstate();
         string ln="";
-        for (auto it = init.loc_names.begin(); it != init.loc_names.end(); it++)
-          ln += *it;
-        cout << ln << endl;
+        // for (auto it = init.loc_names.begin(); it != init.loc_names.end(); it++)
+        //   ln += *it;
+        // cout << ln << endl;
         //REQUIRE(ln=="idle");
         cout << "123"<< endl;
-        cout << init.cvx << endl;
+        init.print();
         cout << "123"<< endl;
         vector<Symbolic_State> vss = MODEL.Post(init);
         for ( auto it = vss.begin(); it != vss.end(); it++) {
-	    ln="";
-	    for ( auto iit = it->loc_names.begin(); iit != it->loc_names.end(); iit++)
-		ln += *iit;
-	    cout << ln << endl;
-	    cout << it->cvx << endl;
+	    it->print();
+	    // ln="";
+	    // for ( auto iit = it->loc_names.begin(); iit != it->loc_names.end(); iit++)
+	    // 	ln += *iit;
+	    // cout << ln << endl;
+	    // cout << it->cvx << endl;
         }
         MODEL.SpaceExplorer();
     }
