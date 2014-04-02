@@ -28,7 +28,7 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
 	cout << "##########  NOW PRINTING THE MODEL  ##################" << endl;
         MODEL.print();
         cout << "haha" << endl;
-        sstate init = MODEL.init_sstate();
+        Symbolic_State init = MODEL.init_sstate();
         string ln="";
         for (auto it = init.loc_names.begin(); it != init.loc_names.end(); it++)
           ln += *it;
@@ -37,7 +37,7 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
         cout << "123"<< endl;
         cout << init.cvx << endl;
         cout << "123"<< endl;
-        vector<sstate> vss = MODEL.Post(init);
+        vector<Symbolic_State> vss = MODEL.Post(init);
         for ( auto it = vss.begin(); it != vss.end(); it++) {
 	    ln="";
 	    for ( auto iit = it->loc_names.begin(); iit != it->loc_names.end(); iit++)

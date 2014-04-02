@@ -4,7 +4,7 @@
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
-bool sstate::contains(const sstate &ss) const
+bool Symbolic_State::contains(const Symbolic_State &ss) const
 {
   for ( int i = 0; i < loc_names.size(); i++)
     if ( loc_names[i] != ss.loc_names[i])
@@ -12,7 +12,7 @@ bool sstate::contains(const sstate &ss) const
   return cvx.contains(ss.cvx);
 }
 
-void sstate::print() 
+void Symbolic_State::print() 
 {
   cout << "-----------------------------" << endl;
   cout << "State name : ";

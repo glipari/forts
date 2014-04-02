@@ -2,11 +2,6 @@
 
 using namespace std;
 
-// model model_builder::get_model()
-// {
-//   return mod;
-// }
-
 void model_builder::aton_name(tipa::parser_context &pc)
 {
     auto x = pc.collect_tokens();
@@ -25,37 +20,6 @@ void model_builder::loc_name(tipa::parser_context &pc)
     loc_names.push_back(ln);
 }
 
-//void model_builder::aton_loc_pairs(void(model_builder::*fn)(location &))
-//{
-//    for ( int i = 0; i < aton_names.size(); i++) {
-//      string an = aton_names.at(i);
-//      string ln = loc_names.at(i);
-//      for ( auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-//        bool aton_matched = false;
-//        bool loc_matched = false;
-//        if (an == it->name) {
-//          aton_matched = true;
-//          for ( auto jt = it->locations.begin(); jt != it->locations.end(); jt++) {
-//            if ( ln == jt->name) {  
-//              this->*fn(*jt); 
-//              //fn(*it, *jt);
-//              //it->init_loc = make_shared<location>(*jt);
-//              loc_matched = true;
-//              break;
-//            }
-//          }
-//          if ( !loc_matched)
-//            throw string("No location named ") + ln + string(" in automaton ") + an;
-//        }
-//        if (!aton_matched)
-//          throw string("No automaton named ") + an;
-//      }
-//    }
-//    cout << "atone names size : " << aton_names.size() << endl;
-//    aton_names.clear();
-//    loc_names.clear();
-//}
-
 void model_builder::init_locs(tipa::parser_context &pc)
 {
     for (unsigned i = 0; i < aton_names.size(); i++) {
@@ -68,27 +32,6 @@ void model_builder::init_locs(tipa::parser_context &pc)
 	     << loc_names.at(i) << " / " 
 	     << autom.get_init_location() << endl;	    
     }
-    // 	for (auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-    // 	    if (an == it->get_name()) {
-    // 		bool loc_matched = false;
-    // 		aton_matched = true;
-    // 		vector<Location> locations = it->get_all_locations();
-    // 		for ( auto jt = locations.begin(); jt != locations.end(); jt++) {
-    // 		    if ( ln == jt->get_name()) {  
-    // 			it->set_init_location(ln);
-    // 			loc_matched = true;
-    // 			break;
-    // 		    }
-    // 		}
-    // 		if ( !loc_matched)
-    // 		    throw parse_exc(string("No location named ") + ln + string(" in automaton ") + an);
-    // 	    }
-    // 	    if (aton_matched)
-    // 		break;
-    // 	}
-    // 	if (!aton_matched)
-    // 	    throw parse_exc(string("No automaton named ") + an);
-    // }
     cout << "aton names size : " << aton_names.size() << endl;
     aton_names.clear();
     loc_names.clear();
@@ -104,27 +47,6 @@ void model_builder::bad_locs(tipa::parser_context &pc)
 	automaton autom = MODEL.get_automaton_by_name(an);
 	Location loc = autom.get_location_by_name(ln);
 	loc.set_bad(true);
-	// bool aton_matched = false;
-	// for (auto it = mod.automata.begin(); it != mod.automata.end(); it++) {
-	//     if (an == it->get_name()) {
-	// 	aton_matched = true;
-	// 	bool loc_matched = false;
-	// 	vector<Location> locations = it->get_all_locations();
-	// 	for ( auto jt = locations.begin(); jt != locations.end(); jt++) {
-	// 	    if ( ln == jt->get_name()) {  
-	// 		jt->set_bad(true);
-	// 		loc_matched = true;
-	// 		break;
-	// 	    }
-	// 	}
-	// 	if ( !loc_matched)
-	// 	    throw parse_exc(string("No location named ") + ln + string(" in automaton ") + an);
-	//     }
-	//     if (aton_matched)
-	// 	break;
-	// }
-	// if (!aton_matched)
-	//     throw parse_exc(string("No automaton named ") + an);
     }
     aton_names.clear();
     loc_names.clear();
@@ -133,7 +55,6 @@ void model_builder::bad_locs(tipa::parser_context &pc)
 void model_builder::the_init_constraint(tipa::parser_context &pc)
 {
     MODEL.set_init(c_builder.get_tree());
-    // mod.init_constraint = c_builder.get_tree();
     c_builder = constraint_builder();
 }
 
@@ -142,7 +63,6 @@ void model_builder::a_cvar(tipa::parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
-    //mod.cvars.insert(v); // push_back(variable(v));
     MODEL.add_cvar(v);
 }
 
@@ -160,16 +80,13 @@ void model_builder::dv_rhs(tipa::parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
-    //mod.dvars.back().set_val(atoi(v.c_str()));
     MODEL.add_dvar(last_dvar_name, atoi(v.c_str()));
-    //set_valuation(mod.dvars, last_dvar_name, );
 }
 
 void model_builder::an_automaton(tipa::parser_context &pc)
 {
     automaton aton = a_builder.get_automaton();
     MODEL.add_automaton(aton);
-    //mod.automata.push_back(aton);
     cout << "automaton name : " << aton.get_name() << endl;
     a_builder = automaton_builder();
 }
@@ -246,5 +163,4 @@ void build_a_model(const std::string &input)
     }
 
     if (!f) throw parse_exc(pc.get_formatted_err_msg());
-    //else return m_builder.get_model();
 }

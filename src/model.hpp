@@ -26,7 +26,7 @@ class Model {
     std::vector<automaton>  automata;
 
     /** The symbolic state space */
-    std::list<sstate> Space;
+    std::list<Symbolic_State> Space;
 
     Model();
 
@@ -49,27 +49,26 @@ public:
     void add_dvar(const std::string &dv, int value); 
 
     // Given a initial sstate, performs a continuous step
-    void continuous_step(sstate &ss);
+    void continuous_step(Symbolic_State &ss);
     // given an initial sstate and a combined edge, performs a discrete step
-    void discrete_step(sstate &ss, Combined_edge &edges);
+    void discrete_step(Symbolic_State &ss, Combined_edge &edges);
 
     // performs a step in the exploration of the state space
-    std::vector<sstate> Post(const sstate& ss);
+    std::vector<Symbolic_State> Post(const Symbolic_State& ss);
 
     // ????
-    PPL::C_Polyhedron get_invariant_cvx(sstate &ss);
+    PPL::C_Polyhedron get_invariant_cvx(Symbolic_State &ss);
 
     // the initial state
-    sstate init_sstate();
+    Symbolic_State init_sstate();
 
     // if the current state is bad
-    bool is_bad(const sstate &ss);
+    bool is_bad(const Symbolic_State &ss);
 
     // throws an exception if the automaton is not found
     automaton& get_automaton_by_name(const std::string name);
     /** 
-	To explore Space according to breadth first search.  
-
+	To explore Space according to breadth first search. 
 	This is the function that performs reachability analysis.
     */
     void SpaceExplorer();

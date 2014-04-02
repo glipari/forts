@@ -15,7 +15,7 @@ Model::Model()
 {
 }
 
-PPL::C_Polyhedron Model::get_invariant_cvx(sstate &ss)
+PPL::C_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
 {
     PPL::C_Polyhedron invariant_cvx(cvars.size());
     for ( auto it = automata.begin(); it != automata.end(); it++){
@@ -42,7 +42,7 @@ void Model::reset()
     the_instance = new Model();
 }
 
-void Model::continuous_step(sstate &ss)
+void Model::continuous_step(Symbolic_State &ss)
 {
     // 1) To do time_elapse_assign
     PPL::C_Polyhedron rates_cvx(cvars.size());
@@ -74,7 +74,7 @@ void Model::continuous_step(sstate &ss)
 }
 
 // TODO : remember to change the e parameter into a const reference
-void Model::discrete_step(sstate &ss, Combined_edge &edges)
+void Model::discrete_step(Symbolic_State &ss, Combined_edge &edges)
 {
     PPL::C_Polyhedron guard_cvx(cvars.size());
     PPL::C_Polyhedron ass_cvx(cvars.size());
@@ -127,11 +127,11 @@ void combine(vector<Combined_edge> &edge_groups, const Location &l,
     }
 }
 
-vector<sstate> Model::Post(const sstate& ss)
+vector<Symbolic_State> Model::Post(const Symbolic_State& ss)
 {
     vector< vector<Edge> > v_edges;
-    vector<sstate> v_ss;
-    vector<sstate> &sstates = v_ss;
+    vector<Symbolic_State> v_ss;
+    vector<Symbolic_State> &sstates = v_ss;
     vector<string> synch_labels; 
 
     int a_index;
@@ -144,7 +144,7 @@ vector<sstate> Model::Post(const sstate& ss)
         //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
     }
     for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
-	sstate nss = ss;
+	Symbolic_State nss = ss;
 	discrete_step(nss, *it);
 	continuous_step(nss);
 	sstates.push_back(nss);
@@ -153,10 +153,10 @@ vector<sstate> Model::Post(const sstate& ss)
     return sstates;
 }
 
-sstate Model::init_sstate()
+Symbolic_State Model::init_sstate()
 {
     cout << "inside init_state()" << endl;
-    sstate init;
+    Symbolic_State init;
     cout << "inside init_state()" << endl;
     string ln="";
     for ( auto it = automata.begin(); it != automata.end(); it++) {
@@ -172,19 +172,19 @@ sstate Model::init_sstate()
     return init;
 }
 
-static bool contained_in(const sstate &ss, const list<sstate> &lss);
-static void remove_included_sstates_in_a_list(const sstate &ss, list<sstate> &lss);
+static bool contained_in(const Symbolic_State &ss, const list<Symbolic_State> &lss);
+static void remove_included_sstates_in_a_list(const Symbolic_State &ss, list<Symbolic_State> &lss);
 
 void Model::SpaceExplorer()
 {
-    sstate init = init_sstate();
-    list<sstate> next;
-    list<sstate> current;
+    Symbolic_State init = init_sstate();
+    list<Symbolic_State> next;
+    list<Symbolic_State> current;
     current.push_back(init);
     int step = 0;
     while(true) {
 	for ( auto it = current.begin(); it != current.end(); it++) {
-	    vector<sstate> nsstates = Post(*it); 
+	    vector<Symbolic_State> nsstates = Post(*it); 
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
 		if ( iit->cvx.is_empty()) continue;
 		if ( is_bad(*iit)) {
@@ -210,7 +210,7 @@ void Model::SpaceExplorer()
     }
 }
 
-bool Model::is_bad(const sstate &ss)
+bool Model::is_bad(const Symbolic_State &ss)
 {
     for (auto it = ss.loc_names.begin(); it != ss.loc_names.end(); it++) {
 	Location &l = automata[it - ss.loc_names.begin()].get_location_by_name(*it);
@@ -220,7 +220,7 @@ bool Model::is_bad(const sstate &ss)
     return false;
 }
 
-static bool contained_in(const sstate &ss, const list<sstate> &lss)
+static bool contained_in(const Symbolic_State &ss, const list<Symbolic_State> &lss)
 {
     for ( auto it = lss.begin(); it != lss.end(); it++)
 	if ( it->contains(ss))
@@ -228,7 +228,7 @@ static bool contained_in(const sstate &ss, const list<sstate> &lss)
     return false;
 }
 
-static void remove_included_sstates_in_a_list(const sstate &ss, list<sstate> &lss)
+static void remove_included_sstates_in_a_list(const Symbolic_State &ss, list<Symbolic_State> &lss)
 {
     auto it = lss.begin();
     while (it != lss.end()){
@@ -308,10 +308,9 @@ void Model::add_dvar(const std::string &dv, int value)
 void Model::check_consistency() 
 {
     int i = 0;
-    for ( auto it = automata.begin(); it != automata.end(); it++) {
+    for (auto it = automata.begin(); it != automata.end(); it++) {
 	it->check_consistency(cvars, dvars);
 	it->set_index(i++);
-        //sort(it->labels.begin(), it->labels.end());
     }
 }
 
