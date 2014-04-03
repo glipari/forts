@@ -49,6 +49,8 @@ public:
     int total_memory_in_bytes() const;
 
     void print() const;
+
+    bool operator == (const Symbolic_State &ss) const;
 };
 
 #endif

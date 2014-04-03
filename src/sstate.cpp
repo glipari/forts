@@ -189,6 +189,7 @@ vector<Symbolic_State> Symbolic_State::post() const
     //for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
     bool first = true;
     for (auto p : locations) {
+        p->print();
         //a_index = loc_it - ss.loc_names.begin();
 	//Location &l = automata[a_index].get_location_by_name(*loc_it);
         vector<string> new_labels = p->get_automaton().get_labels(); 
@@ -210,4 +211,22 @@ vector<Symbolic_State> Symbolic_State::post() const
 int Symbolic_State::total_memory_in_bytes() const
 {
     return cvx.total_memory_in_bytes();
+}
+
+bool Symbolic_State::operator == (const Symbolic_State &ss) const
+{
+    if (locations.size() != ss.locations.size())
+        return false;
+    if (dvars.size() != ss.dvars.size())
+        return false;
+    for (int i = 0; i < locations.size(); i++)
+        if (locations[i] != ss.locations[i])
+            return false;
+    for ( auto it = dvars.begin(), jt = ss.dvars.begin(); it != dvars.end(); ++it, ++jt)
+        if (it->first != jt->first || it->second != jt->second)
+            return false;
+        
+    return cvx.contains(ss.cvx) && ss.cvx.contains(cvx) 
+            && invariant_cvx.contains(ss.invariant_cvx) && ss.invariant_cvx.contains(invariant_cvx);
+
 }
