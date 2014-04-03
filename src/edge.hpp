@@ -40,7 +40,7 @@ public:
 	 const std::vector<Assignment> &ass_list);
 
     Linear_Constraint guard_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
-    Linear_Constraint ass_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
+    Linear_Constraint ass_to_Linear_Constraint(const VariableList &cvl, Valuations &dvl) const;
 
     PPL::Variables_Set get_assignment_vars(const VariableList &cvars) const;
 

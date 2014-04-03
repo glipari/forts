@@ -82,6 +82,12 @@ public:
 	This is the function that performs reachability analysis.
     */
     void SpaceExplorer();
+
+    /** Return the meomey used for symbolic states in Space. */
+    int total_memory_in_bytes() const;
+
+    /** Print the symbolic state space "Space" into a file. */
+    void print_log(const std::string fname= ".log") const;
 };
 
 #endif

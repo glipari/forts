@@ -46,7 +46,9 @@ public:
 
     bool is_empty() const; 
 
-    void print();
+    int total_memory_in_bytes() const;
+
+    void print() const;
 };
 
 #endif

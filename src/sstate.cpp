@@ -43,7 +43,7 @@ bool Symbolic_State::contains(const Symbolic_State &ss) const
     return cvx.contains(ss.cvx);
 }
 
-void Symbolic_State::print() 
+void Symbolic_State::print() const
 {
   cout << "-----------------------------" << endl;
   cout << "State name : ";
@@ -205,4 +205,9 @@ vector<Symbolic_State> Symbolic_State::post() const
     }
     
     return sstates;
+}
+
+int Symbolic_State::total_memory_in_bytes() const
+{
+    return cvx.total_memory_in_bytes();
 }

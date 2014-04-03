@@ -38,21 +38,27 @@ Linear_Constraint Edge::guard_to_Linear_Constraint(const VariableList &cvl,
 }
 
 Linear_Constraint Edge::ass_to_Linear_Constraint(const VariableList &cvl, 
-						 const Valuations &dvl) const
+						 Valuations &dvl) const
 {
     Linear_Constraint lc;
 
-    for ( auto const &x : cvl) {//it = cvl.begin(); it != cvl.end(); it++) {
 	//string x = it->name;
 	for ( auto iit = assignments.begin(); iit != assignments.end(); iit++) {
-	    if ( x == iit->get_var()) {
-		PPL::Variable v = get_ppl_variable(cvl, x);
-		Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
-		AT_Constraint atc = (v==le);
-		lc.insert(atc);
-		break;
+        /** If iit->get_var() is a discrete variable, update it here. */
+        if (contains<string, int>(dvl, iit->get_var())) {
+            int new_val = iit->eval(dvl);
+            set_valuation(dvl, iit->get_var(), new_val);
+            continue;
+        }
+        for ( auto const &x : cvl) {//it = cvl.begin(); it != cvl.end(); it++) {
+	        if ( x == iit->get_var()) {
+		        PPL::Variable v = get_ppl_variable(cvl, x);
+		        Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
+		        AT_Constraint atc = (v==le);
+		        lc.insert(atc);
+		        break;
+	        }
 	    }
-	}
 
     }
     return lc;

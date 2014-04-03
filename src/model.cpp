@@ -1,5 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+#include <time.h>
 
 #include <expression.hpp>
 #include <model.hpp>
@@ -153,6 +155,9 @@ static void remove_included_sstates_in_a_list(const Symbolic_State &ss, list<Sym
 
 void Model::SpaceExplorer()
 {
+    clock_t begin, end;
+    double time_spent;
+    begin = clock();
     Symbolic_State init = init_sstate();
     list<Symbolic_State> next;
     list<Symbolic_State> current;
@@ -180,9 +185,13 @@ void Model::SpaceExplorer()
 	cout << "Number of generated states : " << next.size() << endl;
 	cout << "-----------------------------" << endl;
 	if ( next.size() == 0)
-	    return;
+	    break;
 	current.splice(current.begin(), next);
     }
+    end = clock();
+    time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+    cout << "Total time (in seconds) : " << time_spent << endl;
+    cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) << endl;
 }
 
 // bool Model::is_bad(const Symbolic_State &ss)
@@ -297,3 +306,21 @@ automaton& Model::get_automaton_by_name(const std::string name)
     throw string("Automaton ") + name + " not found";
 }
 
+int Model::total_memory_in_bytes() const
+{
+    int total = 0;
+    for (auto &ss : Space )
+        total += ss.total_memory_in_bytes();
+    return total;
+}
+
+void Model::print_log(const string fname) const
+{
+    ofstream of(fname);
+    std::streambuf *coutbuf = std::cout.rdbuf(); 
+    std::cout.rdbuf(of.rdbuf()); 
+
+    for (auto &ss : Space)
+        ss.print();
+    std::cout.rdbuf(coutbuf);
+}

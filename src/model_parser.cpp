@@ -44,8 +44,8 @@ void model_builder::bad_locs(tipa::parser_context &pc)
 	string ln = loc_names.at(i);
 	cout << "an : " << an << endl;
 	cout << "ln : " << ln << endl;
-	automaton autom = MODEL.get_automaton_by_name(an);
-	Location loc = autom.get_location_by_name(ln);
+	automaton &autom = MODEL.get_automaton_by_name(an);
+	Location &loc = autom.get_location_by_name(ln);
 	loc.set_bad(true);
     }
     aton_names.clear();
