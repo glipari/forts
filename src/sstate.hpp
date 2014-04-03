@@ -20,13 +20,17 @@ class Symbolic_State {
     Valuations dvars;
     PPL::C_Polyhedron cvx;
     
-    //PPL::C_Polyhedron invariant_cvx;
+    PPL::C_Polyhedron invariant_cvx;
 
 
 public:
 
     Symbolic_State(std::vector<Location *> &locations, 
 		   const Valuations &dvars);
+
+    Symbolic_State(std::vector<std::string> &loc_names, 
+		   const Valuations &dvars,
+		   const PPL::C_Polyhedron &pol);
 
     // return true if it contains a bad state
     bool is_bad() const ; 

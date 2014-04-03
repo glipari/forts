@@ -126,25 +126,25 @@ vector<Symbolic_State> Model::Post(const Symbolic_State& ss)
 
 Symbolic_State Model::init_sstate()
 {
-    //cout << "inside init_state()" << endl;
-    //Symbolic_State init;
-    //cout << "inside init_state()" << endl;
     vector<Location *> locs;
-    
+    vector<std::string> loc_names;
+    PPL::C_Polyhedron cvx(cvars.size());
 
     string ln="";
     for (auto it = automata.begin(); it != automata.end(); it++) {
 	cout << "loc name " << it->get_init_location() << endl;
 	//init.loc_names.push_back(it->get_init_location());
+	loc_names.push_back(it->get_init_location());
 	locs.push_back(&(it->get_location_by_name(it->get_init_location())));
 	ln += it->get_init_location();
     }
     cout << "init name " << ln << endl; 
-    //init.cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
-    //cout << "cvx : " << init.cvx << endl;
-    Symbolic_State init(locs, dvars);
+    cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
+    Symbolic_State init(loc_names, dvars, cvx);
+    init.print();
     init.continuous_step();
-    //cout << "cvx after continuous step : " << init.cvx << endl;
+    cout << "cvx after continuous step : ";
+    init.print();
     return init;
 }
 

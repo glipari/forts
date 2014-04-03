@@ -8,15 +8,29 @@
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
-
 Symbolic_State::Symbolic_State(std::vector<Location *> &locs, 
 			       const Valuations &dv) :
     locations(locs),
     dvars(dv)
 {
     cvx = get_invariant_cvx();
+    invariant_cvx = get_invariant_cvx();
 }
 
+Symbolic_State::Symbolic_State(std::vector<std::string> &loc_names, 
+			       const Valuations &dv,
+			       const PPL::C_Polyhedron &pol) :
+    dvars(dv),
+    cvx(pol)
+{
+    invariant_cvx = get_invariant_cvx();   
+    int i = 0;
+    for (auto l : loc_names) {  
+	Location *p = &(MODEL.get_automaton_at(i).get_location_by_name(l));
+	locations.push_back(p);
+	i++;
+    }
+}
 
 bool Symbolic_State::contains(const Symbolic_State &ss) const
 {
@@ -107,7 +121,7 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
     cvx.intersection_assign(guard_cvx);
     cvx.unconstrain(vs);
     cvx.intersection_assign(ass_cvx);
-    cvx.intersection_assign(get_invariant_cvx());
+    cvx.intersection_assign(invariant_cvx);
 }
 
 

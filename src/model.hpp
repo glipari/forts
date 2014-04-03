@@ -73,6 +73,10 @@ public:
 
     // throws an exception if the automaton is not found
     automaton& get_automaton_by_name(const std::string name);
+
+    // throws an exception if the automaton is not found
+    automaton& get_automaton_at(unsigned i) { return automata.at(i); }
+
     /** 
 	To explore Space according to breadth first search. 
 	This is the function that performs reachability analysis.
