@@ -26,7 +26,8 @@ PPL::Variables_Set Edge::get_assignment_vars(const VariableList &cvars) const
 {
     PPL::Variables_Set vs;
     for (auto &a : assignments)
-	vs.insert(get_ppl_variable(cvars, a.get_var()));
+        if (contains<string>(cvars,a.get_var()))
+	        vs.insert(get_ppl_variable(cvars, a.get_var()));
     return vs;
 }
 

@@ -189,7 +189,6 @@ vector<Symbolic_State> Symbolic_State::post() const
     //for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
     bool first = true;
     for (auto p : locations) {
-        p->print();
         //a_index = loc_it - ss.loc_names.begin();
 	//Location &l = automata[a_index].get_location_by_name(*loc_it);
         vector<string> new_labels = p->get_automaton().get_labels(); 

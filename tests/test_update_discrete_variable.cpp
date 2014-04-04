@@ -29,6 +29,8 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
       dvars.insert(make_pair("r1",10));
       dvars.insert(make_pair("r2",200));
 
+      PPL::Variables_Set vs = e1.get_assignment_vars(cvars);
+
       PPL::Variable A(0), B(1), C(2);
       PPL::Constraint_System css;
       css.insert(A+B<= 1000);
@@ -36,10 +38,10 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
       css.insert(C<= 50);
       css.insert(10<=C);
       C_Polyhedron cvx(css);
-      Variables_Set vss;
-      vss.insert(A);
-      vss.insert(B);
-      cvx.unconstrain(vss);
+      //Variables_Set vss;
+      //vss.insert(A);
+      //vss.insert(B);
+      cvx.unconstrain(vs);
 
       cvx.add_constraints(e1.ass_to_Linear_Constraint(cvars,dvars));
 

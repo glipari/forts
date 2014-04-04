@@ -1,6 +1,9 @@
 #+TITLE: todo list for effort
 #+author: Giuseppe Lipari and Youcheng Sun
 
+*TODO Now in an edge, the update of a continuous variable in the form 
+        of "x = x+1" is not supported; should we support it? 
+    
 * DONE Rename classes
 
 * DONE Define class Symbolic State and operations on it
