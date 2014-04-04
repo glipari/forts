@@ -103,7 +103,11 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
     VariableList cvars = MODEL.get_cvars();
 
     PPL::C_Polyhedron guard_cvx(cvars.size());
-    PPL::C_Polyhedron ass_cvx(cvars.size());
+    /** 
+     * The cvx obtained through updates in an
+     * edge can have dimension higher than cvars.size().
+     * */
+    PPL::C_Polyhedron ass_cvx(cvars.size()*2);
 
     Variables_Set vs;
 
@@ -126,6 +130,20 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
 	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
     }
     cvx.intersection_assign(guard_cvx);
+
+    ass_cvx.add_constraints(cvx.constraints());
+    //cvx.add_space_dimensions_and_embed(cvars.size());
+    //ass_cvx.intersection_assign(cvx);
+    //cvx.remove_higher_space_dimensions(cvars.size());
+    /** 
+     * Before intersecting ass_cvx and cvx, we must remove 
+     * the lower cvars.size() dimensions.
+     * */
+    PPL::Variables_Set lower_dims;
+    for ( unsigned i = 0; i < cvars.size(); i++)
+      lower_dims.insert(PPL::Variable(i));
+    ass_cvx.remove_space_dimensions(lower_dims);
+
     cvx.unconstrain(vs);
     cvx.intersection_assign(ass_cvx);
     cvx.intersection_assign(invariant_cvx);

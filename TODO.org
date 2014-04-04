@@ -1,8 +1,9 @@
 #+TITLE: todo list for effort
 #+author: Giuseppe Lipari and Youcheng Sun
 
-*TODO Now in an edge, the update of a continuous variable in the form 
-        of "x = x+1" is not supported; should we support it? 
+*DONE An continuous variable can update by itself
+      in the update field of an edge. 
+      For example, x = x + 1. 
     
 * DONE Rename classes
 

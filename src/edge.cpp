@@ -54,8 +54,13 @@ Linear_Constraint Edge::ass_to_Linear_Constraint(const VariableList &cvl,
         for ( auto const &x : cvl) {//it = cvl.begin(); it != cvl.end(); it++) {
 	        if ( x == iit->get_var()) {
 		        PPL::Variable v = get_ppl_variable(cvl, x);
+                        /** 
+                         * We increase the dimension of v here in
+                         * case the assignment is in form of "v=v+1"
+                         **/
+                        PPL::Variable vv(v.id() + cvl.size());
 		        Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
-		        AT_Constraint atc = (v==le);
+		        AT_Constraint atc = (vv==le);
 		        lc.insert(atc);
 		        break;
 	        }
