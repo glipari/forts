@@ -216,13 +216,11 @@ static void remove_included_sstates_in_a_list(const Symbolic_State &ss, list<Sym
 {
     auto it = lss.begin();
     while (it != lss.end()){
-	if (ss.contains(*it)) {
-        /** When erasing, it should not be incremented? */
-	    lss.erase(it);
-	    //lss.erase(it++);
-	    continue;
-	}
-	it++;
+	    if (ss.contains(*it)) {
+	        it = lss.erase(it);
+	        continue;
+	    }
+	    it++;
     }
 }
 

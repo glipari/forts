@@ -50,6 +50,13 @@ void Symbolic_State::print() const
   for ( auto n : locations)
       cout << n->get_name();
   cout << endl;
+  cout << "Discrete variables : \n";
+  for (auto it = dvars.begin(); it != dvars.end(); it++) {
+      if (it != dvars.begin())
+          cout << ", ";
+      cout << it->first << "==" << it->second;
+  }
+  cout << endl;
   cout << "CVX : " << endl;
   cout << cvx << endl;
   cout << endl;
