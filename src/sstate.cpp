@@ -17,7 +17,7 @@ Symbolic_State::Symbolic_State(std::vector<Location *> &locs,
     invariant_cvx = get_invariant_cvx();
 }
 
-Symbolic_State::Symbolic_State(std::vector<std::string> &loc_names, 
+Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names, 
 			       const Valuations &dv,
 			       const PPL::C_Polyhedron &pol) :
     dvars(dv),

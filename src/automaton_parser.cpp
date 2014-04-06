@@ -94,6 +94,7 @@ Location location_builder::get_location()
     //input += ";";
     //edge e = build_an_edge(input);
     //loc.outgoings.push_back(e);
+    cout << "location_bulder:: Location " << name << " is ready!" << endl;
     return Location(bad, name, invariant, rates, outgoings);
 }
 
@@ -118,6 +119,7 @@ void location_builder::the_name(parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     name = x[x.size()-1].second;
+    cout << "location_builder:: name of the automaton " << name << endl;
 }
 
 rule prepare_rate_rule(location_builder &loc_builder)
@@ -195,6 +197,7 @@ void automaton_builder::the_name(parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     name = x[x.size()-1].second;
+    cout << "automaton_builder:: automaton name " << name << endl;
 }
 
 void automaton_builder::a_label(parser_context &pc)

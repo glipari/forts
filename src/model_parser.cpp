@@ -63,6 +63,7 @@ void model_builder::a_cvar(tipa::parser_context &pc)
     auto x = pc.collect_tokens();
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
+    cout << "model_builder:: Adding variable " << v << endl;
     MODEL.add_cvar(v);
 }
 

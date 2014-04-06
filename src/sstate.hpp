@@ -28,7 +28,7 @@ public:
     Symbolic_State(std::vector<Location *> &locations, 
 		   const Valuations &dvars);
 
-    Symbolic_State(std::vector<std::string> &loc_names, 
+    Symbolic_State(const std::vector<std::string> &loc_names, 
 		   const Valuations &dvars,
 		   const PPL::C_Polyhedron &pol);
 

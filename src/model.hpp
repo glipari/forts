@@ -83,6 +83,9 @@ public:
     */
     void SpaceExplorer();
 
+    std::list<Symbolic_State> &get_all_states() { return Space; }
+
+
     /** Return the meomey used for symbolic states in Space. */
     int total_memory_in_bytes() const;
 
