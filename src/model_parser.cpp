@@ -121,7 +121,8 @@ rule prepare_model_rule(model_builder &m_builder)
 
     dv_lhs = rule(tk_ident);
     dv_rhs = rule(tk_int);
-    r_dvar = dv_lhs >> -(rule("==") >> dv_rhs);
+    //r_dvar = dv_lhs >> -(rule("==") >> dv_rhs);
+    r_dvar = rule(tk_ident) >> -(rule("==") >> rule(tk_int));
 
     r_cvars     = r_cvar >> *(rule(',') >> r_cvar) >> rule(':') >> keyword("continuous") >> rule(';');
     r_dvars     = r_dvar >> *(rule(',') >> r_dvar) >> rule(':') >> keyword("discrete")   >> rule(';');
