@@ -96,7 +96,10 @@ am_test_OBJECTS = test-test_main.$(OBJEXT) \
 	test-test_expr_tree.$(OBJEXT) test-test_automaton.$(OBJEXT) \
 	test-test_model.$(OBJEXT) test-test_sstate.$(OBJEXT) \
 	test-test_SpaceExplorer.$(OBJEXT) \
-	test-test_Combined_edge.$(OBJEXT)
+	test-test_Combined_edge.$(OBJEXT) \
+	test-test_update_discrete_variable.$(OBJEXT) \
+	test-test_generated_symbolic_state_space.$(OBJEXT) \
+	test-test_simple_model.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -497,8 +500,13 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 test_CPPFLAGS = -I../src/ -std=gnu++0x -Wall $(TIPA_CFLAGS)
 test_LDFLAGS = -L../src/ -lefforts -lppl -lgmp $(TIPA_LIBS)
-test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp test_ppl_coefficient.cpp test_expr_tree.cpp test_automaton.cpp test_model.cpp test_sstate.cpp \
-	       test_SpaceExplorer.cpp test_Combined_edge.cpp
+test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp \
+	test_ppl_coefficient.cpp test_expr_tree.cpp test_automaton.cpp \
+	test_model.cpp test_sstate.cpp \
+	test_SpaceExplorer.cpp test_Combined_edge.cpp \
+	test_update_discrete_variable.cpp \
+        test_generated_symbolic_state_space.cpp \
+	test_simple_model.cpp
 
 all: all-am
 
@@ -560,10 +568,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_constraint_to_ppl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_constraint_tree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_expr_tree.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_generated_symbolic_state_space.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_ppl_coefficient.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_simple_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_sstate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test_update_discrete_variable.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -725,6 +736,48 @@ test-test_Combined_edge.obj: test_Combined_edge.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_Combined_edge.cpp' object='test-test_Combined_edge.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_Combined_edge.obj `if test -f 'test_Combined_edge.cpp'; then $(CYGPATH_W) 'test_Combined_edge.cpp'; else $(CYGPATH_W) '$(srcdir)/test_Combined_edge.cpp'; fi`
+
+test-test_update_discrete_variable.o: test_update_discrete_variable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_update_discrete_variable.o -MD -MP -MF $(DEPDIR)/test-test_update_discrete_variable.Tpo -c -o test-test_update_discrete_variable.o `test -f 'test_update_discrete_variable.cpp' || echo '$(srcdir)/'`test_update_discrete_variable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_update_discrete_variable.Tpo $(DEPDIR)/test-test_update_discrete_variable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_update_discrete_variable.cpp' object='test-test_update_discrete_variable.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_update_discrete_variable.o `test -f 'test_update_discrete_variable.cpp' || echo '$(srcdir)/'`test_update_discrete_variable.cpp
+
+test-test_update_discrete_variable.obj: test_update_discrete_variable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_update_discrete_variable.obj -MD -MP -MF $(DEPDIR)/test-test_update_discrete_variable.Tpo -c -o test-test_update_discrete_variable.obj `if test -f 'test_update_discrete_variable.cpp'; then $(CYGPATH_W) 'test_update_discrete_variable.cpp'; else $(CYGPATH_W) '$(srcdir)/test_update_discrete_variable.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_update_discrete_variable.Tpo $(DEPDIR)/test-test_update_discrete_variable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_update_discrete_variable.cpp' object='test-test_update_discrete_variable.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_update_discrete_variable.obj `if test -f 'test_update_discrete_variable.cpp'; then $(CYGPATH_W) 'test_update_discrete_variable.cpp'; else $(CYGPATH_W) '$(srcdir)/test_update_discrete_variable.cpp'; fi`
+
+test-test_generated_symbolic_state_space.o: test_generated_symbolic_state_space.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_generated_symbolic_state_space.o -MD -MP -MF $(DEPDIR)/test-test_generated_symbolic_state_space.Tpo -c -o test-test_generated_symbolic_state_space.o `test -f 'test_generated_symbolic_state_space.cpp' || echo '$(srcdir)/'`test_generated_symbolic_state_space.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_generated_symbolic_state_space.Tpo $(DEPDIR)/test-test_generated_symbolic_state_space.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_generated_symbolic_state_space.cpp' object='test-test_generated_symbolic_state_space.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_generated_symbolic_state_space.o `test -f 'test_generated_symbolic_state_space.cpp' || echo '$(srcdir)/'`test_generated_symbolic_state_space.cpp
+
+test-test_generated_symbolic_state_space.obj: test_generated_symbolic_state_space.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_generated_symbolic_state_space.obj -MD -MP -MF $(DEPDIR)/test-test_generated_symbolic_state_space.Tpo -c -o test-test_generated_symbolic_state_space.obj `if test -f 'test_generated_symbolic_state_space.cpp'; then $(CYGPATH_W) 'test_generated_symbolic_state_space.cpp'; else $(CYGPATH_W) '$(srcdir)/test_generated_symbolic_state_space.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_generated_symbolic_state_space.Tpo $(DEPDIR)/test-test_generated_symbolic_state_space.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_generated_symbolic_state_space.cpp' object='test-test_generated_symbolic_state_space.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_generated_symbolic_state_space.obj `if test -f 'test_generated_symbolic_state_space.cpp'; then $(CYGPATH_W) 'test_generated_symbolic_state_space.cpp'; else $(CYGPATH_W) '$(srcdir)/test_generated_symbolic_state_space.cpp'; fi`
+
+test-test_simple_model.o: test_simple_model.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_simple_model.o -MD -MP -MF $(DEPDIR)/test-test_simple_model.Tpo -c -o test-test_simple_model.o `test -f 'test_simple_model.cpp' || echo '$(srcdir)/'`test_simple_model.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_simple_model.Tpo $(DEPDIR)/test-test_simple_model.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_simple_model.cpp' object='test-test_simple_model.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_simple_model.o `test -f 'test_simple_model.cpp' || echo '$(srcdir)/'`test_simple_model.cpp
+
+test-test_simple_model.obj: test_simple_model.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_simple_model.obj -MD -MP -MF $(DEPDIR)/test-test_simple_model.Tpo -c -o test-test_simple_model.obj `if test -f 'test_simple_model.cpp'; then $(CYGPATH_W) 'test_simple_model.cpp'; else $(CYGPATH_W) '$(srcdir)/test_simple_model.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_simple_model.Tpo $(DEPDIR)/test-test_simple_model.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_simple_model.cpp' object='test-test_simple_model.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_simple_model.obj `if test -f 'test_simple_model.cpp'; then $(CYGPATH_W) 'test_simple_model.cpp'; else $(CYGPATH_W) '$(srcdir)/test_simple_model.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1102,6 +1155,7 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	recheck tags tags-am uninstall uninstall-am
+
 
 #LIBS = -ltinyparser
 

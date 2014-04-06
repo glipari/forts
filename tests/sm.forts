@@ -1,0 +1,16 @@
+    x, y : continuous;
+
+automaton Simple 
+loc LOC_A: while x <= 2 wait {}
+           when x == 2 goto LOC_B;
+loc LOC_B: while true wait { x'=0 }
+           when y <= 5 goto LOC_C;
+loc LOC_C: while true wait { x'=0, y'=0 }
+end
+
+
+init := 
+    loc[Simple] == LOC_A &
+    x == 0 & y == 0;
+    
+bad := loc[Simple] == LOC_C; 

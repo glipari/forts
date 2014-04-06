@@ -155,11 +155,15 @@ void build_a_model(const std::string &input)
     parser_context pc;
     pc.set_stream(str);
 
+    cout << "- Ready to parse the model" << endl;
+
     bool f = false;
     try {
 	f = r_mod.parse(pc);
     } catch (parse_exc &e) {
 	cout << "Parse exception!" << endl;
+    } catch (...) {
+	cout << "Unexpected exception!" << endl;
     }
 
     if (!f) throw parse_exc(pc.get_formatted_err_msg());

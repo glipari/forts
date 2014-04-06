@@ -29,6 +29,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         MODEL.check_consistency();
 
         MODEL.print();
+
         Symbolic_State init = MODEL.init_sstate();
 
         automaton &act1 = MODEL.get_automaton_by_name("act1");

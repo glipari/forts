@@ -132,7 +132,9 @@ rule prepare_outgoing_rule(location_builder &loc_builder)
 {
     rule outgoing = prepare_edge_rule(loc_builder.outgoing_builder);
     using namespace placeholders;
+
     outgoing [bind(&location_builder::an_outgoing, &loc_builder, _1)];
+
     return outgoing;
 }
 
