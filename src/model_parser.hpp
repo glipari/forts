@@ -20,8 +20,9 @@ public:
     void init_locs(tipa::parser_context &pc);
     void the_init_constraint(tipa::parser_context &pc);
     void a_cvar(tipa::parser_context &pc);
-    void dv_lhs(tipa::parser_context &pc);
-    void dv_rhs(tipa::parser_context &pc);
+    void dvars(tipa::parser_context &pc);
+    //void dv_lhs(tipa::parser_context &pc);
+    //void dv_rhs(tipa::parser_context &pc);
     void an_automaton(tipa::parser_context &pc);
     //Model get_model();
 

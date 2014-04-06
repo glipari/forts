@@ -61,28 +61,62 @@ void model_builder::the_init_constraint(tipa::parser_context &pc)
 void model_builder::a_cvar(tipa::parser_context &pc)
 {
     auto x = pc.collect_tokens();
+    cout << endl;
+    for (auto &xx : x)
+      cout << xx.second << endl;
     if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
     string v = x[x.size()-1].second;
     cout << "model_builder:: Adding variable " << v << endl;
     MODEL.add_cvar(v);
 }
 
-void model_builder::dv_lhs(tipa::parser_context &pc)
+void model_builder::dvars(tipa::parser_context &pc)
 {
     auto x = pc.collect_tokens();
-    if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
-    string v = x[x.size()-1].second;
-    //mod.dvars.insert(make_pair(v, 0));//push_back(variable(v));
-    last_dvar_name = v;
+    cout << endl;
+    for (auto &xx : x)
+      cout << xx.second << endl;
+    auto it = x.rbegin();
+    while ( it != x.rend()) {
+      if ( it->second == "discrete" or it->second == "continuous") {
+        it ++;
+        continue;
+      }
+      if ( an_integer(it->second)) {
+        string rhs = it->second;
+        it ++;
+        string lhs = it->second;
+        if ( an_integer(lhs))
+          throw parse_exc("Error in collecting discrete variable."); 
+        MODEL.add_dvar(lhs, atoi(rhs.c_str()));
+      }
+      else {
+        string v = it->second;
+        MODEL.add_dvar(v, 0);
+      }
+      it ++;
+
+    }
+
 }
 
-void model_builder::dv_rhs(tipa::parser_context &pc)
-{
-    auto x = pc.collect_tokens();
-    if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
-    string v = x[x.size()-1].second;
-    MODEL.add_dvar(last_dvar_name, atoi(v.c_str()));
-}
+
+//void model_builder::dv_lhs(tipa::parser_context &pc)
+//{
+//    auto x = pc.collect_tokens();
+//    if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
+//    string v = x[x.size()-1].second;
+//    //mod.dvars.insert(make_pair(v, 0));//push_back(variable(v));
+//    last_dvar_name = v;
+//}
+//
+//void model_builder::dv_rhs(tipa::parser_context &pc)
+//{
+//    auto x = pc.collect_tokens();
+//    if (x.size() < 1) throw parse_exc("Error in collecting variable."); 
+//    string v = x[x.size()-1].second;
+//    MODEL.add_dvar(last_dvar_name, atoi(v.c_str()));
+//}
 
 void model_builder::an_automaton(tipa::parser_context &pc)
 {
@@ -138,8 +172,9 @@ rule prepare_model_rule(model_builder &m_builder)
     r_init_constraint [bind(&model_builder::the_init_constraint, &m_builder, _1)];
     r_bad_locs        [bind(&model_builder::bad_locs,            &m_builder, _1)];
     r_cvar            [bind(&model_builder::a_cvar,              &m_builder, _1)];
-    dv_lhs            [bind(&model_builder::dv_lhs,              &m_builder, _1)];
-    dv_rhs            [bind(&model_builder::dv_rhs,              &m_builder, _1)];
+    r_dvars            [bind(&model_builder::dvars,              &m_builder, _1)];
+    //dv_lhs            [bind(&model_builder::dv_lhs,              &m_builder, _1)];
+    //dv_rhs            [bind(&model_builder::dv_rhs,              &m_builder, _1)];
     r_automaton       [bind(&model_builder::an_automaton,        &m_builder, _1)];
 
     return r_mod;

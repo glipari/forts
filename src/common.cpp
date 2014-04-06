@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include <boost/lexical_cast.hpp>
 
 int get_valuation(const Valuations &v, const std::string &n)
 {
@@ -10,6 +11,18 @@ void set_valuation(Valuations &v, const std::string &n, int val)
 {
     if (!contains(v, n)) throw std::string("Variable not found!");
     v[n] = val;
+}
+
+bool an_integer(const std::string &s)
+{
+  bool y = true;
+  try {
+    boost::lexical_cast<int>(s);
+  } 
+  catch (boost::bad_lexical_cast &e){
+    y = false;
+  }
+  return y;
 }
 
 
