@@ -5,17 +5,29 @@
 #include <vector>
 #include <ppl.hh>
 #include <common.hpp>
+#include <map>
 
 namespace PPL = Parma_Polyhedra_Library;
 
 class Location;
 class Combined_edge;
 
+class Signature {
+    std::string str;
+public :
+    Signature () {}
+    Signature (const std::string &s);
+    bool operator == (const Signature &sig) const;
+    
+};
+
+
 class Symbolic_State {
     // for each automaton, the name of the corresponding location
     //std::vector<std::string> loc_names;
 
     // for each automaton, a pointer to the corresponding location
+    Signature signature;
     std::vector<Location *> locations;
     Valuations dvars;
     PPL::C_Polyhedron cvx;
@@ -51,6 +63,10 @@ public:
     void print() const;
 
     bool operator == (const Symbolic_State &ss) const;
+
+    std::string get_loc_names() const;
+
+    Signature get_signature() const;
 };
 
 #endif

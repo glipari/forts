@@ -106,4 +106,9 @@ TEST_CASE("Simple model", "[model][Space]")
     for (auto x : li) x.print();
 
     CHECK(compare_state_sets(li, expected));
+
+    Signature sig_a("LOC_A"), sig_b("LOC_B"), sig_c("LOC_C");
+    REQUIRE(s_a.get_signature() == sig_a);
+    REQUIRE(s_b.get_signature() == sig_b);
+    REQUIRE(s_c.get_signature() == sig_c);
 }

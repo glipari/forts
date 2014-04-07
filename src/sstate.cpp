@@ -8,6 +8,30 @@
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
+std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
+
+Signature::Signature(const string &s) {
+    str = s;
+}
+
+bool Signature::operator == (const Signature& sig) const
+{
+    return str == sig.str;
+}
+
+string Symbolic_State::get_loc_names() const
+{
+    string str = "";
+    for (auto &x : locations)
+        str += x->get_name();
+    return str;
+}
+
+Signature Symbolic_State::get_signature() const
+{
+    return signature;
+}
+
 Symbolic_State::Symbolic_State(std::vector<Location *> &locs, 
 			       const Valuations &dv) :
     locations(locs),
@@ -15,6 +39,8 @@ Symbolic_State::Symbolic_State(std::vector<Location *> &locs,
 {
     cvx = get_invariant_cvx();
     invariant_cvx = get_invariant_cvx();
+
+    signature = Signature(get_loc_names());
 }
 
 Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names, 
@@ -30,6 +56,7 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
 	locations.push_back(p);
 	i++;
     }
+    signature = Signature(get_loc_names());
 }
 
 bool Symbolic_State::contains(const Symbolic_State &ss) const
@@ -209,18 +236,12 @@ vector<Symbolic_State> Symbolic_State::post() const
     vector<Symbolic_State> &sstates = v_ss;
     vector<string> synch_labels; 
 
-    //int a_index;
     vector<Combined_edge> edge_groups;
-    //for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
     bool first = true;
     for (auto p : locations) {
-        //a_index = loc_it - ss.loc_names.begin();
-	//Location &l = automata[a_index].get_location_by_name(*loc_it);
         vector<string> new_labels = p->get_automaton().get_labels(); 
-	    //automata[a_index].get_labels();
         combine(edge_groups, *p, new_labels, first);
-        //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
-	first = false;
+	    first = false;
     }
     for (auto e : edge_groups) {
 	Symbolic_State nss = *this;
