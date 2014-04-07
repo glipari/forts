@@ -50,8 +50,8 @@ rule prepare_edge_rule(edge_builder & e_builder)
     r_dest  = rule(tk_ident);
     r_label = rule(tk_ident);
     r_sync  = keyword("sync") >> r_label;
-    r_edge  = r_when >> r_constraint >> -r_sync >> r_do >> rule('{') 
-		     >> -(r_ass >> *(rule(',') >> r_ass)) >> rule('}') 
+    r_edge  = r_when >> r_constraint >> -r_sync >> -(r_do >> rule('{') 
+		     >> -(r_ass >> *(rule(',') >> r_ass)) >> rule('}') )
 		     >> r_goto >> r_dest >> rule(';');
     r_ass   = prepare_assignment_rule(e_builder);
     r_constraint = prepare_constraint_rule(e_builder.c_builder);
