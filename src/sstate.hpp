@@ -6,6 +6,7 @@
 #include <ppl.hh>
 #include <common.hpp>
 #include <map>
+#include <memory>
 
 namespace PPL = Parma_Polyhedra_Library;
 
@@ -26,8 +27,8 @@ class Symbolic_State {
     // for each automaton, the name of the corresponding location
     //std::vector<std::string> loc_names;
 
-    // for each automaton, a pointer to the corresponding location
     Signature signature;
+    // for each automaton, a pointer to the corresponding location
     std::vector<Location *> locations;
     Valuations dvars;
     PPL::C_Polyhedron cvx;
@@ -52,9 +53,11 @@ public:
 
     PPL::C_Polyhedron get_invariant_cvx();
 
-    std::vector<Symbolic_State> post() const;
+    std::vector<std::shared_ptr<Symbolic_State> > post() const;
 
-    bool contains(const Symbolic_State &ss) const;
+    //bool contains(const Symbolic_State &ss) const;
+
+    bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
 
     bool is_empty() const; 
 
@@ -63,6 +66,8 @@ public:
     void print() const;
 
     bool operator == (const Symbolic_State &ss) const;
+
+    bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
 
     std::string get_loc_names() const;
 

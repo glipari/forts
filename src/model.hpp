@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "sstate.hpp"
 #include "automaton.hpp"
@@ -26,7 +27,7 @@ class Model {
     std::vector<automaton>  automata;
 
     /** The symbolic state space */
-    std::list<Symbolic_State> Space;
+    std::list<std::shared_ptr<Symbolic_State> > Space;
 
     Model();
 
@@ -56,17 +57,19 @@ public:
     // TBM: Given a initial sstate, performs a continuous step
     // void continuous_step(Symbolic_State &ss);
     // TBM: given an initial sstate and a combined edge, performs a discrete step
-    void discrete_step(Symbolic_State &ss, Combined_edge &edges);
+    //void discrete_step(Symbolic_State &ss, Combined_edge &edges);
+    void discrete_step(std::shared_ptr<Symbolic_State> &pss, Combined_edge &edges);
 
     // Maybe will become private:
     // performs a step in the exploration of the state space
-    std::vector<Symbolic_State> Post(const Symbolic_State& ss);
+    //std::vector<Symbolic_State> Post(const Symbolic_State& ss);
+    std::vector<std::shared_ptr<Symbolic_State> > Post(const std::shared_ptr<Symbolic_State>& pss);
 
     // TBM 
     // PPL::C_Polyhedron get_invariant_cvx(Symbolic_State &ss);
 
     // Initial symbolic state
-    Symbolic_State init_sstate();
+    std::shared_ptr<Symbolic_State> init_sstate();
 
     // TBM: if the current state is bad
     //bool is_bad(const Symbolic_State &ss);
@@ -83,7 +86,7 @@ public:
     */
     void SpaceExplorer();
 
-    std::list<Symbolic_State> &get_all_states() { return Space; }
+    std::list<std::shared_ptr<Symbolic_State> > &get_all_states() { return Space; }
 
 
     /** Return the meomey used for symbolic states in Space. */

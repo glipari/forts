@@ -28,18 +28,18 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
 	cout << "##########  NOW PRINTING THE MODEL  ##################" << endl;
         MODEL.print();
         cout << "haha" << endl;
-        Symbolic_State init = MODEL.init_sstate();
+        auto init = MODEL.init_sstate();
         string ln="";
         // for (auto it = init.loc_names.begin(); it != init.loc_names.end(); it++)
         //   ln += *it;
         // cout << ln << endl;
         //REQUIRE(ln=="idle");
         cout << "123"<< endl;
-        init.print();
+        init->print();
         cout << "123"<< endl;
-        vector<Symbolic_State> vss = MODEL.Post(init);
+        vector<shared_ptr<Symbolic_State> > vss = MODEL.Post(init);
         for ( auto it = vss.begin(); it != vss.end(); it++) {
-	    it->print();
+	        (*it)->print();
 	    // ln="";
 	    // for ( auto iit = it->loc_names.begin(); iit != it->loc_names.end(); iit++)
 	    // 	ln += *iit;

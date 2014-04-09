@@ -59,16 +59,25 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
     signature = Signature(get_loc_names());
 }
 
-bool Symbolic_State::contains(const Symbolic_State &ss) const
+//bool Symbolic_State::contains(const Symbolic_State &ss) const
+//{
+//    //for ( int i = 0; i < loc_names.size(); i++)
+//    //if ( loc_names[i] != ss.loc_names[i])
+//    //return false;
+//    for (unsigned i = 0; i<locations.size(); i++) 
+//	if (locations[i]->get_name() != ss.locations[i]->get_name()) 
+//	    return false;
+//    return cvx.contains(ss.cvx);
+//}
+
+bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
 {
-    //for ( int i = 0; i < loc_names.size(); i++)
-    //if ( loc_names[i] != ss.loc_names[i])
-    //return false;
     for (unsigned i = 0; i<locations.size(); i++) 
-	if (locations[i]->get_name() != ss.locations[i]->get_name()) 
+	if (locations[i]->get_name() != pss->locations[i]->get_name()) 
 	    return false;
-    return cvx.contains(ss.cvx);
+    return cvx.contains(pss->cvx);
 }
+
 
 void Symbolic_State::print() const
 {
@@ -229,11 +238,11 @@ void combine(vector<Combined_edge> &edge_groups, const Location &l,
 }
 
 
-vector<Symbolic_State> Symbolic_State::post() const
+vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
 {
     vector< vector<Edge> > v_edges;
-    vector<Symbolic_State> v_ss;
-    vector<Symbolic_State> &sstates = v_ss;
+    vector<shared_ptr<Symbolic_State> > v_ss;
+    vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
     vector<string> synch_labels; 
 
     vector<Combined_edge> edge_groups;
@@ -244,9 +253,9 @@ vector<Symbolic_State> Symbolic_State::post() const
 	    first = false;
     }
     for (auto e : edge_groups) {
-	Symbolic_State nss = *this;
-	nss.discrete_step(e);
-	nss.continuous_step();
+	auto nss = make_shared<Symbolic_State>(*this);
+	nss->discrete_step(e);
+	nss->continuous_step();
 	sstates.push_back(nss);
     }
     
@@ -273,5 +282,23 @@ bool Symbolic_State::operator == (const Symbolic_State &ss) const
         
     return cvx.contains(ss.cvx) && ss.cvx.contains(cvx) 
             && invariant_cvx.contains(ss.invariant_cvx) && ss.invariant_cvx.contains(invariant_cvx);
+
+}
+
+bool Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
+{
+    if (locations.size() != pss->locations.size())
+        return false;
+    if (dvars.size() != pss->dvars.size())
+        return false;
+    for (int i = 0; i < locations.size(); i++)
+        if (locations[i] != pss->locations[i])
+            return false;
+    for ( auto it = dvars.begin(), jt = pss->dvars.cbegin(); it != dvars.end(); ++it, ++jt)
+        if (it->first != jt->first || it->second != jt->second)
+            return false;
+        
+    return cvx.contains(pss->cvx) && pss->cvx.contains(cvx) 
+            && invariant_cvx.contains(pss->invariant_cvx) && pss->invariant_cvx.contains(invariant_cvx);
 
 }

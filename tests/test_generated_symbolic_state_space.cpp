@@ -30,7 +30,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
 
         MODEL.print();
 
-        Symbolic_State init = MODEL.init_sstate();
+        auto init = MODEL.init_sstate();
 
         automaton &act1 = MODEL.get_automaton_by_name("act1");
         act1.print();
@@ -43,8 +43,8 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         int O1 = 0, T1 = 2, C1 = 1, D1 = 2, O2 = 1, T2 = 4, C2 = 2, D2 = 4;
 
 
-        list<Symbolic_State> sstates, Space;
-        Symbolic_State curr = init;
+        list<shared_ptr<Symbolic_State> > sstates, Space;
+        auto curr = init;
 
         Valuations dvars;
         dvars.insert(make_pair("O1",0));
@@ -70,9 +70,9 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         cvx.add_constraint(d1==0);
         cvx.add_constraint(d2==0);
 
-        Symbolic_State ss0 (loc_names, dvars, cvx);
+        auto ss0 = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
-        REQUIRE(ss0==curr);
+        REQUIRE(ss0->equals(curr));
         sstates.push_back(ss0);
         Space.push_back(curr);
 
@@ -81,11 +81,11 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         cvx = C_Polyhedron(6);
         
         //the sstate 1
-        vector<Symbolic_State> nsss = MODEL.Post(curr);
+        vector<shared_ptr<Symbolic_State> > nsss = MODEL.Post(curr);
         auto it = nsss.begin();
         while( it != nsss.end()) {
-            if ( it->is_empty()) {
-                nsss.erase(it);
+            if ( (*it)->is_empty()) {
+                it = nsss.erase(it);
                 continue;
             }
             it ++;
@@ -103,9 +103,9 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         cvx.add_constraint(d1==p1);
         cvx.add_constraint(d2==p1);
 
-        Symbolic_State ss1 (loc_names, dvars, cvx);
+        auto ss1 = make_shared<Symbolic_State> (loc_names, dvars, cvx);
 
-        REQUIRE(ss1==curr);
+        REQUIRE(ss1->equals(curr));
         sstates.push_back(ss1);
         Space.push_back(curr);
 
