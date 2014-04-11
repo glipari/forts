@@ -1,0 +1,14 @@
+    x : continuous;
+    T == 10, O == 0 : discrete;
+
+automaton Simple2
+
+loc LOC_A: while x <= 0 wait {}
+    when x == O do {x'=0} goto LOC_B;
+
+loc LOC_B: while x<=T wait{}
+    when x == T do {x'=0} goto LOC_B;
+
+end
+
+init := loc[Simple2]==LOC_A & x == 0 ;

@@ -1,0 +1,19 @@
+    w, x : continuous;
+
+automaton Monitor 
+
+loc l0 : while w <= 10 wait {x'=1, w'=1}
+    when w==10 do {x'=0} goto l1;
+
+loc l1 : while x <= 2 wait {x'=1,w'=1}
+    when x == 2 goto l2;
+
+loc l2 : while w >= 5 wait {x'=1,w'=-2}
+    when w == 5 do {x'=0} goto l3;
+
+loc l3 : while x <= 2 wait {x'=1,w'=-2}
+    when x == 2 goto l0;
+
+end
+
+init := loc[Monitor] == l0 & w == 1 & x >= 0;

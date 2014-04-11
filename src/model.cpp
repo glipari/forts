@@ -42,6 +42,7 @@ void Model::reset()
 {
     delete the_instance;
     the_instance = new Model();
+    cache_reset();
 }
 
 // void Model::continuous_step(Symbolic_State &ss)

@@ -10,6 +10,16 @@ using namespace Parma_Polyhedra_Library::IO_Operators;
 
 std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
 
+void cache_reset()
+{
+    signature_to_combined_edges.clear();
+}
+
+std::string Signature::get_str() const
+{
+    return str;
+}
+
 Signature::Signature(const string &s) {
     str = s;
 }
@@ -17,6 +27,11 @@ Signature::Signature(const string &s) {
 bool Signature::operator == (const Signature& sig) const
 {
     return str == sig.str;
+}
+
+bool Signature::operator < (const Signature& sig) const
+{
+    return str < sig.str;
 }
 
 string Symbolic_State::get_loc_names() const
@@ -32,6 +47,11 @@ Signature Symbolic_State::get_signature() const
     return signature;
 }
 
+void Symbolic_State::update_signature() 
+{
+    signature = Signature(get_loc_names());
+}
+
 Symbolic_State::Symbolic_State(std::vector<Location *> &locs, 
 			       const Valuations &dv) :
     locations(locs),
@@ -40,7 +60,7 @@ Symbolic_State::Symbolic_State(std::vector<Location *> &locs,
     cvx = get_invariant_cvx();
     invariant_cvx = get_invariant_cvx();
 
-    signature = Signature(get_loc_names());
+    update_signature();
 }
 
 Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names, 
@@ -56,7 +76,7 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
 	locations.push_back(p);
 	i++;
     }
-    signature = Signature(get_loc_names());
+    update_signature();
 }
 
 //bool Symbolic_State::contains(const Symbolic_State &ss) const
@@ -150,11 +170,12 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
     for (auto &e : edges.get_edges()) {
 	// find location source location with that name
 	bool found = false;
-	for (auto &p : locations) 
+	for (auto &p : locations) { 
 	    if (p == &e.get_src_location()) {
 		found = true;
 		p = &e.get_dst_location();
 	    }
+    }
 	if (!found) throw string("ERROR!!! Cannot find src location ") +
 			e.get_src_location().get_name();
 	// ss.loc_names[e.get_automaton_index()] = e.get_dest();
@@ -245,18 +266,38 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
     vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
     vector<string> synch_labels; 
 
-    vector<Combined_edge> edge_groups;
-    bool first = true;
-    for (auto p : locations) {
-        vector<string> new_labels = p->get_automaton().get_labels(); 
-        combine(edge_groups, *p, new_labels, first);
-	    first = false;
+    auto it = signature_to_combined_edges.find(signature);
+    if ( it != signature_to_combined_edges.end()) {
+        vector<Combined_edge> &edge_groups = it->second;
+        for (auto e : edge_groups) {
+        auto nss = make_shared<Symbolic_State>(*this);
+        nss->discrete_step(e);
+        nss->continuous_step();
+        /** Do not forget to update the signature for the next sstate. */
+        nss->update_signature();
+        sstates.push_back(nss);
+        }
+        
     }
-    for (auto e : edge_groups) {
-	auto nss = make_shared<Symbolic_State>(*this);
-	nss->discrete_step(e);
-	nss->continuous_step();
-	sstates.push_back(nss);
+    else {
+        vector<Combined_edge> edge_groups;
+        bool first = true;
+        for (auto p : locations) {
+            vector<string> new_labels = p->get_automaton().get_labels(); 
+            combine(edge_groups, *p, new_labels, first);
+	        first = false;
+        }
+
+        signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
+
+        for (auto e : edge_groups) {
+	    auto nss = make_shared<Symbolic_State>(*this);
+	    nss->discrete_step(e);
+	    nss->continuous_step();
+        /** Do not forget to update the signature for the next sstate. */
+        nss->update_signature();
+	    sstates.push_back(nss);
+        }
     }
     
     return sstates;
@@ -297,7 +338,9 @@ bool Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
     for ( auto it = dvars.begin(), jt = pss->dvars.cbegin(); it != dvars.end(); ++it, ++jt)
         if (it->first != jt->first || it->second != jt->second)
             return false;
-        
+
+    if ( ! (signature == pss->signature))
+        return false;
     return cvx.contains(pss->cvx) && pss->cvx.contains(cvx) 
             && invariant_cvx.contains(pss->invariant_cvx) && pss->invariant_cvx.contains(invariant_cvx);
 

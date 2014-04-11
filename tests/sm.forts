@@ -5,7 +5,7 @@ automaton Simple
 loc LOC_A: while x <= 2 wait {}
            when x == 2 do { x'= 0} goto LOC_B;
 loc LOC_B: while true wait { x'=0 }
-           when y <= 5 do { } goto LOC_C;
+           when y <= 5 goto LOC_C;
 loc LOC_C: while true wait { x'=0, y'=0 }
 end
 

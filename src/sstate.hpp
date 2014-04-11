@@ -18,9 +18,14 @@ class Signature {
 public :
     Signature () {}
     Signature (const std::string &s);
+    std::string get_str() const;
     bool operator == (const Signature &sig) const;
+    bool operator < (const Signature &sig) const;
     
 };
+
+/** Reset the cached combined edges. */
+void cache_reset();
 
 
 class Symbolic_State {
@@ -72,6 +77,8 @@ public:
     std::string get_loc_names() const;
 
     Signature get_signature() const;
+
+    void update_signature();
 };
 
 #endif

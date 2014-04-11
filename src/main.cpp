@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     if (argc == 1)
         return 0;
     
+    MODEL.reset();
     /** argv[1] in the input file name. */
     ifstream ifs(argv[1]);
     string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>()); 
