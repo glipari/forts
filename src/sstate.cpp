@@ -15,13 +15,46 @@ void cache_reset()
     signature_to_combined_edges.clear();
 }
 
-std::string Signature::get_str() const
+const std::string& Signature::get_str() const
 {
     return str;
 }
 
+const unsigned& Signature::get_active_tasks() const
+{
+    return active_tasks;
+}
+
 Signature::Signature(const string &s) {
     str = s;
+    active_tasks = 0;
+
+    // To parse the list of active tasks
+    vector<string> acts;
+    //vector<int> acts_i;
+    string act = "";
+    for ( auto it = s.begin(); it != s.end(); it ++) {
+        if ( *it <= '9' && *it >= '0') {
+            //cout << "Got one active task " << *it << endl;
+            act.push_back(*it);
+        }
+        else if ( act != "") {
+            acts.push_back(act);
+            act = "";
+        }
+        //else
+        //    act = "";
+    }
+    if ( act != "")
+        acts.push_back(act);
+
+    for (auto &x : acts)
+        active_tasks = active_tasks | 1 << atoi(x.c_str());
+}
+
+bool Signature::includes(const Signature& sig) const
+{
+    return active_tasks == (active_tasks | sig.active_tasks);
 }
 
 bool Signature::operator == (const Signature& sig) const
@@ -98,10 +131,18 @@ bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
     return cvx.contains(pss->cvx);
 }
 
+shared_ptr<Symbolic_State> Symbolic_State::clone() const
+{
+    return make_shared<Symbolic_State> (*this);
+}
+
 
 void Symbolic_State::print() const
 {
-  cout << "-----------------------------" << endl;
+  cout << "==============================" << endl;
+  cout << "Signature : ";
+      cout << signature.get_active_tasks() << endl;
+
   cout << "State name : ";
   for ( auto n : locations)
       cout << n->get_name();
@@ -115,8 +156,8 @@ void Symbolic_State::print() const
   cout << endl;
   cout << "CVX : " << endl;
   cout << cvx << endl;
-  cout << endl;
-  cout << "-----------------------------" << endl;
+  //cout << endl;
+  cout << "------------------------------" << endl;
 }
 
 
@@ -222,6 +263,12 @@ PPL::C_Polyhedron Symbolic_State::get_invariant_cvx()
     return i_cvx;
 }
 
+const PPL::C_Polyhedron& Symbolic_State::get_cvx() const
+{
+    return cvx;
+}
+
+
 bool Symbolic_State::is_empty() const 
 {
     return cvx.is_empty();
@@ -291,7 +338,7 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
         signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
 
         for (auto e : edge_groups) {
-	    auto nss = make_shared<Symbolic_State>(*this);
+	    auto nss = clone(); //make_shared<Symbolic_State>(*this);
 	    nss->discrete_step(e);
 	    nss->continuous_step();
         /** Do not forget to update the signature for the next sstate. */
@@ -338,6 +385,10 @@ bool Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
     for ( auto it = dvars.begin(), jt = pss->dvars.cbegin(); it != dvars.end(); ++it, ++jt)
         if (it->first != jt->first || it->second != jt->second)
             return false;
+    //const Valuations &dvs = dvars; 
+    //for ( auto it = dvs.begin(), jt = pss->dvars.cbegin(); it != dvs.end(); ++it, ++jt)
+    //    if (it->first != jt->first || it->second != jt->second)
+    //        return false;
 
     if ( ! (signature == pss->signature))
         return false;

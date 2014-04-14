@@ -15,6 +15,7 @@ class Combined_edge;
 #define MODEL Model::get_instance()
 
 class Model {
+    bool widened = false;
     // continuous vars for this model
     VariableList cvars;
     // discrete variables for this model
@@ -94,6 +95,8 @@ public:
 
     /** Print the symbolic state space "Space" into a file. */
     void print_log(const std::string fname= ".log") const;
+
+    void set_widened();
 };
 
 #endif

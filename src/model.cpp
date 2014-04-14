@@ -7,6 +7,7 @@
 #include <model.hpp>
 
 #include "combined_edge.hpp"
+#include "widened_sstate.hpp"
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
@@ -149,7 +150,16 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     cout << "init name " << ln << endl; 
     cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
     //Symbolic_State init(loc_names, dvars, cvx);
-    auto init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
+
+    //auto init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
+
+    shared_ptr<Symbolic_State> init;
+
+    if (widened)
+        init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
+    else
+        init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
+
     init->print();
     init->continuous_step();
     cout << "cvx after continuous step : ";
@@ -213,9 +223,14 @@ void Model::SpaceExplorer()
 
 static bool contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
 {
-    for ( auto it = lss.begin(); it != lss.end(); it++)
-	if ( (*it)->contains(ss))
-	    return true;
+    for ( auto it = lss.begin(); it != lss.end(); it++) {
+        auto s1 = (*it)->get_signature();
+        auto s2 = ss->get_signature();
+        if (!s1.includes(s2))
+            continue;
+	    if ( (*it)->contains(ss))
+	        return true;
+    }
     return false;
 }
 
@@ -223,6 +238,12 @@ static void remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &
 {
     auto it = lss.begin();
     while (it != lss.end()){
+        auto s1 = (*it)->get_signature();
+        auto s2 = ss->get_signature();
+        if (!s2.includes(s1)) {
+            it ++;
+            continue;
+        }
 	    if (ss->contains(*it)) {
 	        it = lss.erase(it);
 	        continue;
@@ -330,4 +351,9 @@ void Model::print_log(const string fname) const
     for (auto &pss : Space)
         pss->print();
     std::cout.rdbuf(coutbuf);
+}
+
+void Model::set_widened()
+{
+    widened = true;
 }

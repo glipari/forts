@@ -15,12 +15,15 @@ class Combined_edge;
 
 class Signature {
     std::string str;
+    unsigned active_tasks;
 public :
     Signature () {}
     Signature (const std::string &s);
-    std::string get_str() const;
+    const std::string& get_str() const;
+    const unsigned& get_active_tasks() const;
     bool operator == (const Signature &sig) const;
     bool operator < (const Signature &sig) const;
+    bool includes(const Signature &sig) const;
     
 };
 
@@ -29,6 +32,7 @@ void cache_reset();
 
 
 class Symbolic_State {
+protected:
     // for each automaton, the name of the corresponding location
     //std::vector<std::string> loc_names;
 
@@ -39,7 +43,8 @@ class Symbolic_State {
     PPL::C_Polyhedron cvx;
     
     PPL::C_Polyhedron invariant_cvx;
-
+    
+    virtual std::shared_ptr<Symbolic_State> clone() const;
 
 public:
 
@@ -53,26 +58,26 @@ public:
     // return true if it contains a bad state
     bool is_bad() const ; 
 
-    void continuous_step();
+    virtual void continuous_step();
     void discrete_step(Combined_edge &edges);
 
     PPL::C_Polyhedron get_invariant_cvx();
 
-    std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    virtual const PPL::C_Polyhedron& get_cvx() const;
 
-    //bool contains(const Symbolic_State &ss) const;
+    virtual std::vector<std::shared_ptr<Symbolic_State> > post() const;
 
-    bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
 
     bool is_empty() const; 
 
     int total_memory_in_bytes() const;
 
-    void print() const;
+    virtual void print() const;
 
     bool operator == (const Symbolic_State &ss) const;
 
-    bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
 
     std::string get_loc_names() const;
 
