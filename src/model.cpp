@@ -224,12 +224,12 @@ void Model::SpaceExplorer()
 static bool contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
 {
     for ( auto it = lss.begin(); it != lss.end(); it++) {
-        auto s1 = (*it)->get_signature();
-        auto s2 = ss->get_signature();
-        if (!s1.includes(s2))
-            continue;
-	    if ( (*it)->contains(ss))
-	        return true;
+        // auto s1 = (*it)->get_signature();
+        // auto s2 = ss->get_signature();
+        // if (!s1.includes(s2))
+        //     continue;
+	if ((*it)->contains(ss))
+	    return true;
     }
     return false;
 }
@@ -238,17 +238,17 @@ static void remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &
 {
     auto it = lss.begin();
     while (it != lss.end()){
-        auto s1 = (*it)->get_signature();
-        auto s2 = ss->get_signature();
-        if (!s2.includes(s1)) {
-            it ++;
-            continue;
-        }
-	    if (ss->contains(*it)) {
-	        it = lss.erase(it);
-	        continue;
-	    }
-	    it++;
+        // auto s1 = (*it)->get_signature();
+        // auto s2 = ss->get_signature();
+        // if (!s2.includes(s1)) {
+        //     it ++;
+        //     continue;
+        // }
+	if (ss->contains(*it)) {
+	    it = lss.erase(it);
+	    continue;
+	}
+	it++;
     }
 }
 

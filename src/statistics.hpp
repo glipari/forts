@@ -4,7 +4,6 @@
 #include <chrono>
 
 class TimeStatistic {
-
     typedef std::chrono::time_point<std::chrono::high_resolution_clock> time_t;
     typedef std::chrono::duration<double> duration_t;
 
@@ -12,7 +11,6 @@ class TimeStatistic {
     duration_t max_time;
     time_t last;
     int counter = 0;
-    
 public:
     TimeStatistic();
     void start();
@@ -21,6 +19,9 @@ public:
     double get_total() const { return acc_time.count(); }
     int get_counter() const { return counter; }
 };
+
+
+
 
 
 #endif

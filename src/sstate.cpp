@@ -42,8 +42,6 @@ Signature::Signature(const string &s) {
             acts.push_back(act);
             act = "";
         }
-        //else
-        //    act = "";
     }
     if ( act != "")
         acts.push_back(act);
@@ -125,9 +123,10 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
 
 bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
 {
-    for (unsigned i = 0; i<locations.size(); i++) 
-	if (locations[i]->get_name() != pss->locations[i]->get_name()) 
-	    return false;
+    if (not (signature == pss->signature)) return false;
+    // for (unsigned i = 0; i<locations.size(); i++) 
+    // 	if (locations[i]->get_name() != pss->locations[i]->get_name()) 
+    // 	    return false;
     return cvx.contains(pss->cvx);
 }
 
