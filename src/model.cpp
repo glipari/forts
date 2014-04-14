@@ -234,7 +234,8 @@ void Model::SpaceExplorer()
     stats.print();
 
     cout << "Total time inside contains()  : " << contains_stat.get_total() << endl;
-    cout << "Number of calls to contains() : " << contains_stat.get_total() << endl;
+    cout << "Number of calls to contains() : " << contains_stat.get_counter() << endl;
+    cout << "Max time inside contains()    : " << contains_stat.get_max() << endl;
     cout << "---------------------------------------------------------" << endl;
     cout << "Total time inside post()      : " << post_stat.get_total() << endl;
 }

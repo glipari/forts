@@ -100,7 +100,8 @@ am_test_OBJECTS = test-test_main.$(OBJEXT) \
 	test-test_update_discrete_variable.$(OBJEXT) \
 	test-test_generated_symbolic_state_space.$(OBJEXT) \
 	test-test_simple_model.$(OBJEXT) \
-	test-test_widened_simple_model.$(OBJEXT)
+	test-test_widened_simple_model.$(OBJEXT) \
+	test-test_signature.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_$(V))
@@ -507,7 +508,7 @@ test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp
 	test_SpaceExplorer.cpp test_Combined_edge.cpp \
 	test_update_discrete_variable.cpp \
         test_generated_symbolic_state_space.cpp \
-	test_simple_model.cpp test_widened_simple_model.cpp
+	test_simple_model.cpp test_widened_simple_model.cpp test_signature.cpp
 
 all: all-am
 
@@ -573,6 +574,7 @@ include ./$(DEPDIR)/test-test_generated_symbolic_state_space.Po
 include ./$(DEPDIR)/test-test_main.Po
 include ./$(DEPDIR)/test-test_model.Po
 include ./$(DEPDIR)/test-test_ppl_coefficient.Po
+include ./$(DEPDIR)/test-test_signature.Po
 include ./$(DEPDIR)/test-test_simple_model.Po
 include ./$(DEPDIR)/test-test_sstate.Po
 include ./$(DEPDIR)/test-test_update_discrete_variable.Po
@@ -794,6 +796,20 @@ test-test_widened_simple_model.obj: test_widened_simple_model.cpp
 #	$(AM_V_CXX)source='test_widened_simple_model.cpp' object='test-test_widened_simple_model.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_widened_simple_model.obj `if test -f 'test_widened_simple_model.cpp'; then $(CYGPATH_W) 'test_widened_simple_model.cpp'; else $(CYGPATH_W) '$(srcdir)/test_widened_simple_model.cpp'; fi`
+
+test-test_signature.o: test_signature.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_signature.o -MD -MP -MF $(DEPDIR)/test-test_signature.Tpo -c -o test-test_signature.o `test -f 'test_signature.cpp' || echo '$(srcdir)/'`test_signature.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_signature.Tpo $(DEPDIR)/test-test_signature.Po
+#	$(AM_V_CXX)source='test_signature.cpp' object='test-test_signature.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_signature.o `test -f 'test_signature.cpp' || echo '$(srcdir)/'`test_signature.cpp
+
+test-test_signature.obj: test_signature.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_signature.obj -MD -MP -MF $(DEPDIR)/test-test_signature.Tpo -c -o test-test_signature.obj `if test -f 'test_signature.cpp'; then $(CYGPATH_W) 'test_signature.cpp'; else $(CYGPATH_W) '$(srcdir)/test_signature.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_signature.Tpo $(DEPDIR)/test-test_signature.Po
+#	$(AM_V_CXX)source='test_signature.cpp' object='test-test_signature.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_signature.obj `if test -f 'test_signature.cpp'; then $(CYGPATH_W) 'test_signature.cpp'; else $(CYGPATH_W) '$(srcdir)/test_signature.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
