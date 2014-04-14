@@ -167,8 +167,8 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     return init;
 }
 
-static bool contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss);
-static void remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &ss, list<shared_ptr<Symbolic_State> > &lss);
+// static bool contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss);
+// static int remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &ss, list<shared_ptr<Symbolic_State> > &lss);
 
 void Model::SpaceExplorer()
 {
@@ -179,19 +179,40 @@ void Model::SpaceExplorer()
     list<shared_ptr<Symbolic_State> > next;
     list<shared_ptr<Symbolic_State> > current;
     current.push_back(init);
-    int step = 0;
+    int step = 0; 
+
+    stats = model_stats{};
+
     while(true) {
 	for ( auto it = current.begin(); it != current.end(); it++) {
+	    post_stat.start();
 	    vector<shared_ptr<Symbolic_State> > nsstates = Post(*it); 
+	    post_stat.stop();
+	    stats.total_states += nsstates.size();
+
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
-		if ( (*iit)->is_empty()) continue;
+		if ( (*iit)->is_empty()) {
+		    stats.eliminated++;
+		    continue;
+		}
 		if ( (*iit)->is_bad()) {
 		    throw ("A bad location is reached ... ");
                 }
-		if ( contained_in(*iit, current)) continue;
-		if ( contained_in(*iit, next)) continue;
-		if ( contained_in(*iit, Space)) continue;
-		remove_included_sstates_in_a_list(*iit, next);
+		if ( contained_in(*iit, current)) {
+		    stats.eliminated++;
+		    continue;
+		}
+		if ( contained_in(*iit, next)) {
+		    stats.eliminated++;
+		    continue;
+		}
+		if ( contained_in(*iit, Space)) {
+		    stats.eliminated++;
+		    continue;
+		}
+		stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, next);
+		stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
+		stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
 		next.push_back(*iit);
 	    }
 	}
@@ -209,33 +230,49 @@ void Model::SpaceExplorer()
     time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
     cout << "Total time (in seconds) : " << time_spent << endl;
     cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) << endl;
+
+    stats.print();
+
+    cout << "Total time inside contains()  : " << contains_stat.get_total() << endl;
+    cout << "Number of calls to contains() : " << contains_stat.get_total() << endl;
+    cout << "---------------------------------------------------------" << endl;
+    cout << "Total time inside post()      : " << post_stat.get_total() << endl;
 }
 
-// bool Model::is_bad(const Symbolic_State &ss)
-// {
-//     for (auto it = ss.loc_names.begin(); it != ss.loc_names.end(); it++) {
-// 	Location &l = automata[it - ss.loc_names.begin()].get_location_by_name(*it);
-// 	if (l.is_bad())
-// 	    return true;
-//     }
-//     return false;
-// }
 
-static bool contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
+void model_stats::print()
+{
+    int te = eliminated+past_elim_from_next+past_elim_from_current+past_elim_from_space;
+    cout << "Total generated states: " << total_states << endl;
+    cout << "Eliminated:             " << eliminated << endl;
+    cout << "Eliminated from next:   " << past_elim_from_next << endl;
+    cout << "Eliminated from current:" << past_elim_from_current << endl;
+    cout << "Eliminated from space:  " << past_elim_from_space << endl;
+    cout << "--------------------------------------" << endl;
+    cout << "Total eliminated:       " << te << endl;
+    cout << "--------------------------------------" << endl;
+    cout << "Final states:           " << total_states - te << endl;
+}
+
+
+bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
 {
     for ( auto it = lss.begin(); it != lss.end(); it++) {
         // auto s1 = (*it)->get_signature();
         // auto s2 = ss->get_signature();
         // if (!s1.includes(s2))
         //     continue;
-	if ((*it)->contains(ss))
-	    return true;
+	contains_stat.start();
+	bool f = (*it)->contains(ss);
+	contains_stat.stop();
+	if (f) return true;
     }
     return false;
 }
 
-static void remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &ss, list<shared_ptr<Symbolic_State> > &lss)
+int Model::remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &ss, list<shared_ptr<Symbolic_State> > &lss)
 {
+    int count = 0;
     auto it = lss.begin();
     while (it != lss.end()){
         // auto s1 = (*it)->get_signature();
@@ -244,12 +281,16 @@ static void remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &
         //     it ++;
         //     continue;
         // }
-	if (ss->contains(*it)) {
+	contains_stat.start();
+	bool f = ss->contains(*it); 
+	contains_stat.stop();
+	if (f) {
 	    it = lss.erase(it);
-	    continue;
+	    count++;
 	}
-	it++;
+	else it++;
     }
+    return count;
 }
 
 void Model::print() const
