@@ -191,12 +191,11 @@ test-test_main.o: test_main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/4.8/deque /usr/include/c++/4.8/bits/stl_deque.h \
  /usr/include/c++/4.8/bits/deque.tcc /usr/include/c++/4.8/list \
  /usr/include/c++/4.8/bits/stl_list.h /usr/include/c++/4.8/bits/list.tcc \
- ../src/common.hpp ../src/automaton.hpp ../src/constraint.hpp \
- ../src/expression.hpp /usr/include/c++/4.8/stack \
- /usr/include/c++/4.8/bits/stl_stack.h ../src/ppl_adapt.hpp \
- ../src/unique_index.hpp ../src/edge.hpp ../src/assignment.hpp \
- ../src/statistics.hpp /usr/include/c++/4.8/chrono \
- /usr/include/c++/4.8/ratio
+ ../src/common.hpp ../src/ppl_adapt.hpp ../src/automaton.hpp \
+ ../src/constraint.hpp ../src/expression.hpp /usr/include/c++/4.8/stack \
+ /usr/include/c++/4.8/bits/stl_stack.h ../src/unique_index.hpp \
+ ../src/edge.hpp ../src/assignment.hpp ../src/statistics.hpp \
+ /usr/include/c++/4.8/chrono /usr/include/c++/4.8/ratio
 
 /usr/include/stdc-predef.h:
 
@@ -706,6 +705,8 @@ catch.hpp:
 
 ../src/common.hpp:
 
+../src/ppl_adapt.hpp:
+
 ../src/automaton.hpp:
 
 ../src/constraint.hpp:
@@ -715,8 +716,6 @@ catch.hpp:
 /usr/include/c++/4.8/stack:
 
 /usr/include/c++/4.8/bits/stl_stack.h:
-
-../src/ppl_adapt.hpp:
 
 ../src/unique_index.hpp:
 

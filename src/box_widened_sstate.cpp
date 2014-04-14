@@ -13,7 +13,7 @@ Box_Widened_Symbolic_State::Box_Widened_Symbolic_State(std::vector<Location *> &
 }
 
 Box_Widened_Symbolic_State::Box_Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
-		   const Valuations &dvars, const PPL::C_Polyhedron &pol) 
+						       const Valuations &dvars, const PPL::C_Polyhedron &pol) 
             : Widened_Symbolic_State(loc_names, dvars, pol)
 {
     //widen();
@@ -32,9 +32,12 @@ void Box_Widened_Symbolic_State::widen()
 
 bool Box_Widened_Symbolic_State::contains(const std::shared_ptr<Symbolic_State> &pss) const
 {
-    if (not signature.includes(pss->get_signature())) return false;
+    auto myptr = dynamic_pointer_cast<Box_Widened_Symbolic_State>(pss); 
 
-    if (not box_widened_cvx.contains(TBox(pss->get_cvx(), PPL::ANY_COMPLEXITY)))
+    if (not signature.includes(myptr->get_signature())) return false;
+
+    if (not box_widened_cvx.contains(myptr->box_widened_cvx))
+//TBox(pss->get_cvx(), PPL::ANY_COMPLEXITY)))
         return false;
     return widened_cvx.contains(pss->get_cvx());
 }
