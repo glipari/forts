@@ -107,7 +107,7 @@ TEST_CASE("Simple widened model", "[model][Space]")
     cout << "------------------ Consistency checked ---------------------" << endl;
     MODEL.print();
 
-    MODEL.set_widened();
+    MODEL.set_sstate_type(WIDENED);
     MODEL.SpaceExplorer();
 
     // build expected states
