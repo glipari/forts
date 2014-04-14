@@ -6,12 +6,13 @@
 #include <model.hpp>
 #include <model_parser.hpp>
 #include <constraint_parser.hpp>
+#include <widened_sstate.hpp>
 
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace std;
 using namespace tipa;
 
-Location &parse_location(const std::string &auto_loc)
+static Location &parse_location(const std::string &auto_loc)
 {
     std::string a, l;
 
@@ -36,7 +37,7 @@ Location &parse_location(const std::string &auto_loc)
 }
 
 
-shared_ptr<Symbolic_State> build_state(const std::vector<std::string> &locs, 
+static shared_ptr<Symbolic_State> build_state(const std::vector<std::string> &locs, 
 			   const Valuations  &dv,
 			   const std::string &constraints)
 {
@@ -49,11 +50,13 @@ shared_ptr<Symbolic_State> build_state(const std::vector<std::string> &locs,
     auto cs = build_a_constraint_tree(constraints);
     PPL::C_Polyhedron cvx(cv.size());
     cvx.add_constraints(cs.to_Linear_Constraint(cv, dv));
-    return make_shared<Symbolic_State> (locs, dv, cvx );
+    auto res = make_shared<Widened_Symbolic_State> (locs, dv, cvx );
+    res->widen();
+    return res;
     
 }
 
-bool compare_state_sets(const list<Symbolic_State> &la,
+static bool compare_state_sets(const list<Symbolic_State> &la,
 		       const list<Symbolic_State> &lb)
 {
     int c = 0;
@@ -69,7 +72,7 @@ bool compare_state_sets(const list<Symbolic_State> &la,
     else return false;
 }
 
-bool compare_state_sets(const list<shared_ptr<Symbolic_State> > &la,
+static bool compare_state_sets(const list<shared_ptr<Symbolic_State> > &la,
 		       const list<Symbolic_State>  &lb)
 {
     int c = 0;
@@ -87,10 +90,11 @@ bool compare_state_sets(const list<shared_ptr<Symbolic_State> > &la,
 }
 
 
-TEST_CASE("Simple model", "[model][Space]")
+
+TEST_CASE("Simple widened model", "[model][Space]")
 {
     Model::reset();
-    ifstream ifs("sm.forts");
+    ifstream ifs("1t-1p.forts");
     string str {std::istreambuf_iterator<char>(ifs), 
 	    std::istreambuf_iterator<char>()};
 
@@ -103,149 +107,43 @@ TEST_CASE("Simple model", "[model][Space]")
     cout << "------------------ Consistency checked ---------------------" << endl;
     MODEL.print();
 
+    MODEL.set_widened();
     MODEL.SpaceExplorer();
 
     // build expected states
 
-    auto s_a = build_state({ "LOC_A" }, 
-				     {{"d", 0}}, 
-				     "x == y & x <= 2 & y >=0"); 
-    auto s_b = build_state({ "LOC_B" }, 
-				     {{"d", 0}}, 
-				     "x == 0 & y >=2");
-    auto s_c = build_state({ "LOC_C" }, 
-				     {{"d", 0}}, 
-				     "x == 0 & y <=5 & y >= 2");
+    auto s_a = build_state({ "idle" }, 
+				     {{"C1",2}, {"D1",8}, {"T1",8}}, 
+				     "c1==0 & p1 >= 0"); 
+    auto s_b = build_state({ "x1R" }, 
+				     {{"C1",2}, {"D1",8}, {"T1",8}}, 
+				     "p1+c1==2 & c1 >=0 & c1 <= 2");
 
-    list<Symbolic_State> expected = { *s_a, *s_b, *s_c };
+    list<Symbolic_State> expected = { *s_a, *s_b};
 
-    auto li = MODEL.get_all_states();
-    for (auto x : li) x->print();
 
-    CHECK(compare_state_sets(li, expected));
-
-    Signature sig_a("LOC_A"), sig_b("LOC_B"), sig_c("LOC_C");
-    REQUIRE(s_a->get_signature() == sig_a);
-    REQUIRE(s_b->get_signature() == sig_b);
-    REQUIRE(s_c->get_signature() == sig_c);
-}
-
-TEST_CASE("Simple model2", "[model][Space]")
-{
-    Model::reset();
-    ifstream ifs("sm2.forts");
-    string str {std::istreambuf_iterator<char>(ifs), 
-	    std::istreambuf_iterator<char>()};
-
-    cout << "------------------ File has been read ----------------------" << endl;
-    cout << str << endl;
-    cout << "------------------------------------------------------------" << endl;
-    build_a_model(str);
-    cout << "------------------ Model has been built --------------------" << endl;
-    MODEL.check_consistency(); // TODO put this inside build_a_model();
-    cout << "------------------ Consistency checked ---------------------" << endl;
-    MODEL.print();
-
-    MODEL.SpaceExplorer();
-
-    // build expected states
-
-    auto s_a = build_state({ "LOC_A" }, 
-				     {}, 
-				     "x+y==0 & x == z & x >=0"); 
-    auto s_b = build_state({ "LOC_B" }, 
-				     {}, 
-				     "x+z<=10 & x-y==4 & x>= 2 & x==z");
-
-    list<Symbolic_State> expected = { *s_a, *s_b };
-
-    auto li = MODEL.get_all_states();
-    for (auto x : li) x->print();
-
-    CHECK(compare_state_sets(li, expected));
-
-    Signature sig_a("LOC_A"), sig_b("LOC_B");
-    REQUIRE(s_a->get_signature() == sig_a);
-    REQUIRE(s_b->get_signature() == sig_b);
-}
-
-TEST_CASE("Simple model3", "[model][Space]")
-{
-    Model::reset();
-    ifstream ifs("sm3.forts");
-    string str {std::istreambuf_iterator<char>(ifs), 
-	    std::istreambuf_iterator<char>()};
-
-    cout << "------------------ File has been read ----------------------" << endl;
-    cout << str << endl;
-    cout << "------------------------------------------------------------" << endl;
-    build_a_model(str);
-    cout << "------------------ Model has been built --------------------" << endl;
-    MODEL.check_consistency(); // TODO put this inside build_a_model();
-    cout << "------------------ Consistency checked ---------------------" << endl;
-    MODEL.print();
-
-    MODEL.SpaceExplorer();
-
-    // build expected states
-
-    auto s_a = build_state({ "LOC_A" }, 
-				     {{"T",10}, {"O",0}}, 
-				     "x == 0"); 
-    auto s_b = build_state({ "LOC_B" }, 
-				     {{"T",10}, {"O",0}}, 
-				     "x <= 10 & x >= 0");
-
-    list<Symbolic_State> expected = { *s_a, *s_b };
-
-    auto li = MODEL.get_all_states();
-    for (auto x : li) x->print();
-
-    CHECK(compare_state_sets(li, expected));
-
-}
-
-TEST_CASE("Simple water monitor model", "[model][Space]")
-{
-    Model::reset();
-    ifstream ifs("water-level.forts");
-    string str {std::istreambuf_iterator<char>(ifs), 
-	    std::istreambuf_iterator<char>()};
-
-    cout << "------------------ File has been read ----------------------" << endl;
-    cout << str << endl;
-    cout << "------------------------------------------------------------" << endl;
-    build_a_model(str);
-    cout << "------------------ Model has been built --------------------" << endl;
-    MODEL.check_consistency(); // TODO put this inside build_a_model();
-    cout << "------------------ Consistency checked ---------------------" << endl;
-    MODEL.print();
-
-    MODEL.SpaceExplorer();
-
-    // build expected states
-
-    auto s_a = build_state({ "l0" }, 
-				     {}, 
-				     "w<=10 & w >= 1 & x >= 0 & w-x<=1"); 
-    auto s_b = build_state({ "l1" }, 
-				     {}, 
-				     "x<=2 & x>=0 & w==x+10");
-    auto s_c = build_state({ "l2" }, 
-				     {}, 
-				     "2*x+w==16 & w>= 5 & x>= 2");
-    auto s_d = build_state({ "l3" }, 
-				     {}, 
-				     "2*x+w==5 & x>=0 & x <= 2");
-
-    list<Symbolic_State> expected = { *s_a, *s_b , *s_c, *s_d};
 
     auto li = MODEL.get_all_states();
     //cout << "The states we got : " << endl;
     for (auto x : li) x->print();
-    //cout << "The states we expected : " << endl;
-    //for (auto x : expected) x.print();
 
     CHECK(compare_state_sets(li, expected));
+
+    const C_Polyhedron & x = s_a->get_cvx();
+    const C_Polyhedron & y = s_b->get_cvx();
+
+
+    PPL::C_Polyhedron xx(2);
+    xx.add_constraint( PPL::Variable(0) <= 0);
+    REQUIRE(xx.contains(x));
+    REQUIRE(x.contains(xx));
+
+    PPL::C_Polyhedron yy(2);
+    yy.add_constraint( PPL::Variable(0) <= 2);
+    yy.add_constraint( PPL::Variable(1) <= 2);
+    yy.add_constraint( PPL::Variable(0) + PPL::Variable(1) <= 2);
+    REQUIRE(yy.contains(y) );
+    REQUIRE(y.contains(yy));
+
 
 }
