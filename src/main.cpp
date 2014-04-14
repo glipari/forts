@@ -9,23 +9,28 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    if (argc == 1)
+    if (argc == 1) {
+	cout << "Usage: " << argv[0] << " <filename> " << endl;
         return 0;
+    }
     
     MODEL.reset();
     /** argv[1] in the input file name. */
     ifstream ifs(argv[1]);
+    
+    if (not ifs.good()) {
+	cout << "Could not read " << argv[1] << endl;
+	return 0;
+    }
+
     string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>()); 
 
     build_a_model(str);
     try {
         MODEL.check_consistency();
-
         /** To print out the model? */
         MODEL.print();
-        
-        MODEL.SpaceExplorer();        
-
+        MODEL.SpaceExplorer();
         MODEL.print_log();
     } catch(const string &s) {
         cout << s << endl;
