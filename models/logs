@@ -1,0 +1,42 @@
+automaton name : sched
+an : sched
+ln : idle
+Setting init location for automaton sched == idle / idle
+aton names size : 1
+an : sched
+ln : error
+an : sched
+ln : error
+c1,p1: continous;
+C1 = 2,D1 = 8,T1 = 8,r1 = 0: discrete;
+automaton sched
+sync: ;
+loc idle: while 1==1 wait { }
+when p1-T1>=0 sync  do {p1'=0, r1'=C1 } goto x1R;
+
+loc x1R: while c1<=1&p1-D1<=0 wait { }
+
+loc error: while 1==1 wait { }
+
+end
+
+init := 
+loc[sched]==idle& p1>=0&c1==0;
+bad := loc[sched]==error;
+loc name idle
+init name idle
+-----------------------------
+State name : idle
+CVX : 
+A = 0, B >= 0
+
+-----------------------------
+cvx after continuous step : -----------------------------
+State name : idle
+CVX : 
+-A + B >= 0, A >= 0
+
+-----------------------------
+loc idle: while 1==1 wait { }
+when p1-T1>=0 sync  do {p1'=0, r1'=C1 } goto x1R;
+no such a variable "r1" in the CVList.
