@@ -9,6 +9,6 @@ test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp
 	test_SpaceExplorer.cpp test_Combined_edge.cpp \
 	test_update_discrete_variable.cpp \
         test_generated_symbolic_state_space.cpp \
-	test_simple_model.cpp test_widened_simple_model.cpp
+	test_simple_model.cpp test_widened_simple_model.cpp test_signature.cpp
 
 #LIBS = -ltinyparser
