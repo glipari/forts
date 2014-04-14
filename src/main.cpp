@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
         MODEL.check_consistency();
         /** To print out the model? */
         MODEL.print();
+        MODEL.set_sstate_type(BOX_WIDENED);
+        //MODEL.set_sstate_type(WIDENED);
         MODEL.SpaceExplorer();
         MODEL.print_log();
     } catch(const string &s) {

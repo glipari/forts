@@ -8,6 +8,7 @@
 
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
+#include "box_widened_sstate.hpp"
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
@@ -155,8 +156,10 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     shared_ptr<Symbolic_State> init;
 
-    if (widened)
+    if (sstate_type == WIDENED)
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
+    else if (sstate_type == BOX_WIDENED)
+        init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
     else
         init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
@@ -395,7 +398,7 @@ void Model::print_log(const string fname) const
     std::cout.rdbuf(coutbuf);
 }
 
-void Model::set_widened()
+void Model::set_sstate_type(enum SYMBOLIC_STATE_TYPE t)
 {
-    widened = true;
+    sstate_type = t;
 }

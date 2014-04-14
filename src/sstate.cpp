@@ -267,7 +267,6 @@ const PPL::C_Polyhedron& Symbolic_State::get_cvx() const
     return cvx;
 }
 
-
 bool Symbolic_State::is_empty() const 
 {
     return cvx.is_empty();

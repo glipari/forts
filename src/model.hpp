@@ -27,10 +27,10 @@ struct model_stats {
 };
 
 
-
+enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED }; 
 
 class Model {
-    bool widened = false;
+    enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
     // continuous vars for this model
     VariableList cvars;
     // discrete variables for this model
@@ -118,7 +118,7 @@ public:
     /** Print the symbolic state space "Space" into a file. */
     void print_log(const std::string fname= ".log") const;
 
-    void set_widened();
+    void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
 };
 
 #endif
