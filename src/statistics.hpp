@@ -18,6 +18,7 @@ public:
 
     double get_total() const { return acc_time.count(); }
     int get_counter() const { return counter; }
+    double get_max() const { return max_time.count(); }
 };
 
 

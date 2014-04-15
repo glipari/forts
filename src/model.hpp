@@ -7,6 +7,7 @@
 
 #include "sstate.hpp"
 #include "automaton.hpp"
+#include "statistics.hpp"
 
 typedef constraint_node constraint;
 
@@ -14,8 +15,22 @@ class Combined_edge;
 
 #define MODEL Model::get_instance()
 
+
+struct model_stats {
+    int total_states = 0; 
+    int eliminated = 0; 
+    int past_elim_from_next = 0;
+    int past_elim_from_current = 0;
+    int past_elim_from_space = 0;
+
+    void print();
+};
+
+
+enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED }; 
+
 class Model {
-    bool widened = false;
+    enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
     // continuous vars for this model
     VariableList cvars;
     // discrete variables for this model
@@ -30,9 +45,16 @@ class Model {
     /** The symbolic state space */
     std::list<std::shared_ptr<Symbolic_State> > Space;
 
+    model_stats stats;
+    TimeStatistic contains_stat;
+    TimeStatistic post_stat;
+
     Model();
 
     static Model *the_instance; 
+
+    bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
+    int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
 
 public:
     Model(const Model &other) = delete;
@@ -96,7 +118,7 @@ public:
     /** Print the symbolic state space "Space" into a file. */
     void print_log(const std::string fname= ".log") const;
 
-    void set_widened();
+    void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
 };
 
 #endif

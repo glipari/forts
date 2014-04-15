@@ -58,6 +58,11 @@ const PPL::C_Polyhedron& Widened_Symbolic_State::get_cvx() const
     return widened_cvx;
 }
 
+//const PPL::C_Polyhedron& Widened_Symbolic_State::get_featured_cvx() const
+//{
+//    return widened_cvx;
+//}
+
 bool Widened_Symbolic_State::contains(const std::shared_ptr<Symbolic_State> &pss) const
 {
     if (not signature.includes(pss->get_signature())) return false;
@@ -68,7 +73,7 @@ void Widened_Symbolic_State::print() const
 {
     Symbolic_State::print();
     cout << "Widened cvx : \n";
-    cout << widened_cvx << endl << endl;
+    cout << widened_cvx << endl ;
 }
 
 bool Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const

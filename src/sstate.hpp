@@ -7,6 +7,7 @@
 #include <common.hpp>
 #include <map>
 #include <memory>
+#include <ppl_adapt.hpp>
 
 namespace PPL = Parma_Polyhedra_Library;
 

@@ -267,7 +267,6 @@ const PPL::C_Polyhedron& Symbolic_State::get_cvx() const
     return cvx;
 }
 
-
 bool Symbolic_State::is_empty() const 
 {
     return cvx.is_empty();
@@ -316,7 +315,7 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
     if ( it != signature_to_combined_edges.end()) {
         vector<Combined_edge> &edge_groups = it->second;
         for (auto e : edge_groups) {
-        auto nss = make_shared<Symbolic_State>(*this);
+        auto nss = clone(); //make_shared<Symbolic_State>(*this);
         nss->discrete_step(e);
         nss->continuous_step();
         /** Do not forget to update the signature for the next sstate. */
