@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     }
     
     MODEL.reset();
+    MODEL.set_concurrency(1);
     /** argv[1] in the input file name. */
     ifstream ifs(argv[1]);
     
@@ -32,7 +33,8 @@ int main(int argc, char *argv[])
         MODEL.print();
         MODEL.set_sstate_type(BOX_WIDENED);
         //MODEL.set_sstate_type(WIDENED);
-        MODEL.SpaceExplorer();
+        //MODEL.SpaceExplorer();
+	MODEL.SpaceExplorerParallel();
         MODEL.print_log();
     } catch(const string &s) {
         cout << s << endl;

@@ -37,7 +37,7 @@ TEST_CASE("First test on SpaceExplorer", "[model][Space]")
         cout << "123"<< endl;
         init->print();
         cout << "123"<< endl;
-        vector<shared_ptr<Symbolic_State> > vss = MODEL.Post(init);
+        vector<shared_ptr<Symbolic_State> > vss = init->post(); //MODEL.Post(init);
         for ( auto it = vss.begin(); it != vss.end(); it++) {
 	        (*it)->print();
 	    // ln="";

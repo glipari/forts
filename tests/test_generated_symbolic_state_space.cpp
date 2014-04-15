@@ -81,7 +81,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         cvx = C_Polyhedron(6);
         
         //the sstate 1
-        vector<shared_ptr<Symbolic_State> > nsss = MODEL.Post(curr);
+        vector<shared_ptr<Symbolic_State> > nsss = curr->post(); //MODEL.Post(curr);
         auto it = nsss.begin();
         while( it != nsss.end()) {
             if ( (*it)->is_empty()) {

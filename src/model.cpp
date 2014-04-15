@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <fstream>
 #include <time.h>
+#include <thread>
+
 
 #include <expression.hpp>
 #include <model.hpp>
@@ -9,6 +11,8 @@
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
 #include "box_widened_sstate.hpp"
+
+#include "synch.hpp"
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
@@ -19,23 +23,8 @@ Model::Model()
 {
 }
 
-// PPL::C_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
-// {
-//     PPL::C_Polyhedron invariant_cvx(cvars.size());
-//     for ( auto it = automata.begin(); it != automata.end(); it++){
-// 	Linear_Constraint lc;
-// 	string ln = ss.loc_names[it-automata.begin()];
-// 	Location &l = it->get_location_by_name(ln);
-
-// 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
-//     }
-//     return invariant_cvx;
-// }
-
-
 Model &Model::get_instance()
 {
-//    static Model m;
     if (the_instance == nullptr) the_instance = new Model();
     return *the_instance;
 }
@@ -47,94 +36,12 @@ void Model::reset()
     cache_reset();
 }
 
-// void Model::continuous_step(Symbolic_State &ss)
-// {
-//     // 1) To do time_elapse_assign
-//     PPL::C_Polyhedron rates_cvx(cvars.size());
-//     PPL::C_Polyhedron invariant_cvx(cvars.size());
-//     VariableList lvars = cvars;
-//     for ( auto it = automata.begin(); it != automata.end(); it++){
-// 	Linear_Constraint lc;
-// 	string ln = ss.loc_names[it-automata.begin()];
-// 	Location &l = it->get_location_by_name(ln);
-
-// 	invariant_cvx.add_constraints(l.invariant_to_Linear_Constraint(cvars, dvars));
-// 	rates_cvx.add_constraints(l.rates_to_Linear_Constraint(cvars, dvars, lvars));
-//         //cout << "rates : " << rates_cvx << endl;
-//         //cout << "invariant : " << invariant_cvx << endl;
-    
-//     }
-
-//     // If a variable's rate is not specified in the location, it's assumed to be 1
-//     for ( auto it = lvars.begin(); it != lvars.end(); it++) {
-// 	PPL::Variable v = get_ppl_variable(cvars, *it);
-// 	Linear_Expr le;
-// 	le += 1;
-// 	AT_Constraint atc = (v==le);
-// 	rates_cvx.add_constraint(atc);
-//     }
-//     ss.cvx.time_elapse_assign(rates_cvx);
-//     // 2) intersect with invariant
-//     ss.cvx.intersection_assign(invariant_cvx);
-// }
-
-// TODO : remember to change the e parameter into a const reference
-//void Model::discrete_step(Symbolic_State &ss, Combined_edge &edges)
-//{
-//    // PPL::C_Polyhedron guard_cvx(cvars.size());
-//    // PPL::C_Polyhedron ass_cvx(cvars.size());
-//    // Variables_Set vs;
-//
-//    // for (auto &e : edges.get_edges()) {
-//    // 	ss.loc_names[e.get_automaton_index()] = e.get_dest();
-//    // 	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
-//    // 	Variables_Set vs2 = e.get_assignment_vars(cvars);
-//    // 	vs.insert(vs2.begin(), vs2.end());
-//    // 	// for (auto &a : e.assignments)
-//    // 	//     vs.insert(get_variable(a.get_var(), cvars));
-//    // 	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
-//    // }
-//    // ss.cvx.intersection_assign(guard_cvx);
-//    // ss.cvx.unconstrain(vs);
-//    // ss.cvx.intersection_assign(ass_cvx);
-//    // ss.cvx.intersection_assign(get_invariant_cvx(ss));
-//    ss.discrete_step(edges);
-//}
-
-void Model::discrete_step(shared_ptr<Symbolic_State> &pss, Combined_edge &edges)
+void Model::discrete_step(State_ptr &pss, Combined_edge &edges)
 {
     pss->discrete_step(edges);
 }
 
-
-
-vector<shared_ptr<Symbolic_State> > Model::Post(const shared_ptr<Symbolic_State>& pss)
-{
-    // vector< vector<Edge> > v_edges;
-    // vector<Symbolic_State> v_ss;
-    // vector<Symbolic_State> &sstates = v_ss;
-    // vector<string> synch_labels; 
-
-    // int a_index;
-    // vector<Combined_edge> edge_groups;
-    // for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
-    //     a_index = loc_it - ss.loc_names.begin();
-    // 	Location &l = automata[a_index].get_location_by_name(*loc_it);
-    //     vector<string> new_labels = automata[a_index].get_labels();
-    //     combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
-    //     //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
-    // }
-    // for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
-    // 	Symbolic_State nss = ss;
-    // 	discrete_step(nss, *it);
-    // 	continuous_step(nss);
-    // 	sstates.push_back(nss);
-    // }
-
-    return pss->post();
-}
-
-shared_ptr<Symbolic_State> Model::init_sstate()
+State_ptr Model::init_sstate()
 {
     vector<Location *> locs;
     vector<std::string> loc_names;
@@ -150,11 +57,8 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     }
     cout << "init name " << ln << endl; 
     cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
-    //Symbolic_State init(loc_names, dvars, cvx);
 
-    //auto init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
-
-    shared_ptr<Symbolic_State> init;
+    State_ptr init;
 
     if (sstate_type == WIDENED)
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
@@ -170,17 +74,115 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     return init;
 }
 
-// static bool contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss);
-// static int remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &ss, list<shared_ptr<Symbolic_State> > &lss);
+// i is the index of this particular worker
+void Model::worker(SynchBarrier &barrier, unsigned i)
+{
+    barrier.synch();
+    worker_data &mydata = wdata[i];
+    while (mydata.active) {
+	for (auto it = mydata.start; it != mydata.stop; ++it) {
+	    vector<State_ptr> nsstates = (*it)->post();
+	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
+		if ((*iit)->is_empty()) {
+		    mydata.stats.eliminated++;
+		    continue;
+		}
+		if ((*iit)->is_bad()) //
+		    mydata.bad = true;
+		if (contained_in(*iit, current)) {
+		    mydata.stats.eliminated++;
+		    continue;
+		}
+		if (contained_in(*iit, mydata.next)) {
+		    mydata.stats.eliminated++;
+		    continue;
+		}
+		if (contained_in(*iit, Space)) {
+		    mydata.stats.eliminated++;
+		    continue;
+		}
+		mydata.stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, mydata.next);
+		mydata.next.push_back(*iit);
+	    }
+	}
+	barrier.synch();
+	// now next has been emptied and moved to current    
+    }
+}
+
+
+void Model::SpaceExplorerParallel()
+{
+    clock_t begin, end;
+    double time_spent;
+    begin = clock();
+    State_ptr init = init_sstate();
+    SynchBarrier barrier(n_workers);
+    
+    current.clear();
+    current.push_back(init);
+    int step = 0; 
+    // init all threads;
+    wdata.clear(); 
+    workers.clear();
+
+    using namespace std::placeholders;
+    auto tf = std::bind(&Model::worker, this, _1, _2);
+
+    for (int i=0; i<n_workers; ++i) {
+	wdata.push_back(worker_data{});
+	workers.push_back(thread(tf, ref(barrier), i));
+    }
+
+    // now all workers are ready to start
+    bool bad_found = false;
+    while (not bad_found) {
+	// split work
+	auto v = split(std::begin(current), std::end(current), 
+		       current.size(), n_workers);
+	for (int i=0; i<n_workers; ++i) {
+	    wdata[i].start = v[i].first;
+	    wdata[i].stop  = v[i].second;
+	}
+	
+	barrier.start();
+	// all work is done in the parallel threads
+	barrier.waitForAll();
+
+	// move all results
+	Space.splice(Space.end(), current);
+	for (int i=0; i<n_workers; ++i) {
+	    current.splice(current.end(), wdata[i].next);
+	}
+	
+	cout << "-----------------------------" << endl;
+	cout << "Step : " << ++step << endl;
+	cout << "Number of passed states : " << Space.size() << endl;
+	cout << "Number of generated states : " << current.size() << endl;
+	cout << "-----------------------------" << endl;
+	
+	if (current.size() == 0) break;
+	for (int i=0; i<n_workers; ++i) {
+	    bad_found = bad_found or wdata[i].bad;
+	}
+    }
+    end = clock();
+    time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+    cout << "Total time (in seconds) : " << time_spent << endl;
+    cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) 
+	 << endl;
+}
+
 
 void Model::SpaceExplorer()
 {
     clock_t begin, end;
     double time_spent;
     begin = clock();
-    shared_ptr<Symbolic_State> init = init_sstate();
-    list<shared_ptr<Symbolic_State> > next;
-    list<shared_ptr<Symbolic_State> > current;
+    State_ptr init = init_sstate();
+    Space_list next; 
+    //Space_list current; 
+    current.clear();
     current.push_back(init);
     int step = 0; 
 
@@ -189,7 +191,7 @@ void Model::SpaceExplorer()
     while(true) {
 	for ( auto it = current.begin(); it != current.end(); it++) {
 	    post_stat.start();
-	    vector<shared_ptr<Symbolic_State> > nsstates = Post(*it); 
+	    vector<State_ptr> nsstates = (*it)->post(); //Post(*it); 
 	    post_stat.stop();
 	    stats.total_states += nsstates.size();
 
@@ -230,6 +232,7 @@ void Model::SpaceExplorer()
 	current.splice(current.begin(), next);
     }
     end = clock();
+
     time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
     cout << "Total time (in seconds) : " << time_spent << endl;
     cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) << endl;
@@ -259,7 +262,7 @@ void model_stats::print()
 }
 
 
-bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
+bool Model::contained_in(const State_ptr &ss, const Space_list &lss)
 {
     for ( auto it = lss.begin(); it != lss.end(); it++) {
         // auto s1 = (*it)->get_signature();
@@ -274,7 +277,7 @@ bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared
     return false;
 }
 
-int Model::remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &ss, list<shared_ptr<Symbolic_State> > &lss)
+int Model::remove_included_sstates_in_a_list(const State_ptr &ss, Space_list &lss)
 {
     int count = 0;
     auto it = lss.begin();
@@ -401,4 +404,11 @@ void Model::print_log(const string fname) const
 void Model::set_sstate_type(enum SYMBOLIC_STATE_TYPE t)
 {
     sstate_type = t;
+}
+
+void Model::set_concurrency(unsigned nth)
+{
+    if (nth == 0) n_workers = std::thread::hardware_concurrency();
+    else n_workers = nth;
+    // TODO create all threads?     
 }

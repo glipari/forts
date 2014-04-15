@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <thread>
 
 #include "sstate.hpp"
 #include "automaton.hpp"
@@ -25,8 +26,13 @@ struct model_stats {
     void print();
 };
 
-
 enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED }; 
+
+typedef std::shared_ptr<Symbolic_State> State_ptr;
+typedef std::list<State_ptr>            Space_list;
+typedef std::list<State_ptr>::iterator  Space_iter;
+
+class SynchBarrier;
 
 class Model {
     enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
@@ -42,7 +48,8 @@ class Model {
     std::vector<automaton>  automata;
 
     /** The symbolic state space */
-    std::list<std::shared_ptr<Symbolic_State> > Space;
+    Space_list Space;
+    Space_list current; 
 
     model_stats stats;
     TimeStatistic contains_stat;
@@ -52,8 +59,24 @@ class Model {
 
     static Model *the_instance; 
 
-    bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
-    int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
+    bool contained_in(const State_ptr &ss, const Space_list &lss);
+    int remove_included_sstates_in_a_list(const State_ptr &ss, Space_list &lss);
+
+    struct worker_data {
+	Space_list next;
+	Space_iter start;
+	Space_iter stop;
+	// should add local statistics about the time and the rest;
+	bool bad = false;
+	model_stats stats;
+	bool active = true;
+    };
+    
+    int n_workers = 1;
+    std::vector<worker_data> wdata;
+    std::vector<std::thread> workers;
+
+    void worker(SynchBarrier &barrier, unsigned n);
 
 public:
     Model(const Model &other) = delete;
@@ -76,25 +99,10 @@ public:
 
     VariableList get_cvars() const { return cvars; }
 
-    // TBM: Given a initial sstate, performs a continuous step
-    // void continuous_step(Symbolic_State &ss);
-    // TBM: given an initial sstate and a combined edge, performs a discrete step
-    //void discrete_step(Symbolic_State &ss, Combined_edge &edges);
-    void discrete_step(std::shared_ptr<Symbolic_State> &pss, Combined_edge &edges);
-
-    // Maybe will become private:
-    // performs a step in the exploration of the state space
-    //std::vector<Symbolic_State> Post(const Symbolic_State& ss);
-    std::vector<std::shared_ptr<Symbolic_State> > Post(const std::shared_ptr<Symbolic_State>& pss);
-
-    // TBM 
-    // PPL::C_Polyhedron get_invariant_cvx(Symbolic_State &ss);
+    void discrete_step(State_ptr &pss, Combined_edge &edges);
 
     // Initial symbolic state
-    std::shared_ptr<Symbolic_State> init_sstate();
-
-    // TBM: if the current state is bad
-    //bool is_bad(const Symbolic_State &ss);
+    State_ptr init_sstate();
 
     // throws an exception if the automaton is not found
     automaton& get_automaton_by_name(const std::string name);
@@ -108,16 +116,25 @@ public:
     */
     void SpaceExplorer();
 
-    std::list<std::shared_ptr<Symbolic_State> > &get_all_states() { return Space; }
+    void SpaceExplorerParallel();
 
+    Space_list &get_all_states() { return Space; }
 
-    /** Return the meomey used for symbolic states in Space. */
+    /** Return the memory used for symbolic states in Space. */
     int total_memory_in_bytes() const;
 
     /** Print the symbolic state space "Space" into a file. */
     void print_log(const std::string fname= ".log") const;
 
     void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
+
+    /** sets the concurrency level. 
+         if nth = 0, looks at the maximum parallelization level in hardware. 
+         if nth = 1 (default), no parallelization is done
+         if nth > 1, nth threads are created to carry out the internal 
+	 state exploration in parallel. */
+    void set_concurrency(unsigned nth);
+    unsigned get_concurrency() const { return n_workers; }
 };
 
 #endif

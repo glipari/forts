@@ -172,9 +172,10 @@ test-test_main.o: test_main.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h \
  /usr/include/x86_64-linux-gnu/sys/time.h ../src/model.hpp \
- ../src/sstate.hpp /usr/local/include/ppl.hh /usr/include/inttypes.h \
- /usr/include/c++/4.8/cassert /usr/include/gmpxx.h \
- /usr/include/c++/4.8/cstring /usr/include/string.h \
+ /usr/include/c++/4.8/thread /usr/include/c++/4.8/chrono \
+ /usr/include/c++/4.8/ratio ../src/sstate.hpp /usr/local/include/ppl.hh \
+ /usr/include/inttypes.h /usr/include/c++/4.8/cassert \
+ /usr/include/gmpxx.h /usr/include/c++/4.8/cstring /usr/include/string.h \
  /usr/include/x86_64-linux-gnu/bits/string3.h /usr/include/c++/4.8/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
  /usr/include/x86_64-linux-gnu/gmp.h /usr/include/c++/4.8/climits \
@@ -194,8 +195,7 @@ test-test_main.o: test_main.cpp /usr/include/stdc-predef.h \
  ../src/common.hpp ../src/ppl_adapt.hpp ../src/automaton.hpp \
  ../src/constraint.hpp ../src/expression.hpp /usr/include/c++/4.8/stack \
  /usr/include/c++/4.8/bits/stl_stack.h ../src/unique_index.hpp \
- ../src/edge.hpp ../src/assignment.hpp ../src/statistics.hpp \
- /usr/include/c++/4.8/chrono /usr/include/c++/4.8/ratio
+ ../src/edge.hpp ../src/assignment.hpp ../src/statistics.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -641,6 +641,12 @@ catch.hpp:
 
 ../src/model.hpp:
 
+/usr/include/c++/4.8/thread:
+
+/usr/include/c++/4.8/chrono:
+
+/usr/include/c++/4.8/ratio:
+
 ../src/sstate.hpp:
 
 /usr/local/include/ppl.hh:
@@ -724,7 +730,3 @@ catch.hpp:
 ../src/assignment.hpp:
 
 ../src/statistics.hpp:
-
-/usr/include/c++/4.8/chrono:
-
-/usr/include/c++/4.8/ratio:
