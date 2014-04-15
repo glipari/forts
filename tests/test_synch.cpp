@@ -114,4 +114,20 @@ TEST_CASE("split", "[parallel]")
 	REQUIRE(x[0].second == end(v));
 	REQUIRE(*x[0].first == 1);
     }
+    SECTION("split with list, over") {
+	list<int> v = {1, 2};
+	auto x = split(begin(v), end(v), 2, 5);
+	REQUIRE(x.size() == 5);
+	REQUIRE(*x[0].first == 1);
+	REQUIRE(x[0].first  == begin(v));
+	REQUIRE(x[0].second == x[1].first);
+	REQUIRE(*x[1].first == 2);
+	REQUIRE(x[1].second == end(v));
+	REQUIRE(x[2].first  == end(v));
+	REQUIRE(x[3].first  == end(v));
+	REQUIRE(x[4].first  == end(v));
+	REQUIRE(x[2].second == end(v));
+	REQUIRE(x[3].second == end(v));
+	REQUIRE(x[4].second == end(v));
+    }
 }

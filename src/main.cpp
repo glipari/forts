@@ -4,6 +4,7 @@
 #include "expression.hpp"
 #include "sstate.hpp"
 #include <model_parser.hpp>
+#include <thread> 
 
 using namespace std;
 
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
     }
     
     MODEL.reset();
-    MODEL.set_concurrency(1);
+
     /** argv[1] in the input file name. */
     ifstream ifs(argv[1]);
     
@@ -30,10 +31,11 @@ int main(int argc, char *argv[])
     try {
         MODEL.check_consistency();
         /** To print out the model? */
-        MODEL.print();
+        //MODEL.print();
         MODEL.set_sstate_type(BOX_WIDENED);
         //MODEL.set_sstate_type(WIDENED);
         //MODEL.SpaceExplorer();
+	MODEL.set_concurrency(1);
 	MODEL.SpaceExplorerParallel();
         MODEL.print_log();
     } catch(const string &s) {

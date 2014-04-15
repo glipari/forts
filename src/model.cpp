@@ -82,29 +82,36 @@ void Model::worker(SynchBarrier &barrier, unsigned i)
     while (mydata.active) {
 	for (auto it = mydata.start; it != mydata.stop; ++it) {
 	    vector<State_ptr> nsstates = (*it)->post();
+	    cout << "worker " << i << " *** " << nsstates.size() << endl;
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
 		if ((*iit)->is_empty()) {
 		    mydata.stats.eliminated++;
+		    cout << "worker " << i << " empty!" << endl;
 		    continue;
 		}
 		if ((*iit)->is_bad()) //
 		    mydata.bad = true;
 		if (contained_in(*iit, current)) {
 		    mydata.stats.eliminated++;
+		    cout << "worker " << i << " in current!" << endl;
 		    continue;
 		}
 		if (contained_in(*iit, mydata.next)) {
 		    mydata.stats.eliminated++;
+		    cout << "worker " << i << " in next!" << endl;
 		    continue;
 		}
 		if (contained_in(*iit, Space)) {
 		    mydata.stats.eliminated++;
+		    cout << "worker " << i << " in Space!" << endl;
 		    continue;
 		}
 		mydata.stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, mydata.next);
 		mydata.next.push_back(*iit);
 	    }
 	}
+	cout << "worker " << i << " produced " 
+	     << mydata.next.size() << " states" << endl;
 	barrier.synch();
 	// now next has been emptied and moved to current    
     }
@@ -118,12 +125,13 @@ void Model::SpaceExplorerParallel()
     begin = clock();
     State_ptr init = init_sstate();
     SynchBarrier barrier(n_workers);
+    int step = 0; 
     
     current.clear();
     current.push_back(init);
-    int step = 0; 
+
     // init all threads;
-    wdata.clear(); 
+    wdata.clear();
     workers.clear();
 
     using namespace std::placeholders;
@@ -135,11 +143,15 @@ void Model::SpaceExplorerParallel()
     }
 
     // now all workers are ready to start
+
+    cout << "Concurrency level: " << MODEL.get_concurrency() << endl;
+
     bool bad_found = false;
     while (not bad_found) {
 	// split work
 	auto v = split(std::begin(current), std::end(current), 
 		       current.size(), n_workers);
+	cout << "splitted" << endl;
 	for (int i=0; i<n_workers; ++i) {
 	    wdata[i].start = v[i].first;
 	    wdata[i].stop  = v[i].second;
@@ -269,9 +281,9 @@ bool Model::contained_in(const State_ptr &ss, const Space_list &lss)
         // auto s2 = ss->get_signature();
         // if (!s1.includes(s2))
         //     continue;
-	contains_stat.start();
+	//contains_stat.start();
 	bool f = (*it)->contains(ss);
-	contains_stat.stop();
+	//contains_stat.stop();
 	if (f) return true;
     }
     return false;
@@ -288,9 +300,9 @@ int Model::remove_included_sstates_in_a_list(const State_ptr &ss, Space_list &ls
         //     it ++;
         //     continue;
         // }
-	contains_stat.start();
+	//contains_stat.start();
 	bool f = ss->contains(*it); 
-	contains_stat.stop();
+	//contains_stat.stop();
 	if (f) {
 	    it = lss.erase(it);
 	    count++;

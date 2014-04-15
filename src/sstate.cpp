@@ -310,17 +310,17 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
     vector<shared_ptr<Symbolic_State> > v_ss;
     vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
     vector<string> synch_labels; 
-
+    
     auto it = signature_to_combined_edges.find(signature);
     if ( it != signature_to_combined_edges.end()) {
         vector<Combined_edge> &edge_groups = it->second;
         for (auto e : edge_groups) {
-        auto nss = clone(); //make_shared<Symbolic_State>(*this);
-        nss->discrete_step(e);
-        nss->continuous_step();
-        /** Do not forget to update the signature for the next sstate. */
-        nss->update_signature();
-        sstates.push_back(nss);
+	    auto nss = clone(); //make_shared<Symbolic_State>(*this);
+	    nss->discrete_step(e);
+	    nss->continuous_step();
+	    /** Do not forget to update the signature for the next sstate. */
+	    nss->update_signature();
+	    sstates.push_back(nss);
         }
         
     }
@@ -330,7 +330,7 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
         for (auto p : locations) {
             vector<string> new_labels = p->get_automaton().get_labels(); 
             combine(edge_groups, *p, new_labels, first);
-	        first = false;
+	    first = false;
         }
 
         signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
@@ -339,8 +339,8 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
 	    auto nss = clone(); //make_shared<Symbolic_State>(*this);
 	    nss->discrete_step(e);
 	    nss->continuous_step();
-        /** Do not forget to update the signature for the next sstate. */
-        nss->update_signature();
+	    /** Do not forget to update the signature for the next sstate. */
+	    nss->update_signature();
 	    sstates.push_back(nss);
         }
     }
