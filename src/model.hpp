@@ -15,7 +15,6 @@ class Combined_edge;
 
 #define MODEL Model::get_instance()
 
-
 struct model_stats {
     int total_states = 0; 
     int eliminated = 0; 

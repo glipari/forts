@@ -2,6 +2,7 @@
 #include <synch.hpp>
 #include <thread>
 #include <vector>
+#include <list>
 
 using namespace std;
 
@@ -49,4 +50,68 @@ TEST_CASE("barrier", "[parallel]")
     barrier.start();
     for (auto &x : th) x.join();
     CHECK(true);
+}
+
+
+TEST_CASE("split", "[parallel]")
+{
+    SECTION("split with vector, 1") {
+	vector<int> v = {1, 2, 3};
+	auto x = split(begin(v), end(v), v.size(), 1);
+	REQUIRE(x.size() == 1);
+	REQUIRE(*x[0].first == 1);
+	REQUIRE(x[0].first == v.begin());
+	REQUIRE(x[0].second == v.end());
+    }
+    SECTION("split with vector, 2") {
+	vector<int> v = {1, 2, 3};
+	auto x = split(begin(v), end(v), v.size(), 3);
+	REQUIRE(x.size() == 3);
+	REQUIRE(x[0].first == v.begin());
+	REQUIRE(x[0].second == x[1].first);
+	REQUIRE(x[1].second == x[2].first);
+	REQUIRE(x[2].second == v.end());
+	REQUIRE(*x[0].first == 1);
+	REQUIRE(*x[1].first == 2);
+	REQUIRE(*x[2].first == 3);
+    }
+    SECTION("split with vector, 3") {
+	vector<int> v = {1, 2, 3};
+	auto x = split(begin(v), end(v), v.size(), 2);
+	REQUIRE(x.size() == 2);
+	REQUIRE(x[0].first == v.begin());
+	REQUIRE(x[0].second == x[1].first);
+	REQUIRE(x[1].second == v.end());
+	REQUIRE(*x[0].first == 1);
+	REQUIRE(*x[1].first == 3);
+    }
+    SECTION("split with array, 3") {
+	int v[] = {1, 2, 3};
+	auto x = split(begin(v), end(v), 3, 2);
+	REQUIRE(x.size() == 2);
+	REQUIRE(x[0].first == begin(v));
+	REQUIRE(x[0].second == x[1].first);
+	REQUIRE(x[1].second == end(v));
+	REQUIRE(*x[0].first == 1);
+	REQUIRE(*x[1].first == 3);
+    }
+    SECTION("split with list, 3") {
+	list<int> v = {1, 2, 3};
+	auto x = split(begin(v), end(v), 3, 2);
+	REQUIRE(x.size() == 2);
+	REQUIRE(x[0].first == begin(v));
+	REQUIRE(x[0].second == x[1].first);
+	REQUIRE(x[1].second == end(v));
+	REQUIRE(*x[0].first == 1);
+	REQUIRE(*x[1].first == 3);
+    }
+    SECTION("split with list, 1") {
+	list<int> v = {1, 2, 3};
+	auto x = split(begin(v), end(v), 3, 1);
+	REQUIRE(x.size() == 1);
+	REQUIRE(*x[0].first == 1);
+	REQUIRE(x[0].first == begin(v));
+	REQUIRE(x[0].second == end(v));
+	REQUIRE(*x[0].first == 1);
+    }
 }
