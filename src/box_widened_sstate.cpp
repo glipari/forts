@@ -48,3 +48,13 @@ void Box_Widened_Symbolic_State::print() const
     cout << "Box Widened cvx : \n";
     cout << box_widened_cvx << endl << endl;
 }
+
+bool Box_Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
+{
+    bool res = Widened_Symbolic_State::equals(pss);
+    if (res) {
+        auto myptr = dynamic_pointer_cast<Box_Widened_Symbolic_State>(pss); 
+        res = (box_widened_cvx == myptr->box_widened_cvx);
+    }
+    return res;
+}

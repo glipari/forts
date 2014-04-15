@@ -33,6 +33,8 @@ TEST_CASE("Test the signature of a symbolic state",
         REQUIRE (sig3.get_active_tasks() == 0);
         REQUIRE (sig5.get_active_tasks() == 2);
         REQUIRE (sig1 == sig4);
+
+        REQUIRE( not sig5.includes(sig2));
     }
 }
 

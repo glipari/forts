@@ -20,7 +20,6 @@ public :
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void continuous_step();
     virtual const PPL::C_Polyhedron& get_cvx() const;
-    //virtual const PPL::C_Polyhedron& get_featured_cvx() const;
     virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void print() const;
     virtual void widen();

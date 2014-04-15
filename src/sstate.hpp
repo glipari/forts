@@ -66,7 +66,7 @@ public:
 
     virtual const PPL::C_Polyhedron& get_cvx() const;
 
-    virtual std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    std::vector<std::shared_ptr<Symbolic_State> > post() const;
 
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
 

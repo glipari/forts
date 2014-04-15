@@ -22,7 +22,7 @@ public :
     virtual void widen();
     //virtual void continuous_step();
     //virtual const PPL::C_Polyhedron& get_cvx() const;
-    //virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void print() const;
     //void widen();
 };

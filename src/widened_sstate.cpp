@@ -30,6 +30,28 @@ void Widened_Symbolic_State::continuous_step()
     widen();
 }
 
+//void Widened_Symbolic_State::widen()
+//{
+//    widened_cvx = cvx;
+//    VariableList cvars = MODEL.get_cvars();
+//    int dim = cvars.size();
+//    widened_cvx.add_space_dimensions_and_embed(dim);
+//
+//    PPL::Constraint_System css1, css2;
+//
+//    for ( int i = 0; i < dim; i++) {
+//        css1.insert(PPL::Variable(i)==PPL::Variable(i+dim));
+//    }
+//    widened_cvx.add_constraints(css1);
+//
+//    for ( int i = 0; i < dim; i++) {
+//        widened_cvx.unconstrain(PPL::Variable(i));
+//        css2.insert(PPL::Variable(i)<=PPL::Variable(i+dim));
+//    }
+//    widened_cvx.add_constraints(css2);
+//
+//    widened_cvx.remove_higher_space_dimensions(dim);
+//}
 void Widened_Symbolic_State::widen()
 {
     widened_cvx = cvx;
@@ -37,20 +59,15 @@ void Widened_Symbolic_State::widen()
     int dim = cvars.size();
     widened_cvx.add_space_dimensions_and_embed(dim);
 
-    PPL::Constraint_System css1, css2;
-
+    PPL::Constraint_System css1;
+    PPL::Variables_Set vss;
     for ( int i = 0; i < dim; i++) {
-        css1.insert(PPL::Variable(i)==PPL::Variable(i+dim));
+        css1.insert(PPL::Variable(i)>=PPL::Variable(i+dim));
+        vss.insert(PPL::Variable(i));
     }
     widened_cvx.add_constraints(css1);
 
-    for ( int i = 0; i < dim; i++) {
-        widened_cvx.unconstrain(PPL::Variable(i));
-        css2.insert(PPL::Variable(i)<=PPL::Variable(i+dim));
-    }
-    widened_cvx.add_constraints(css2);
-
-    widened_cvx.remove_higher_space_dimensions(dim);
+    widened_cvx.remove_space_dimensions(vss);
 }
 
 const PPL::C_Polyhedron& Widened_Symbolic_State::get_cvx() const
