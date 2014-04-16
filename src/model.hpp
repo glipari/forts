@@ -72,10 +72,9 @@ class Model {
 	bool active = true;
     };
     
-    int n_workers = 1;
+    //int n_workers = 1;
     std::vector<worker_data> wdata;
     std::vector<std::thread> workers;
-
     void worker(SynchBarrier &barrier, unsigned n);
 
 public:
@@ -116,7 +115,7 @@ public:
     */
     void SpaceExplorer();
 
-    void SpaceExplorerParallel();
+    void SpaceExplorerParallel(int n_workers);
 
     Space_list &get_all_states() { return Space; }
 
@@ -133,8 +132,8 @@ public:
          if nth = 1 (default), no parallelization is done
          if nth > 1, nth threads are created to carry out the internal 
 	 state exploration in parallel. */
-    void set_concurrency(unsigned nth);
-    unsigned get_concurrency() const { return n_workers; }
+    //void set_concurrency(unsigned nth);
+    //unsigned get_concurrency() const { return n_workers; }
 };
 
 #endif

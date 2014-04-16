@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	if (c == 'p') cout << "Parallelism set to :";
 	parall = atoi(optarg);
 	cout << parall << endl;
-	MODEL.set_concurrency(parall);
+	//MODEL.set_concurrency(parall);
     }
 
     /** argv[1] in the input file name. */
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         //MODEL.set_sstate_type(WIDENED);
         //MODEL.SpaceExplorer();
 	// MODEL.set_concurrency(2);
-	MODEL.SpaceExplorerParallel();
+	MODEL.SpaceExplorerParallel(parall);
         MODEL.print_log();
     } catch(const string &s) {
         cout << s << endl;

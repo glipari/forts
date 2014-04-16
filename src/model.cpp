@@ -133,7 +133,7 @@ void Model::worker(SynchBarrier &barrier, unsigned i)
 }
 
 
-void Model::SpaceExplorerParallel()
+void Model::SpaceExplorerParallel(int n_workers)
 {
     clock_t begin, end;
     double time_spent;
@@ -159,7 +159,7 @@ void Model::SpaceExplorerParallel()
 
     // now all workers are ready to start
 
-    cout << "Concurrency level: " << MODEL.get_concurrency() << endl;
+    cout << "Concurrency level: " << n_workers << endl;
 
     bool bad_found = false;
     while (not bad_found) {
@@ -439,9 +439,9 @@ void Model::set_sstate_type(enum SYMBOLIC_STATE_TYPE t)
     sstate_type = t;
 }
 
-void Model::set_concurrency(unsigned nth)
-{
-    if (nth == 0) n_workers = std::thread::hardware_concurrency();
-    else n_workers = nth;
-    // TODO create all threads?     
-}
+// void Model::set_concurrency(unsigned nth)
+// {
+//     if (nth == 0) n_workers = std::thread::hardware_concurrency();
+//     else n_workers = nth;
+//     // TODO create all threads?     
+// }
