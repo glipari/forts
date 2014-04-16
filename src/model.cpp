@@ -192,7 +192,7 @@ void Model::SpaceExplorerParallel(int n_workers)
 	cout << "Step : " << ++step << endl;
 	cout << "Number of passed states : " << Space.size() << endl;
 	cout << "Number of generated states : " << current.size() << endl;
-	cout << "-----------------------------" << endl;
+t	cout << "-----------------------------" << endl;
 	
 	if (current.size() == 0) break;
 	for (int i=0; i<n_workers; ++i) {

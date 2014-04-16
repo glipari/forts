@@ -190,11 +190,11 @@ TEST_CASE("Simple model3", "[model][Space]")
     // build expected states
 
     auto s_a = build_state({ "LOC_A" }, 
-				     {{"T",10}, {"O",0}}, 
-				     "x == 0"); 
+			   {{"T",10}, {"O",0}}, 
+			   "x == 0"); 
     auto s_b = build_state({ "LOC_B" }, 
-				     {{"T",10}, {"O",0}}, 
-				     "x <= 10 & x >= 0");
+			   {{"T",10}, {"O",0}}, 
+			   "x <= 10 & x >= 0");
 
     list<Symbolic_State> expected = { *s_a, *s_b };
 
