@@ -259,14 +259,14 @@ TEST_CASE("Simple model parallel", "[model][Space][parallel]")
     string str {std::istreambuf_iterator<char>(ifs), 
 	    std::istreambuf_iterator<char>()};
 
-    cout << "------------------ File has been read ----------------------" << endl;
-    cout << str << endl;
-    cout << "------------------------------------------------------------" << endl;
+    // cout << "------------------ File has been read ----------------------" << endl;
+    // cout << str << endl;
+    // cout << "------------------------------------------------------------" << endl;
     build_a_model(str);
-    cout << "------------------ Model has been built --------------------" << endl;
+    // cout << "------------------ Model has been built --------------------" << endl;
     MODEL.check_consistency(); // TODO put this inside build_a_model();
-    cout << "------------------ Consistency checked ---------------------" << endl;
-    MODEL.print();
+    // cout << "------------------ Consistency checked ---------------------" << endl;
+    // MODEL.print();
 
     SECTION("parallel = 1", "parallel = 1") {
 	MODEL.SpaceExplorerParallel(1);
@@ -275,26 +275,30 @@ TEST_CASE("Simple model parallel", "[model][Space][parallel]")
     // build expected states
 
     auto s_a = build_state({ "LOC_A" }, 
-				     {{"d", 0}}, 
-				     "x == y & x <= 2 & y >=0"); 
+			   {{"d", 0}}, 
+			   "x == y & x <= 2 & y >=0"); 
     auto s_b = build_state({ "LOC_B" }, 
-				     {{"d", 0}}, 
-				     "x == 0 & y >=2");
+			   {{"d", 0}}, 
+			   "x == 0 & y >=2");
     auto s_c = build_state({ "LOC_C" }, 
-				     {{"d", 0}}, 
-				     "x == 0 & y <=5 & y >= 2");
+			   {{"d", 0}}, 
+			   "x == 0 & y <=5 & y >= 2");
 
     list<Symbolic_State> expected = { *s_a, *s_b, *s_c };
-
+    
     auto li = MODEL.get_all_states();
-    for (auto x : li) x->print();
-
+    // for (auto x : li) x->print();
+    
     CHECK(compare_state_sets(li, expected));
+
+    cout << "Compare is ok" << endl; 
 
     Signature sig_a("LOC_A"), sig_b("LOC_B"), sig_c("LOC_C");
     REQUIRE(s_a->get_signature() == sig_a);
     REQUIRE(s_b->get_signature() == sig_b);
     REQUIRE(s_c->get_signature() == sig_c);
+
+    cout << "requires are all ok" << endl;
 }
 
 
