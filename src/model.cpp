@@ -200,6 +200,15 @@ void Model::SpaceExplorerParallel(int n_workers)
 	}
     }
     end = clock();
+    // clean exit of the threads:
+    for (int i=0; i<n_workers; i++) 
+	wdata[i].active = false;
+    barrier.start();
+    for (int i=0; i<n_workers; i++) 
+	workers[i].join();
+    
+    cout << "All threads correctly ended" << endl;
+
     time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
     cout << "Total time (in seconds) : " << time_spent << endl;
     cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) 
