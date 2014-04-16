@@ -14,9 +14,7 @@ using namespace std;
 
 TEST_CASE("Test the generated sumbolic states in Space", "[][]")
 {
-
     SECTION("Check every symbolic state in Space") {
-
         MODEL.reset();
         /**
          * 2t.mod : two tasks are scheduled by preemptive
@@ -41,7 +39,6 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
 
         PPL::Variable p1(0), c1(1), d1(2), p2(3), c2(4), d2(5);
         int O1 = 0, T1 = 2, C1 = 1, D1 = 2, O2 = 1, T2 = 4, C2 = 2, D2 = 4;
-
 
         list<shared_ptr<Symbolic_State> > sstates, Space;
         auto curr = init;
@@ -112,11 +109,6 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         // reset 
         loc_names.clear();
         cvx = C_Polyhedron(6);
-
-
-        
-
-
     }
 
 }

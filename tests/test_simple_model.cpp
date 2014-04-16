@@ -268,8 +268,16 @@ TEST_CASE("Simple model parallel", "[model][Space][parallel]")
     // cout << "------------------ Consistency checked ---------------------" << endl;
     // MODEL.print();
 
-    SECTION("parallel = 1", "parallel = 1") {
+    SECTION("parallel = 1") {
 	MODEL.SpaceExplorerParallel(1);
+    }
+
+    SECTION("parallel = 2") {
+	MODEL.SpaceExplorerParallel(2);
+    }
+
+    SECTION("parallel = 8") {
+	MODEL.SpaceExplorerParallel(8);
     }
 
     // build expected states
@@ -302,3 +310,51 @@ TEST_CASE("Simple model parallel", "[model][Space][parallel]")
 }
 
 
+TEST_CASE("Simple water monitor model parallel", "[model][Space][parallel]")
+{
+    Model::reset();
+    ifstream ifs("water-level.forts");
+    string str {std::istreambuf_iterator<char>(ifs), 
+	    std::istreambuf_iterator<char>()};
+
+    cout << "------------------ File has been read ----------------------" << endl;
+    cout << str << endl;
+    cout << "------------------------------------------------------------" << endl;
+    build_a_model(str);
+    cout << "------------------ Model has been built --------------------" << endl;
+    MODEL.check_consistency(); // TODO put this inside build_a_model();
+    cout << "------------------ Consistency checked ---------------------" << endl;
+    //MODEL.print();
+    
+    SECTION("Parallel single thread") {
+	MODEL.SpaceExplorerParallel(1);
+    }
+
+    SECTION("Parallel two threads") {
+	MODEL.SpaceExplorerParallel(2);
+    }
+
+    SECTION("Parallel eight threads") {
+	MODEL.SpaceExplorerParallel(8);
+    }
+
+    // build expected states
+
+    auto s_a = build_state({ "l0" }, 
+			   {}, 
+			   "w<=10 & w >= 1 & x >= 0 & w-x<=1"); 
+    auto s_b = build_state({ "l1" }, 
+			   {}, 
+			   "x<=2 & x>=0 & w==x+10");
+    auto s_c = build_state({ "l2" }, 
+			   {}, 
+			   "2*x+w==16 & w>= 5 & x>= 2");
+    auto s_d = build_state({ "l3" }, 
+			   {}, 
+			   "2*x+w==5 & x>=0 & x <= 2");
+
+    list<Symbolic_State> expected = { *s_a, *s_b , *s_c, *s_d};
+
+    auto li = MODEL.get_all_states();
+    CHECK(compare_state_sets(li, expected));
+}
