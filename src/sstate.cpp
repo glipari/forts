@@ -4,15 +4,17 @@
 #include "automaton.hpp"
 #include "model.hpp"
 #include "combined_edge.hpp"
+#include "edge_factory.hpp"
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
-std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
-
-void cache_reset()
+//std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
+  
+ostream & operator<<(ostream& os, const Signature &s)
 {
-    signature_to_combined_edges.clear();
+    os << s.get_str();
+    return os;
 }
 
 const std::string& Signature::get_str() const
@@ -272,77 +274,18 @@ bool Symbolic_State::is_empty() const
     return cvx.is_empty();
 }
 
-void combine(vector<Combined_edge> &edge_groups, const Location &l, 
-	     const vector<string> new_labels,
-	     bool first) 
-{
-    if (first) {
-	vector<Edge> outgoings = l.get_edges();
-	for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
-            Combined_edge egroup(*iit, iit->get_label(), new_labels);
-            // egroup.edges.push_back(*iit);
-            // //if ( iit->sync_label != "") {
-            //   egroup.sync_label = (iit->sync_label);
-            //   egroup.sync_set = new_labels;
-            // //}
-            edge_groups.push_back(egroup);
-	}
-	return;
-    } 
-    vector<Combined_edge> copy = edge_groups;
-    edge_groups.clear();
-    // to combine every outgoing from "l" with every "edge group"
-    vector<Edge> outgoings = l.get_edges();
-    for ( auto &egroup : copy) {
-      for ( auto it = outgoings.begin(); it != outgoings.end(); it++) {
-        vector<Combined_edge> com = egroup.combine(*it, new_labels);
-        for ( auto &eg : com)
-          if ( not contains(edge_groups, eg))
-            edge_groups.push_back(eg);
-      }
-    }
-}
-
-
 vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
 {
-    vector< vector<Edge> > v_edges;
-    vector<shared_ptr<Symbolic_State> > v_ss;
-    vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
-    vector<string> synch_labels; 
-    
-    auto it = signature_to_combined_edges.find(signature);
-    if ( it != signature_to_combined_edges.end()) {
-        vector<Combined_edge> &edge_groups = it->second;
-        for (auto e : edge_groups) {
-	    auto nss = clone(); //make_shared<Symbolic_State>(*this);
-	    nss->discrete_step(e);
-	    nss->continuous_step();
-	    /** Do not forget to update the signature for the next sstate. */
-	    nss->update_signature();
-	    sstates.push_back(nss);
-        }
-        
-    }
-    else {
-        vector<Combined_edge> edge_groups;
-        bool first = true;
-        for (auto p : locations) {
-            vector<string> new_labels = p->get_automaton().get_labels(); 
-            combine(edge_groups, *p, new_labels, first);
-	    first = false;
-        }
+    vector<shared_ptr<Symbolic_State> > sstates;
+    vector<Combined_edge> eg = EDGE_FACTORY.get_edges(signature, locations);
 
-        signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
-
-        for (auto e : edge_groups) {
-	    auto nss = clone(); //make_shared<Symbolic_State>(*this);
-	    nss->discrete_step(e);
-	    nss->continuous_step();
-	    /** Do not forget to update the signature for the next sstate. */
-	    nss->update_signature();
-	    sstates.push_back(nss);
-        }
+    for (auto e : eg) {
+	auto nss = clone(); 
+	nss->discrete_step(e);
+	nss->continuous_step();
+	/** Do not forget to update the signature for the next sstate. */
+	nss->update_signature();
+	sstates.push_back(nss);
     }
     
     return sstates;

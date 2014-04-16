@@ -13,6 +13,7 @@
 #include "box_widened_sstate.hpp"
 
 #include "synch.hpp"
+#include "edge_factory.hpp"
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
@@ -21,6 +22,8 @@ Model *Model::the_instance = nullptr;
 
 Model::Model()
 {
+    // initializes the edge factory;
+    // EDGE_FACTORY;
 }
 
 Model &Model::get_instance()
@@ -33,7 +36,8 @@ void Model::reset()
 {
     delete the_instance;
     the_instance = new Model();
-    cache_reset();
+    //cache_reset();
+    EdgeFactory::reset();
 }
 
 void Model::discrete_step(State_ptr &pss, Combined_edge &edges)
@@ -78,35 +82,46 @@ State_ptr Model::init_sstate()
 void Model::worker(SynchBarrier &barrier, unsigned i)
 {
     barrier.synch();
-    worker_data &mydata = wdata[i];
-    while (mydata.active) {
+
+    while (wdata[i].active) {
+	// for debug:
+	worker_data &mydata = wdata[i];
+	int count = 0;
+	auto temp = mydata.start; 
+	while (temp != mydata.stop) { temp++; count++; }
+	cout << "Worker " << i << " received " << count << " states; " << endl;
+	
 	for (auto it = mydata.start; it != mydata.stop; ++it) {
+	    cout << "Worker " << i << " ptr: " << (*it)->get_signature() << endl;
 	    vector<State_ptr> nsstates = (*it)->post();
-	    cout << "worker " << i << " *** " << nsstates.size() << endl;
+	    //cout << "worker " << i << " *** " << nsstates.size() << endl;
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
+
+		cout << "Worker " << i << " prod: " 
+		     << (*iit)->get_signature() << endl;
 		if ((*iit)->is_empty()) {
 		    mydata.stats.eliminated++;
-		    cout << "worker " << i << " empty!" << endl;
+		    //cout << "worker " << i << " empty!" << endl;
 		    continue;
 		}
 		if ((*iit)->is_bad()) //
 		    mydata.bad = true;
 		if (contained_in(*iit, current)) {
 		    mydata.stats.eliminated++;
-		    cout << "worker " << i << " in current!" << endl;
+		    //cout << "worker " << i << " in current!" << endl;
 		    continue;
 		}
 		if (contained_in(*iit, mydata.next)) {
 		    mydata.stats.eliminated++;
-		    cout << "worker " << i << " in next!" << endl;
+		    //cout << "worker " << i << " in next!" << endl;
 		    continue;
 		}
 		if (contained_in(*iit, Space)) {
 		    mydata.stats.eliminated++;
-		    cout << "worker " << i << " in Space!" << endl;
+		    //cout << "worker " << i << " in Space!" << endl;
 		    continue;
 		}
-		mydata.stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, mydata.next);
+		//mydata.stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, mydata.next);
 		mydata.next.push_back(*iit);
 	    }
 	}
@@ -151,12 +166,18 @@ void Model::SpaceExplorerParallel()
 	// split work
 	auto v = split(std::begin(current), std::end(current), 
 		       current.size(), n_workers);
-	cout << "splitted" << endl;
+	assert(v.size() == n_workers);
 	for (int i=0; i<n_workers; ++i) {
 	    wdata[i].start = v[i].first;
 	    wdata[i].stop  = v[i].second;
 	}
 	
+	cout << "splitted" << endl;
+	cout << "All pointers: " << endl;
+	for (auto it = std::begin(current); it != std::end(current); ++it) {
+	    cout << (*it)->get_signature() << endl;
+	}
+	cout << "----------" << endl;
 	barrier.start();
 	// all work is done in the parallel threads
 	barrier.waitForAll();

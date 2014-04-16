@@ -11,7 +11,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     if (argc == 1) {
-	cout << "Usage: " << argv[0] << " <filename> " << endl;
+	cout << "Usage: " << argv[0] << " [options] <filename> " << endl;
         return 0;
     }
     
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         MODEL.set_sstate_type(BOX_WIDENED);
         //MODEL.set_sstate_type(WIDENED);
         //MODEL.SpaceExplorer();
-	MODEL.set_concurrency(1);
+	MODEL.set_concurrency(2);
 	MODEL.SpaceExplorerParallel();
         MODEL.print_log();
     } catch(const string &s) {

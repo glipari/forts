@@ -7,6 +7,7 @@
 #include <common.hpp>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <ppl_adapt.hpp>
 
 namespace PPL = Parma_Polyhedra_Library;
@@ -25,11 +26,9 @@ public :
     bool operator == (const Signature &sig) const;
     bool operator < (const Signature &sig) const;
     bool includes(const Signature &sig) const;
-    
 };
 
-/** Reset the cached combined edges. */
-void cache_reset();
+std::ostream & operator<<(std::ostream& os, const Signature &s);
 
 
 class Symbolic_State {
