@@ -6,6 +6,8 @@
 #include <model_parser.hpp>
 #include <thread> 
 
+#include <unistd.h>
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -16,9 +18,17 @@ int main(int argc, char *argv[])
     }
     
     MODEL.reset();
+    int c = -1;
+    int parall = 1;
+    while ((c = getopt(argc, argv, "p:")) != -1) {
+	if (c == 'p') cout << "Parallelism set to :";
+	parall = atoi(optarg);
+	cout << parall << endl;
+	MODEL.set_concurrency(parall);
+    }
 
     /** argv[1] in the input file name. */
-    ifstream ifs(argv[1]);
+    ifstream ifs(argv[optind]);
     
     if (not ifs.good()) {
 	cout << "Could not read " << argv[1] << endl;
@@ -35,14 +45,13 @@ int main(int argc, char *argv[])
         MODEL.set_sstate_type(BOX_WIDENED);
         //MODEL.set_sstate_type(WIDENED);
         //MODEL.SpaceExplorer();
-	MODEL.set_concurrency(2);
+	// MODEL.set_concurrency(2);
 	MODEL.SpaceExplorerParallel();
         MODEL.print_log();
     } catch(const string &s) {
         cout << s << endl;
         return 1;
     }
-
 
     return 0;
 }
