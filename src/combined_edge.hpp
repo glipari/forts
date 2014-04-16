@@ -16,9 +16,13 @@ class Combined_edge {
 public:
     Combined_edge(const Edge &e, const std::string &sync, 
 		  const std::vector<std::string> &labels);
+
+    Combined_edge(const std::vector<std::string> &labels);
     
     std::vector<Combined_edge> combine(const Edge &e, 
 				       const std::vector<std::string> e_syncs);
+
+    std::vector<Combined_edge> combine(const std::vector<std::string> new_labels);
 
     bool operator == (const Combined_edge &ce) const;
 

@@ -11,7 +11,7 @@
 
 class EdgeFactory {
     static EdgeFactory *instance; 
-    std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;    
+//    std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;    
     std::mutex mtx;
 
     EdgeFactory();
