@@ -53,7 +53,7 @@ void Widened_Symbolic_State::widen()
     widened_cvx.remove_higher_space_dimensions(dim);
 }
 
-const PPL::C_Polyhedron& Widened_Symbolic_State::get_cvx() const
+const PPL::C_Polyhedron Widened_Symbolic_State::get_cvx() const
 {
     return widened_cvx;
 }

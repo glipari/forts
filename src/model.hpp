@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <thread>
+#include <mutex>
 
 #include "sstate.hpp"
 #include "automaton.hpp"
@@ -70,10 +71,13 @@ class Model {
 
 	worker_data();
     };
-    
+
     //int n_workers = 1;
     std::vector<worker_data> wdata;
     std::vector<std::thread> workers;
+
+    std::mutex debug_mtx;    
+
     void worker(SynchBarrier &barrier, unsigned n);
 
     void split_work(const Space_list &current, std::vector<Model::worker_data> &wdata);

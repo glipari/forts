@@ -20,7 +20,7 @@ using namespace Parma_Polyhedra_Library::IO_Operators;
 
 Model *Model::the_instance = nullptr;
 
-Model::Model()
+Model::Model() : debug_mtx{}
 {
     // initializes the edge factory;
     // EDGE_FACTORY;
@@ -59,13 +59,13 @@ State_ptr Model::init_sstate()
 
     string ln="";
     for (auto it = automata.begin(); it != automata.end(); it++) {
-	cout << "loc name " << it->get_init_location() << endl;
+	//cout << "loc name " << it->get_init_location() << endl;
 	//init.loc_names.push_back(it->get_init_location());
 	loc_names.push_back(it->get_init_location());
 	locs.push_back(&(it->get_location_by_name(it->get_init_location())));
 	ln += it->get_init_location();
     }
-    cout << "init name " << ln << endl; 
+    //cout << "init name " << ln << endl; 
     cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
 
     State_ptr init;
@@ -77,10 +77,10 @@ State_ptr Model::init_sstate()
     else
         init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
-    init->print();
+    //init->print();
     init->continuous_step();
-    cout << "cvx after continuous step : ";
-    init->print();
+    //cout << "cvx after continuous step : ";
+    //init->print();
     return init;
 }
 
@@ -90,6 +90,9 @@ void Model::worker(SynchBarrier &barrier, unsigned i)
     barrier.synch();
 
     while (wdata[i].active) {
+	cout << "Taking the lock ... " << endl;
+	unique_lock<mutex> lck(debug_mtx);
+
 	cout << "Worker " << i << " received " << wdata[i].current.size() << " states; " << endl;
 	for (auto it = wdata[i].current.begin(); it != wdata[i].current.end(); ++it) {
 	    cout << "Worker " << i << " ptr: " << (*it)->get_signature() << endl;
@@ -104,27 +107,28 @@ void Model::worker(SynchBarrier &barrier, unsigned i)
 		}
 		if ((*iit)->is_bad()) //
 		    wdata[i].bad = true;
-		/*if (contained_in(*iit, current)) {
+		if (contained_in(*iit, current)) {
 		    wdata[i].stats.eliminated++;
 		    //cout << "worker " << i << " in current!" << endl;
 		    continue;
-		    }*/
+		}
 		if (contained_in(*iit, wdata[i].next)) {
 		    wdata[i].stats.eliminated++;
 		    //cout << "worker " << i << " in next!" << endl;
 		    continue;
 		}
-		/*if (contained_in(*iit, Space)) {
+		if (contained_in(*iit, Space)) {
 		    wdata[i].stats.eliminated++;
 		    //cout << "worker " << i << " in Space!" << endl;
 		    continue;
-		    }*/
+		}
 		//wdata[i].stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, wdata[i].next);
 		wdata[i].next.push_back(*iit);
 	    }
 	}
 	cout << "worker " << i << " produced " 
 	     << wdata[i].next.size() << " states" << endl;
+	lck.unlock();
 	barrier.synch();
 	// now next has been emptied and moved to current    
     }
@@ -159,6 +163,7 @@ void Model::SpaceExplorerParallel(int n_workers)
     workers.clear();
 
     using namespace std::placeholders;
+
     auto tf = std::bind(&Model::worker, this, _1, _2);
 
     for (int i=0; i<n_workers; ++i) {
@@ -191,7 +196,9 @@ void Model::SpaceExplorerParallel(int n_workers)
 	// }
 	
 	cout << "splitted" << endl;
+
 	barrier.start();
+
 	// all work is done in the parallel threads
 	barrier.waitForAll();
 

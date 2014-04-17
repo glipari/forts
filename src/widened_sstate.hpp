@@ -19,7 +19,7 @@ public :
 
     virtual bool contains(const State_ptr &pss) const;
     virtual void continuous_step();
-    virtual const PPL::C_Polyhedron& get_cvx() const;
+    virtual const PPL::C_Polyhedron get_cvx() const;
     //virtual const PPL::C_Polyhedron& get_featured_cvx() const;
     virtual bool equals(const State_ptr &pss) const;
     virtual void print() const;
