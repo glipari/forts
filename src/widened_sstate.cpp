@@ -19,7 +19,7 @@ Widened_Symbolic_State::Widened_Symbolic_State(const std::vector<std::string> &l
     //widen();
 }
 
-std::shared_ptr<Symbolic_State> Widened_Symbolic_State::clone() const
+State_ptr Widened_Symbolic_State::clone() const
 {
     return make_shared<Widened_Symbolic_State> (*this);
 }
@@ -63,7 +63,7 @@ const PPL::C_Polyhedron& Widened_Symbolic_State::get_cvx() const
 //    return widened_cvx;
 //}
 
-bool Widened_Symbolic_State::contains(const std::shared_ptr<Symbolic_State> &pss) const
+bool Widened_Symbolic_State::contains(const State_ptr &pss) const
 {
     if (not signature.includes(pss->get_signature())) return false;
     return widened_cvx.contains(pss->get_cvx());
@@ -76,7 +76,7 @@ void Widened_Symbolic_State::print() const
     cout << widened_cvx << endl ;
 }
 
-bool Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
+bool Widened_Symbolic_State::equals(const State_ptr &pss) const
 {
     bool res = Symbolic_State::equals(pss);
     if (res) {

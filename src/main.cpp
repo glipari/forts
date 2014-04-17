@@ -20,11 +20,27 @@ int main(int argc, char *argv[])
     MODEL.reset();
     int c = -1;
     int parall = 1;
-    while ((c = getopt(argc, argv, "p:")) != -1) {
-	if (c == 'p') cout << "Parallelism set to :";
-	parall = atoi(optarg);
-	cout << parall << endl;
-	//MODEL.set_concurrency(parall);
+    string state_type = "";
+    while ((c = getopt(argc, argv, "p:s:")) != -1) {
+	if (c == 'p') {
+	    cout << "Parallelism set to :";
+	    parall = atoi(optarg);
+	    cout << parall << endl;
+	}
+	if (c == 's') {
+	    state_type = string(optarg);
+	    if (state_type == "box") 
+		MODEL.set_sstate_type(BOX_WIDENED);
+	    else if (state_type == "widened") 
+		MODEL.set_sstate_type(WIDENED);
+	    else if (state_type == "origin")
+		MODEL.set_sstate_type(ORIGIN);
+	    else {
+		cout << "Unknown state type : " << state_type << endl;
+		cout << "Possible values are: origin, widened, box" << endl;
+	    }
+	    cout << "State set to :" << state_type << endl;
+	}
     }
 
     /** argv[1] in the input file name. */

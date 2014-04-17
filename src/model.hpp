@@ -28,10 +28,6 @@ struct model_stats {
 
 enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED }; 
 
-typedef std::shared_ptr<Symbolic_State> State_ptr;
-typedef std::list<State_ptr>            Space_list;
-typedef std::list<State_ptr>::iterator  Space_iter;
-
 class SynchBarrier;
 
 class Model {
@@ -64,18 +60,23 @@ class Model {
 
     struct worker_data {
 	Space_list next;
-	Space_iter start;
-	Space_iter stop;
+	//Space_iter start;
+	//Space_iter stop;
+	Space_list current;
 	// should add local statistics about the time and the rest;
 	bool bad = false;
 	model_stats stats;
 	bool active = true;
+
+	worker_data();
     };
     
     //int n_workers = 1;
     std::vector<worker_data> wdata;
     std::vector<std::thread> workers;
     void worker(SynchBarrier &barrier, unsigned n);
+
+    void split_work(const Space_list &current, std::vector<Model::worker_data> &wdata);
 
 public:
     Model(const Model &other) = delete;

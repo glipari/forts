@@ -14,6 +14,11 @@ namespace PPL = Parma_Polyhedra_Library;
 
 class Location;
 class Combined_edge;
+class Symbolic_State;
+
+typedef std::shared_ptr<Symbolic_State> State_ptr;
+typedef std::list<State_ptr>            Space_list;
+typedef std::list<State_ptr>::iterator  Space_iter;
 
 class Signature {
     std::string str;
@@ -44,7 +49,7 @@ protected:
     
     PPL::C_Polyhedron invariant_cvx;
     
-    virtual std::shared_ptr<Symbolic_State> clone() const;
+    virtual State_ptr clone() const;
 
 public:
 
@@ -61,13 +66,13 @@ public:
     virtual void continuous_step();
     void discrete_step(Combined_edge &edges);
 
-    PPL::C_Polyhedron get_invariant_cvx();
+    PPL::C_Polyhedron get_invariant_cvx() const;
 
-    virtual const PPL::C_Polyhedron& get_cvx() const;
+    virtual const PPL::C_Polyhedron get_cvx() const;
 
-    virtual std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    virtual std::vector<State_ptr> post() const;
 
-    virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool contains(const State_ptr  &pss) const;
 
     bool is_empty() const; 
 
@@ -77,7 +82,7 @@ public:
 
     bool operator == (const Symbolic_State &ss) const;
 
-    virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool equals(const State_ptr &pss) const;
 
     std::string get_loc_names() const;
 
@@ -85,5 +90,8 @@ public:
 
     void update_signature();
 };
+
+
+
 
 #endif

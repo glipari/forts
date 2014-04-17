@@ -26,6 +26,11 @@ Model::Model()
     // EDGE_FACTORY;
 }
 
+Model::worker_data::worker_data()
+{
+}
+
+
 Model &Model::get_instance()
 {
     if (the_instance == nullptr) the_instance = new Model();
@@ -44,6 +49,7 @@ void Model::discrete_step(State_ptr &pss, Combined_edge &edges)
 {
     pss->discrete_step(edges);
 }
+
 
 State_ptr Model::init_sstate()
 {
@@ -84,51 +90,54 @@ void Model::worker(SynchBarrier &barrier, unsigned i)
     barrier.synch();
 
     while (wdata[i].active) {
-	// for debug:
-	worker_data &mydata = wdata[i];
-	int count = 0;
-	auto temp = mydata.start; 
-	while (temp != mydata.stop) { temp++; count++; }
-	cout << "Worker " << i << " received " << count << " states; " << endl;
-	
-	for (auto it = mydata.start; it != mydata.stop; ++it) {
+	cout << "Worker " << i << " received " << wdata[i].current.size() << " states; " << endl;
+	for (auto it = wdata[i].current.begin(); it != wdata[i].current.end(); ++it) {
 	    cout << "Worker " << i << " ptr: " << (*it)->get_signature() << endl;
 	    vector<State_ptr> nsstates = (*it)->post();
-	    //cout << "worker " << i << " *** " << nsstates.size() << endl;
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
-
 		cout << "Worker " << i << " prod: " 
 		     << (*iit)->get_signature() << endl;
 		if ((*iit)->is_empty()) {
-		    mydata.stats.eliminated++;
+		    wdata[i].stats.eliminated++;
 		    //cout << "worker " << i << " empty!" << endl;
 		    continue;
 		}
 		if ((*iit)->is_bad()) //
-		    mydata.bad = true;
-		if (contained_in(*iit, current)) {
-		    mydata.stats.eliminated++;
+		    wdata[i].bad = true;
+		/*if (contained_in(*iit, current)) {
+		    wdata[i].stats.eliminated++;
 		    //cout << "worker " << i << " in current!" << endl;
 		    continue;
-		}
-		if (contained_in(*iit, mydata.next)) {
-		    mydata.stats.eliminated++;
+		    }*/
+		if (contained_in(*iit, wdata[i].next)) {
+		    wdata[i].stats.eliminated++;
 		    //cout << "worker " << i << " in next!" << endl;
 		    continue;
 		}
-		if (contained_in(*iit, Space)) {
-		    mydata.stats.eliminated++;
+		/*if (contained_in(*iit, Space)) {
+		    wdata[i].stats.eliminated++;
 		    //cout << "worker " << i << " in Space!" << endl;
 		    continue;
-		}
-		//mydata.stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, mydata.next);
-		mydata.next.push_back(*iit);
+		    }*/
+		//wdata[i].stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, wdata[i].next);
+		wdata[i].next.push_back(*iit);
 	    }
 	}
 	cout << "worker " << i << " produced " 
-	     << mydata.next.size() << " states" << endl;
+	     << wdata[i].next.size() << " states" << endl;
 	barrier.synch();
 	// now next has been emptied and moved to current    
+    }
+}
+
+void Model::split_work(const Space_list &current, std::vector<Model::worker_data> &wdata)
+{
+    const int w = std::ceil(double(current.size())/wdata.size());
+    auto it = current.begin();
+    for (unsigned i=0; i<wdata.size(); i++) {
+	wdata[i].current.clear();
+	for (unsigned k=0; it != current.end() and k<w; k++, it++) 
+	    wdata[i].current.push_back(*it);
     }
 }
 
@@ -163,36 +172,42 @@ void Model::SpaceExplorerParallel(int n_workers)
 
     bool bad_found = false;
     while (not bad_found) {
-	// split work
-	auto v = split(std::begin(current), std::end(current), 
-		       current.size(), n_workers);
-	assert(v.size() == n_workers);
-	for (int i=0; i<n_workers; ++i) {
-	    wdata[i].start = v[i].first;
-	    wdata[i].stop  = v[i].second;
-	}
-	
-	cout << "splitted" << endl;
 	cout << "All pointers: " << endl;
 	for (auto it = std::begin(current); it != std::end(current); ++it) {
 	    cout << (*it)->get_signature() << endl;
 	}
 	cout << "----------" << endl;
+
+	split_work(current, wdata);
+	// // split work
+	// auto v = split(std::begin(current), std::end(current), 
+	// 	       current.size(), n_workers);
+	// assert(v.size() == n_workers);
+	// for (int i=0; i<n_workers; ++i) {
+	//     wdata[i].current.clear();
+	//     cout << "now copying in current" << endl;
+	//     for (auto it = v[i].first; it != v[i].second; ++it) 
+	// 	current.push_back(*it);
+	// }
+	
+	cout << "splitted" << endl;
 	barrier.start();
 	// all work is done in the parallel threads
 	barrier.waitForAll();
 
 	// move all results
-	Space.splice(Space.end(), current);
+	Space.splice(Space.begin(), current);
+	assert(current.size() == 0);
 	for (int i=0; i<n_workers; ++i) {
-	    current.splice(current.end(), wdata[i].next);
+	    current.splice(current.begin(), wdata[i].next);
+	    assert(wdata[i].next.size() == 0);
 	}
 	
 	cout << "-----------------------------" << endl;
 	cout << "Step : " << ++step << endl;
 	cout << "Number of passed states : " << Space.size() << endl;
 	cout << "Number of generated states : " << current.size() << endl;
-t	cout << "-----------------------------" << endl;
+	cout << "-----------------------------" << endl;
 	
 	if (current.size() == 0) break;
 	for (int i=0; i<n_workers; ++i) {

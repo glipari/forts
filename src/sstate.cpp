@@ -27,7 +27,8 @@ const unsigned& Signature::get_active_tasks() const
     return active_tasks;
 }
 
-Signature::Signature(const string &s) {
+Signature::Signature(const string &s) 
+{
     str = s;
     active_tasks = 0;
 
@@ -123,7 +124,7 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
 //    return cvx.contains(ss.cvx);
 //}
 
-bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
+bool Symbolic_State::contains(const State_ptr &pss) const
 {
     if (not (signature == pss->signature)) return false;
     // for (unsigned i = 0; i<locations.size(); i++) 
@@ -132,7 +133,7 @@ bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
     return cvx.contains(pss->cvx);
 }
 
-shared_ptr<Symbolic_State> Symbolic_State::clone() const
+State_ptr Symbolic_State::clone() const
 {
     return make_shared<Symbolic_State> (*this);
 }
@@ -231,9 +232,6 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
     cvx.intersection_assign(guard_cvx);
 
     ass_cvx.add_constraints(cvx.constraints());
-    //cvx.add_space_dimensions_and_embed(cvars.size());
-    //ass_cvx.intersection_assign(cvx);
-    //cvx.remove_higher_space_dimensions(cvars.size());
     /** 
      * Before intersecting ass_cvx and cvx, we must remove 
      * the lower cvars.size() dimensions.
@@ -249,22 +247,17 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
 }
 
 
-PPL::C_Polyhedron Symbolic_State::get_invariant_cvx()
+PPL::C_Polyhedron Symbolic_State::get_invariant_cvx() const
 {
     VariableList cvars = MODEL.get_cvars();
     PPL::C_Polyhedron i_cvx(cvars.size());
-    //for ( auto it = automata.begin(); it != automata.end(); it++){
-    for (auto p : locations) {
-	Linear_Constraint lc;
-	// string ln = ss.loc_names[it-automata.begin()];
-	// Location &l = it->get_location_by_name(ln);
-
+    for (auto p : locations)
 	i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
-    }
+   
     return i_cvx;
 }
 
-const PPL::C_Polyhedron& Symbolic_State::get_cvx() const
+const PPL::C_Polyhedron Symbolic_State::get_cvx() const
 {
     return cvx;
 }
@@ -274,9 +267,9 @@ bool Symbolic_State::is_empty() const
     return cvx.is_empty();
 }
 
-vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
+vector<State_ptr> Symbolic_State::post() const
 {
-    vector<shared_ptr<Symbolic_State> > sstates;
+    vector<State_ptr> sstates;
     vector<Combined_edge> eg = EDGE_FACTORY.get_edges(signature, locations);
 
     for (auto e : eg) {
@@ -311,10 +304,9 @@ bool Symbolic_State::operator == (const Symbolic_State &ss) const
         
     return cvx.contains(ss.cvx) && ss.cvx.contains(cvx) 
             && invariant_cvx.contains(ss.invariant_cvx) && ss.invariant_cvx.contains(invariant_cvx);
-
 }
 
-bool Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
+bool Symbolic_State::equals(const State_ptr &pss) const
 {
     if (locations.size() != pss->locations.size())
         return false;

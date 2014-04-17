@@ -7,7 +7,7 @@ class Widened_Symbolic_State : public Symbolic_State {
 protected:
 
     PPL::C_Polyhedron widened_cvx;
-    virtual std::shared_ptr<Symbolic_State> clone() const;
+    virtual State_ptr clone() const;
 
 public :
     Widened_Symbolic_State(std::vector<Location *> &locations, 
@@ -17,11 +17,11 @@ public :
 		   const Valuations &dvars,
 		   const PPL::C_Polyhedron &pol);
 
-    virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool contains(const State_ptr &pss) const;
     virtual void continuous_step();
     virtual const PPL::C_Polyhedron& get_cvx() const;
     //virtual const PPL::C_Polyhedron& get_featured_cvx() const;
-    virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool equals(const State_ptr &pss) const;
     virtual void print() const;
     virtual void widen();
 };
