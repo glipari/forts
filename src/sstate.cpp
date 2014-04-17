@@ -277,8 +277,13 @@ void combine(vector<Combined_edge> &edge_groups, const Location &l,
 	     bool first) 
 {
     if (first) {
-	vector<Edge> outgoings = l.get_edges();
-	for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
+	    vector<Edge> outgoings = l.get_edges();
+        if (outgoings.size() == 0) {
+            Combined_edge egroup(new_labels);
+            edge_groups.push_back(egroup);
+	        return;
+        }
+	    for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
             Combined_edge egroup(*iit, iit->get_label(), new_labels);
             // egroup.edges.push_back(*iit);
             // //if ( iit->sync_label != "") {
@@ -286,14 +291,20 @@ void combine(vector<Combined_edge> &edge_groups, const Location &l,
             //   egroup.sync_set = new_labels;
             // //}
             edge_groups.push_back(egroup);
-	}
-	return;
+	    }
+	    return;
     } 
     vector<Combined_edge> copy = edge_groups;
     edge_groups.clear();
     // to combine every outgoing from "l" with every "edge group"
     vector<Edge> outgoings = l.get_edges();
     for ( auto &egroup : copy) {
+      if ( outgoings.size() == 0) {
+        vector<Combined_edge> com = egroup.combine(new_labels);
+        for ( auto &eg : com)
+          if ( not contains(edge_groups, eg))
+            edge_groups.push_back(eg);
+      }
       for ( auto it = outgoings.begin(); it != outgoings.end(); it++) {
         vector<Combined_edge> com = egroup.combine(*it, new_labels);
         for ( auto &eg : com)
@@ -302,6 +313,36 @@ void combine(vector<Combined_edge> &edge_groups, const Location &l,
       }
     }
 }
+//void combine(vector<Combined_edge> &edge_groups, const Location &l, 
+//	     const vector<string> new_labels,
+//	     bool first) 
+//{
+//    if (first) {
+//	vector<Edge> outgoings = l.get_edges();
+//	for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
+//            Combined_edge egroup(*iit, iit->get_label(), new_labels);
+//            // egroup.edges.push_back(*iit);
+//            // //if ( iit->sync_label != "") {
+//            //   egroup.sync_label = (iit->sync_label);
+//            //   egroup.sync_set = new_labels;
+//            // //}
+//            edge_groups.push_back(egroup);
+//	}
+//	return;
+//    } 
+//    vector<Combined_edge> copy = edge_groups;
+//    edge_groups.clear();
+//    // to combine every outgoing from "l" with every "edge group"
+//    vector<Edge> outgoings = l.get_edges();
+//    for ( auto &egroup : copy) {
+//      for ( auto it = outgoings.begin(); it != outgoings.end(); it++) {
+//        vector<Combined_edge> com = egroup.combine(*it, new_labels);
+//        for ( auto &eg : com)
+//          if ( not contains(edge_groups, eg))
+//            edge_groups.push_back(eg);
+//      }
+//    }
+//}
 
 
 vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const

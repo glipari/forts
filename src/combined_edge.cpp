@@ -8,6 +8,11 @@ Combined_edge::Combined_edge(const Edge &e, const std::string &sync,
 {
 }
 
+Combined_edge::Combined_edge(const vector<string> &labels) :
+    sync_set(labels)
+{
+}
+
 bool Combined_edge::operator == (const Combined_edge &ce) const
 {
     if (edges.size() != ce.edges.size())  return false;
@@ -21,6 +26,29 @@ bool Combined_edge::operator == (const Combined_edge &ce) const
 	if ( sync_set[i] != ce.sync_set[i])
 	    return false;
     return true;
+}
+
+std::vector<Combined_edge> Combined_edge::combine(const vector<string> new_labels)
+{
+    vector<string> common_labels;
+    vector<string> union_labels;
+    std::set_intersection(sync_set.begin(), 
+                          sync_set.end(), 
+                          new_labels.begin(),
+                          new_labels.end(),
+                          std::back_inserter(common_labels));
+    std::set_union(sync_set.begin(), 
+		   sync_set.end(), 
+		   new_labels.begin(),
+		   new_labels.end(),
+		   std::back_inserter(union_labels));
+    vector<Combined_edge> after_combination;
+    if (not contains(common_labels, sync_label)) {
+	    Combined_edge ce = *this;
+	    ce.sync_set = union_labels;
+	    after_combination.push_back(ce);
+    }
+    return after_combination;
 }
 
 std::vector<Combined_edge> Combined_edge::combine(const Edge &e, 
