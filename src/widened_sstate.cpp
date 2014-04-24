@@ -13,7 +13,7 @@ Widened_Symbolic_State::Widened_Symbolic_State(std::vector<Location *> &location
 }
 
 Widened_Symbolic_State::Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
-		   const Valuations &dvars, const PPL::C_Polyhedron &pol) 
+		   const Valuations &dvars, const PPL::NNC_Polyhedron &pol) 
             : Symbolic_State(loc_names, dvars, pol)
 {
     //widen();
@@ -70,12 +70,12 @@ void Widened_Symbolic_State::widen()
     widened_cvx.remove_space_dimensions(vss);
 }
 
-const PPL::C_Polyhedron& Widened_Symbolic_State::get_cvx() const
+const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_cvx() const
 {
     return widened_cvx;
 }
 
-//const PPL::C_Polyhedron& Widened_Symbolic_State::get_featured_cvx() const
+//const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_featured_cvx() const
 //{
 //    return widened_cvx;
 //}
@@ -100,4 +100,9 @@ bool Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) 
         res = get_cvx().contains(pss->get_cvx()) && pss->get_cvx().contains(get_cvx());
     }
     return res;
+}
+
+int64_t Widened_Symbolic_State::total_memory_in_bytes() const
+{
+    return widened_cvx.total_memory_in_bytes();
 }

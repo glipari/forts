@@ -13,7 +13,7 @@ Box_Widened_Symbolic_State::Box_Widened_Symbolic_State(std::vector<Location *> &
 }
 
 Box_Widened_Symbolic_State::Box_Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
-						       const Valuations &dvars, const PPL::C_Polyhedron &pol) 
+						       const Valuations &dvars, const PPL::NNC_Polyhedron &pol) 
             : Widened_Symbolic_State(loc_names, dvars, pol)
 {
     //widen();
@@ -57,4 +57,9 @@ bool Box_Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &p
         res = (box_widened_cvx == myptr->box_widened_cvx);
     }
     return res;
+}
+
+int64_t Box_Widened_Symbolic_State::total_memory_in_bytes() const
+{
+    return widened_cvx.total_memory_in_bytes() + box_widened_cvx.total_memory_in_bytes();
 }

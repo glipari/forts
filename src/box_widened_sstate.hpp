@@ -16,14 +16,15 @@ public :
 
     Box_Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
 		   const Valuations &dvars,
-		   const PPL::C_Polyhedron &pol);
+		   const PPL::NNC_Polyhedron &pol);
 
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void widen();
     //virtual void continuous_step();
-    //virtual const PPL::C_Polyhedron& get_cvx() const;
+    //virtual const PPL::NNC_Polyhedron& get_cvx() const;
     virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void print() const;
+    virtual int64_t total_memory_in_bytes() const;
     //void widen();
 };
 

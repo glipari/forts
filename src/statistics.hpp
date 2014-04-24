@@ -4,7 +4,7 @@
 #include <chrono>
 
 class TimeStatistic {
-    typedef std::chrono::time_point<std::chrono::high_resolution_clock> time_t;
+    typedef std::chrono::time_point<std::chrono::system_clock> time_t;
     typedef std::chrono::duration<double> duration_t;
 
     duration_t acc_time ;

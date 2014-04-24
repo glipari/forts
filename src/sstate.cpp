@@ -96,7 +96,7 @@ Symbolic_State::Symbolic_State(std::vector<Location *> &locs,
 
 Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names, 
 			       const Valuations &dv,
-			       const PPL::C_Polyhedron &pol) :
+			       const PPL::NNC_Polyhedron &pol) :
     dvars(dv),
     cvx(pol)
 {
@@ -172,8 +172,8 @@ bool Symbolic_State::is_bad() const
 void Symbolic_State::continuous_step()
 {
     VariableList cvars = MODEL.get_cvars();
-    PPL::C_Polyhedron r_cvx(cvars.size());
-    PPL::C_Polyhedron i_cvx(cvars.size());
+    PPL::NNC_Polyhedron r_cvx(cvars.size());
+    PPL::NNC_Polyhedron i_cvx(cvars.size());
     
     VariableList lvars = cvars;
     for (auto p: locations) {
@@ -198,12 +198,12 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
 {
     VariableList cvars = MODEL.get_cvars();
 
-    PPL::C_Polyhedron guard_cvx(cvars.size());
+    PPL::NNC_Polyhedron guard_cvx(cvars.size());
     /** 
      * The cvx obtained through updates in an
      * edge can have dimension higher than cvars.size().
      * */
-    PPL::C_Polyhedron ass_cvx(cvars.size()*2);
+    PPL::NNC_Polyhedron ass_cvx(cvars.size()*2);
 
     Variables_Set vs;
 
@@ -247,10 +247,10 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
 }
 
 
-PPL::C_Polyhedron Symbolic_State::get_invariant_cvx()
+PPL::NNC_Polyhedron Symbolic_State::get_invariant_cvx()
 {
     VariableList cvars = MODEL.get_cvars();
-    PPL::C_Polyhedron i_cvx(cvars.size());
+    PPL::NNC_Polyhedron i_cvx(cvars.size());
     //for ( auto it = automata.begin(); it != automata.end(); it++){
     for (auto p : locations) {
 	Linear_Constraint lc;
@@ -262,7 +262,7 @@ PPL::C_Polyhedron Symbolic_State::get_invariant_cvx()
     return i_cvx;
 }
 
-const PPL::C_Polyhedron& Symbolic_State::get_cvx() const
+const PPL::NNC_Polyhedron& Symbolic_State::get_cvx() const
 {
     return cvx;
 }
@@ -389,7 +389,7 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
     return sstates;
 }
 
-int Symbolic_State::total_memory_in_bytes() const
+int64_t Symbolic_State::total_memory_in_bytes() const
 {
     return cvx.total_memory_in_bytes();
 }

@@ -23,6 +23,8 @@ struct model_stats {
     int past_elim_from_current = 0;
     int past_elim_from_space = 0;
 
+    int final_states = 0;
+
     void print();
 };
 
@@ -30,6 +32,7 @@ struct model_stats {
 enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED }; 
 
 class Model {
+public :
     enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
     // continuous vars for this model
     VariableList cvars;
@@ -45,9 +48,9 @@ class Model {
     /** The symbolic state space */
     std::list<std::shared_ptr<Symbolic_State> > Space;
 
-    model_stats stats;
     TimeStatistic contains_stat;
     TimeStatistic post_stat;
+    TimeStatistic se_stat;
 
     Model();
 
@@ -57,6 +60,9 @@ class Model {
     int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
 
 public:
+    int steps = 0;
+    std::string unknown="" ;
+    model_stats stats;
     Model(const Model &other) = delete;
     Model &operator=(const Model &other) = delete;
 
@@ -76,6 +82,7 @@ public:
     void add_dvar(const std::string &dv, int value); 
 
     VariableList get_cvars() const { return cvars; }
+    Valuations& get_dvars() { return dvars; }
 
     // TBM: Given a initial sstate, performs a continuous step
     // void continuous_step(Symbolic_State &ss);
@@ -89,7 +96,7 @@ public:
     std::vector<std::shared_ptr<Symbolic_State> > Post(const std::shared_ptr<Symbolic_State>& pss);
 
     // TBM 
-    // PPL::C_Polyhedron get_invariant_cvx(Symbolic_State &ss);
+    // PPL::NNC_Polyhedron get_invariant_cvx(Symbolic_State &ss);
 
     // Initial symbolic state
     std::shared_ptr<Symbolic_State> init_sstate();
@@ -113,7 +120,7 @@ public:
 
 
     /** Return the meomey used for symbolic states in Space. */
-    int total_memory_in_bytes() const;
+    int64_t total_memory_in_bytes() const;
 
     /** Print the symbolic state space "Space" into a file. */
     void print_log(const std::string fname= ".log") const;

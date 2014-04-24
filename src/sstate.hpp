@@ -33,7 +33,8 @@ void cache_reset();
 
 
 class Symbolic_State {
-protected:
+//protected:
+  public:
     // for each automaton, the name of the corresponding location
     //std::vector<std::string> loc_names;
 
@@ -41,9 +42,9 @@ protected:
     // for each automaton, a pointer to the corresponding location
     std::vector<Location *> locations;
     Valuations dvars;
-    PPL::C_Polyhedron cvx;
+    PPL::NNC_Polyhedron cvx;
     
-    PPL::C_Polyhedron invariant_cvx;
+    PPL::NNC_Polyhedron invariant_cvx;
     
     virtual std::shared_ptr<Symbolic_State> clone() const;
 
@@ -54,7 +55,7 @@ public:
 
     Symbolic_State(const std::vector<std::string> &loc_names, 
 		   const Valuations &dvars,
-		   const PPL::C_Polyhedron &pol);
+		   const PPL::NNC_Polyhedron &pol);
 
     // return true if it contains a bad state
     bool is_bad() const ; 
@@ -62,9 +63,9 @@ public:
     virtual void continuous_step();
     void discrete_step(Combined_edge &edges);
 
-    PPL::C_Polyhedron get_invariant_cvx();
+    PPL::NNC_Polyhedron get_invariant_cvx();
 
-    virtual const PPL::C_Polyhedron& get_cvx() const;
+    virtual const PPL::NNC_Polyhedron& get_cvx() const;
 
     std::vector<std::shared_ptr<Symbolic_State> > post() const;
 
@@ -72,7 +73,7 @@ public:
 
     bool is_empty() const; 
 
-    int total_memory_in_bytes() const;
+    virtual int64_t total_memory_in_bytes() const;
 
     virtual void print() const;
 

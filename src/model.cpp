@@ -19,9 +19,9 @@ Model::Model()
 {
 }
 
-// PPL::C_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
+// PPL::NNC_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
 // {
-//     PPL::C_Polyhedron invariant_cvx(cvars.size());
+//     PPL::NNC_Polyhedron invariant_cvx(cvars.size());
 //     for ( auto it = automata.begin(); it != automata.end(); it++){
 // 	Linear_Constraint lc;
 // 	string ln = ss.loc_names[it-automata.begin()];
@@ -50,8 +50,8 @@ void Model::reset()
 // void Model::continuous_step(Symbolic_State &ss)
 // {
 //     // 1) To do time_elapse_assign
-//     PPL::C_Polyhedron rates_cvx(cvars.size());
-//     PPL::C_Polyhedron invariant_cvx(cvars.size());
+//     PPL::NNC_Polyhedron rates_cvx(cvars.size());
+//     PPL::NNC_Polyhedron invariant_cvx(cvars.size());
 //     VariableList lvars = cvars;
 //     for ( auto it = automata.begin(); it != automata.end(); it++){
 // 	Linear_Constraint lc;
@@ -81,8 +81,8 @@ void Model::reset()
 // TODO : remember to change the e parameter into a const reference
 //void Model::discrete_step(Symbolic_State &ss, Combined_edge &edges)
 //{
-//    // PPL::C_Polyhedron guard_cvx(cvars.size());
-//    // PPL::C_Polyhedron ass_cvx(cvars.size());
+//    // PPL::NNC_Polyhedron guard_cvx(cvars.size());
+//    // PPL::NNC_Polyhedron ass_cvx(cvars.size());
 //    // Variables_Set vs;
 //
 //    // for (auto &e : edges.get_edges()) {
@@ -138,18 +138,18 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 {
     vector<Location *> locs;
     vector<std::string> loc_names;
-    PPL::C_Polyhedron cvx(cvars.size());
+    PPL::NNC_Polyhedron cvx(cvars.size());
 
     string ln="";
     for (auto it = automata.begin(); it != automata.end(); it++) {
-	cout << "loc name " << it->get_init_location() << endl;
+	//cout << "loc name " << it->get_init_location() << endl;
 	//init.loc_names.push_back(it->get_init_location());
 	loc_names.push_back(it->get_init_location());
 	locs.push_back(&(it->get_location_by_name(it->get_init_location())));
 	ln += it->get_init_location();
     }
-    cout << "init name " << ln << endl; 
-    cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
+    //cout << "init name " << ln << endl; 
+    cvx = NNC_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
     //Symbolic_State init(loc_names, dvars, cvx);
 
     //auto init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
@@ -163,10 +163,10 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     else
         init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
-    init->print();
+    //init->print();
     init->continuous_step();
-    cout << "cvx after continuous step : ";
-    init->print();
+    //cout << "cvx after continuous step : ";
+    //init->print();
     return init;
 }
 
@@ -175,6 +175,7 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
 void Model::SpaceExplorer()
 {
+    se_stat.start();
     clock_t begin, end;
     double time_spent;
     begin = clock();
@@ -187,6 +188,7 @@ void Model::SpaceExplorer()
     stats = model_stats{};
 
     while(true) {
+      steps ++;
 	for ( auto it = current.begin(); it != current.end(); it++) {
 	    post_stat.start();
 	    vector<shared_ptr<Symbolic_State> > nsstates = Post(*it); 
@@ -199,6 +201,10 @@ void Model::SpaceExplorer()
 		    continue;
 		}
 		if ( (*iit)->is_bad()) {
+                    se_stat.stop();
+                    stats.final_states += Space.size(); 
+                    stats.final_states += next.size(); 
+                    stats.final_states += current.size(); 
 		    throw ("A bad location is reached ... ");
                 }
 		if ( contained_in(*iit, current)) {
@@ -214,19 +220,29 @@ void Model::SpaceExplorer()
 		    continue;
 		}
 		stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, next);
-		stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
-		stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
+		//stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
+		//stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
 		next.push_back(*iit);
 	    }
+        if (Space.size() + current.size() + next.size()> 40000) {
+          unknown = string("unknown");
+          return;
+
+        }
 	}
+        for ( auto &xy : current)
+          xy->cvx.remove_higher_space_dimensions(0);
 	Space.splice(Space.end(), current);
 	cout << "-----------------------------" << endl;
 	cout << "Step : " << ++step << endl;
 	cout << "Number of passed states : " << Space.size() + current.size()<< endl;
 	cout << "Number of generated states : " << next.size() << endl;
 	cout << "-----------------------------" << endl;
-	if ( next.size() == 0)
+	if ( next.size() == 0) {
+          se_stat.stop();
+          stats.final_states = Space.size();
 	    break;
+        }
 	current.splice(current.begin(), next);
     }
     end = clock();
@@ -379,9 +395,9 @@ automaton& Model::get_automaton_by_name(const std::string name)
     throw string("Automaton ") + name + " not found";
 }
 
-int Model::total_memory_in_bytes() const
+int64_t Model::total_memory_in_bytes() const
 {
-    int total = 0;
+    int64_t total = 0;
     for (auto &pss : Space )
         total += pss->total_memory_in_bytes();
     return total;
