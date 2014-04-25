@@ -710,7 +710,7 @@ def main() :
           fout.write(": discrete; ")
 
 
-    cpus = 2
+    cpus = 4
     gen_sched(fout, n, cpus)
     #gen_server(fout, n, s)
     gen_init(fout, n)
