@@ -11,19 +11,51 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/foreach.hpp>
+#include <signal.h>
+#include "var_printf.hpp"
+
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace std;
 
 unsigned seed = 12345;
 
-void run_tests(int CPUs, int nTasks, int beginning_util, int beginning_taskset_index, int beginning_rta_sched, int beginning_forts_sched);
+void run_tests();//int CPUs, int nTasks, int beginning_util, int beginning_taskset_index, int beginning_rta_sched, int beginning_forts_sched);
+
+int CPUs, nTasks, beginning_util=0, beginning_taskset_index=0, beginning_rta_sched=0, beginning_forts_sched=0;
+
+void sighandler(int sig)
+{
+    cout<< "Signal " << sig << " caught..." << endl;
+    ofstream out("interrupted_parms");
+    safe_fprintf(out, "% % % % % % \n",  CPUs, nTasks, beginning_util, beginning_taskset_index, beginning_rta_sched, beginning_forts_sched);
+    out.close();
+    cout << "Now exiting" << endl;
+    _exit(0);
+}
+
+void read_params_from_file(const string &temp)
+{
+    ifstream in(temp);
+    if (not in) {
+	cout << "File " << temp << " does not exists " << endl;
+	exit(-1);
+    }
+    in >> CPUs >> nTasks >> beginning_util >> beginning_taskset_index >> beginning_rta_sched >> beginning_forts_sched;
+    in.close();
+}
 
 int main(int argc, char** argv)
 {
+    //int CPUs, nTasks, beginning_util=0, beginning_taskset_index=0, beginning_rta_sched=0, beginning_forts_sched=0;
+    signal(SIGINT, &sighandler);
+    string temp = "";
 
-    int CPUs, nTasks, beginning_util=0, beginning_taskset_index=0, beginning_rta_sched=0, beginning_forts_sched=0;
     int c = -1;
-    while ((c = getopt(argc, argv, "m:n:u:t:r:f:")) != -1) {
+    while ((c = getopt(argc, argv, "m:n:u:t:r:f:i:")) != -1) {
+	if (c == 'i') {
+	    temp = string(optarg);
+	    break;
+	}
         if (c == 'm') {
             CPUs = atoi(optarg);
         }
@@ -43,19 +75,28 @@ int main(int argc, char** argv)
             beginning_forts_sched = atoi(optarg);
         }
     }
-    run_tests(CPUs, nTasks, beginning_util, beginning_taskset_index, beginning_rta_sched, beginning_forts_sched);
+    if (temp != "") {
+	read_params_from_file(temp);
+    }
+    run_tests();//CPUs, nTasks, beginning_util, beginning_taskset_index, beginning_rta_sched, beginning_forts_sched);
 }
 
-void run_tests(int CPUs, int nTasks, int beginning_util, int beginning_taskset_index, int beginning_rta_sched, int beginning_forts_sched)
+void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
 {
+    // CPUs = cpu;
+    // nTasks = nt;
+    // beginning_util=bu;
+    // beginning_taskset_index=bti;
+    // beginning_rta_sched=brs;
+    // beginning_forts_sched=bfs;
 
     int nSets;
     vector<int> utils; 
-    for ( int i = 0; i <= CPUs*10/2; i++)
+    for (int i = 0; i <= CPUs*10/2; i++)
         utils.push_back(CPUs*10/2+i);
 
     for ( auto util : utils) {
-        if ( util < beginning_util )
+        if (util < beginning_util)
             continue;
 
         nSets = 100;
