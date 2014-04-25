@@ -268,7 +268,7 @@ def main():
     n = options.n
     m = 3
     seed = 12345*n*m + m + n
-    nSets = 1000
+    nSets = 5000
     utils = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     numpy.random.seed(seed)
     #for xx, yy in enumerate(utils) :
@@ -280,7 +280,7 @@ def main():
     while i < nSets:
       seed = seed + 1
       numpy.random.seed(seed)
-      options.util = numpy.random.uniform(1, 2)
+      options.util = numpy.random.uniform(1, m)
       taskset = gen_tasksets(options)
       flag = True
       for ii in range(0,n):
