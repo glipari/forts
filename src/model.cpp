@@ -230,8 +230,10 @@ void Model::SpaceExplorer()
 
         }
 	}
-        for ( auto &xy : current)
+        for ( auto &xy : current) {
           xy->cvx.remove_higher_space_dimensions(0);
+          xy->invariant_cvx.remove_higher_space_dimensions(0);
+        }
 	Space.splice(Space.end(), current);
 	cout << "-----------------------------" << endl;
 	cout << "Step : " << ++step << endl;
