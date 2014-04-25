@@ -23,11 +23,15 @@ void run_tests();//int CPUs, int nTasks, int beginning_util, int beginning_tasks
 
 int CPUs, nTasks, beginning_util=0, beginning_taskset_index=0, beginning_rta_sched=0, beginning_forts_sched=0;
 
+int current_util;
+int rta_schedulable = 0, forts_schedulable = 0;
+int task_set_index; 
+
 void sighandler(int sig)
 {
     cout<< "Signal " << sig << " caught..." << endl;
     ofstream out("interrupted_parms");
-    safe_fprintf(out, "% % % % % % \n",  CPUs, nTasks, beginning_util, beginning_taskset_index, beginning_rta_sched, beginning_forts_sched);
+    safe_fprintf(out, "% % % % % % \n",  CPUs, nTasks, current_util, task_set_index, rta_schedulable, forts_schedulable);
     out.close();
     cout << "Now exiting" << endl;
     _exit(0);
@@ -49,7 +53,7 @@ int main(int argc, char** argv)
     //int CPUs, nTasks, beginning_util=0, beginning_taskset_index=0, beginning_rta_sched=0, beginning_forts_sched=0;
     signal(SIGINT, &sighandler);
     string temp = "";
-
+    
     int c = -1;
     while ((c = getopt(argc, argv, "m:n:u:t:r:f:i:")) != -1) {
 	if (c == 'i') {
@@ -83,24 +87,19 @@ int main(int argc, char** argv)
 
 void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
 {
-    // CPUs = cpu;
-    // nTasks = nt;
-    // beginning_util=bu;
-    // beginning_taskset_index=bti;
-    // beginning_rta_sched=brs;
-    // beginning_forts_sched=bfs;
-
     int nSets;
     vector<int> utils; 
     for (int i = 0; i <= CPUs*10/2; i++)
         utils.push_back(CPUs*10/2+i);
-
-    for ( auto util : utils) {
+    
+    for (auto util : utils) {
         if (util < beginning_util)
             continue;
+	
+	current_util = util;
 
         nSets = 100;
-        int rta_schedulable = 0, forts_schedulable = 0 ;
+        //int rta_schedulable = 0, forts_schedulable = 0 ;
         // the file to print schedulability result
         string SchedResultsName = string("sched-res-m") + to_string(CPUs) + string("-n") + to_string(nTasks) + string("-u")+to_string(util)+string(".dat");
         // another output file to print details for FORTS schedulability check results
@@ -110,6 +109,7 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
 
         ifstream TasksReader(TasksReaderName);
         for ( int i = 0; i < nSets; i++) {
+	    task_set_index = i;
             // to read a task set, which has nTasks tasks inside
             TaskSet tks;
             string line;

@@ -101,7 +101,8 @@ am_test_OBJECTS = test-test_main.$(OBJEXT) \
 	test-test_generated_symbolic_state_space.$(OBJEXT) \
 	test-test_simple_model.$(OBJEXT) \
 	test-test_widened_simple_model.$(OBJEXT) \
-	test-test_signature.$(OBJEXT)
+	test-test_signature.$(OBJEXT) \
+	test-test_box_widened_simple_model.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_$(V))
@@ -508,7 +509,7 @@ test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp
 	test_SpaceExplorer.cpp test_Combined_edge.cpp \
 	test_update_discrete_variable.cpp \
         test_generated_symbolic_state_space.cpp \
-	test_simple_model.cpp test_widened_simple_model.cpp test_signature.cpp
+	test_simple_model.cpp test_widened_simple_model.cpp test_signature.cpp test_box_widened_simple_model.cpp
 
 all: all-am
 
@@ -567,6 +568,7 @@ distclean-compile:
 include ./$(DEPDIR)/test-test_Combined_edge.Po
 include ./$(DEPDIR)/test-test_SpaceExplorer.Po
 include ./$(DEPDIR)/test-test_automaton.Po
+include ./$(DEPDIR)/test-test_box_widened_simple_model.Po
 include ./$(DEPDIR)/test-test_constraint_to_ppl.Po
 include ./$(DEPDIR)/test-test_constraint_tree.Po
 include ./$(DEPDIR)/test-test_expr_tree.Po
@@ -810,6 +812,20 @@ test-test_signature.obj: test_signature.cpp
 #	$(AM_V_CXX)source='test_signature.cpp' object='test-test_signature.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_signature.obj `if test -f 'test_signature.cpp'; then $(CYGPATH_W) 'test_signature.cpp'; else $(CYGPATH_W) '$(srcdir)/test_signature.cpp'; fi`
+
+test-test_box_widened_simple_model.o: test_box_widened_simple_model.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_box_widened_simple_model.o -MD -MP -MF $(DEPDIR)/test-test_box_widened_simple_model.Tpo -c -o test-test_box_widened_simple_model.o `test -f 'test_box_widened_simple_model.cpp' || echo '$(srcdir)/'`test_box_widened_simple_model.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_box_widened_simple_model.Tpo $(DEPDIR)/test-test_box_widened_simple_model.Po
+#	$(AM_V_CXX)source='test_box_widened_simple_model.cpp' object='test-test_box_widened_simple_model.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_box_widened_simple_model.o `test -f 'test_box_widened_simple_model.cpp' || echo '$(srcdir)/'`test_box_widened_simple_model.cpp
+
+test-test_box_widened_simple_model.obj: test_box_widened_simple_model.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test-test_box_widened_simple_model.obj -MD -MP -MF $(DEPDIR)/test-test_box_widened_simple_model.Tpo -c -o test-test_box_widened_simple_model.obj `if test -f 'test_box_widened_simple_model.cpp'; then $(CYGPATH_W) 'test_box_widened_simple_model.cpp'; else $(CYGPATH_W) '$(srcdir)/test_box_widened_simple_model.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test_box_widened_simple_model.Tpo $(DEPDIR)/test-test_box_widened_simple_model.Po
+#	$(AM_V_CXX)source='test_box_widened_simple_model.cpp' object='test-test_box_widened_simple_model.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test-test_box_widened_simple_model.obj `if test -f 'test_box_widened_simple_model.cpp'; then $(CYGPATH_W) 'test_box_widened_simple_model.cpp'; else $(CYGPATH_W) '$(srcdir)/test_box_widened_simple_model.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
