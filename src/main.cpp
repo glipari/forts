@@ -26,12 +26,13 @@ int CPUs, nTasks, beginning_util=0, beginning_taskset_index=0, beginning_rta_sch
 int current_util;
 int rta_schedulable = 0, forts_schedulable = 0;
 int task_set_index; 
+int current_nSets = 0, nSets;
 
 void sighandler(int sig)
 {
     cout<< "Signal " << sig << " caught..." << endl;
     ofstream out("interrupted_parms");
-    safe_fprintf(out, "% % % % % % \n",  CPUs, nTasks, current_util, task_set_index, rta_schedulable, forts_schedulable);
+    safe_fprintf(out, "% % % % % % % \n",  CPUs, nTasks, current_util, task_set_index, nSets, rta_schedulable, forts_schedulable);
     out.close();
     cout << "Now exiting" << endl;
     _exit(0);
@@ -44,7 +45,7 @@ void read_params_from_file(const string &temp)
 	cout << "File " << temp << " does not exists " << endl;
 	exit(-1);
     }
-    in >> CPUs >> nTasks >> beginning_util >> beginning_taskset_index >> beginning_rta_sched >> beginning_forts_sched;
+    in >> CPUs >> nTasks >> beginning_util >> beginning_taskset_index >> current_nSets >> beginning_rta_sched >> beginning_forts_sched;
     in.close();
 }
 
@@ -87,7 +88,6 @@ int main(int argc, char** argv)
 
 void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
 {
-    int nSets;
     vector<int> utils; 
     for (int i = 0; i <= CPUs*10/2; i++)
         utils.push_back(CPUs*10/2+i);
@@ -98,7 +98,12 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
 	
 	current_util = util;
 
+        rta_schedulable = 0;
+        forts_schedulable = 0;
         nSets = 100;
+        if ( util == beginning_util) {
+            nSets = current_nSets;
+        }
         //int rta_schedulable = 0, forts_schedulable = 0 ;
         // the file to print schedulability result
         string SchedResultsName = string("sched-res-m") + to_string(CPUs) + string("-n") + to_string(nTasks) + string("-u")+to_string(util)+string(".dat");
@@ -155,7 +160,7 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
             if (rta_succ) {
                 ofstream of;
                 of.open(SchedResultsName, ios::app);
-                of << rta_schedulable++ << "  " << forts_schedulable++ << "  " << i << endl;
+                of << "RTA-LC: " << ++rta_schedulable << ", FORTS: " << ++forts_schedulable << ", i: " << i << ", nSets: " << nSets << endl;
                 of.close();
                 continue;
             }
@@ -198,13 +203,12 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
             of.close();
             // to print the schedulability results
             of.open(SchedResultsName, ios::app);
-            of << rta_schedulable << "  " << forts_schedulable << "  " << i << endl;
+            of << "RTA-LC: " << rta_schedulable << ", FORTS: " << forts_schedulable << ", i: " << i << ", nSets: " << nSets << endl;
             of.close();
 
-            if ( MODEL.unknown == "unknown")
+            if ( MODEL.unknown == "unknown") {
                 nSets ++;
-            else 
-                i -- ;
+            }
         }
 
         // if there is no schedulable task sets in current utilization level, we do not further explore higher utilization levels
