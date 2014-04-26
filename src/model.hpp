@@ -52,6 +52,8 @@ public :
     TimeStatistic post_stat;
     TimeStatistic se_stat;
 
+    int LimitNumberOfStates = 50000;
+
     Model();
 
     static Model *the_instance; 
@@ -126,6 +128,9 @@ public:
     void print_log(const std::string fname= ".log") const;
 
     void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
+
+    void set_limit_states(int l) {LimitNumberOfStates = l;}
+
 };
 
 #endif

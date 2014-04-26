@@ -56,7 +56,10 @@ int main(int argc, char** argv)
     string temp = "";
     
     int c = -1;
-    while ((c = getopt(argc, argv, "m:n:u:t:r:f:i:")) != -1) {
+    while ((c = getopt(argc, argv, "m:n:u:t:r:f:i:l:")) != -1) {
+        if (c == 'l') {
+            MODEL.set_limit_states(atoi(optarg));
+        }
 	if (c == 'i') {
 	    temp = string(optarg);
 	    break;
@@ -83,7 +86,14 @@ int main(int argc, char** argv)
     if (temp != "") {
 	read_params_from_file(temp);
     }
-    run_tests();//CPUs, nTasks, beginning_util, beginning_taskset_index, beginning_rta_sched, beginning_forts_sched);
+    cout << "Starting the test with : ";
+    cout << "CPUs:   " << CPUs << endl;
+    cout << "nTasks: " << nTasks << endl;
+    cout << "beginning_util:  " << beginning_util << endl;
+    cout << "beginning_taskset_index: " << beginning_taskset_index << endl;
+    cout << "beginning_rta_sched:     " << beginning_rta_sched << endl;
+    cout << "beginning_forts_sched:   " << beginning_forts_sched << endl;
+    run_tests();
 }
 
 void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
@@ -98,10 +108,12 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
 	
 	current_util = util;
 
+	cout << "Analysing util = " << current_util << endl;
+
         rta_schedulable = 0;
         forts_schedulable = 0;
         nSets = 100;
-        if ( util == beginning_util) {
+        if (util == beginning_util) {
             nSets = current_nSets;
         }
         //int rta_schedulable = 0, forts_schedulable = 0 ;
@@ -113,7 +125,14 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
         string TasksReaderName = string("./tasksets-c/m") + to_string(CPUs) + string("-n") + to_string(nTasks) + string("-u")+to_string(util) + string(".dat");      
 
         ifstream TasksReader(TasksReaderName);
-        for ( int i = 0; i < nSets; i++) {
+	if (not TasksReader) {
+	    cout << "Can't find file " << TasksReaderName << endl;
+	    exit(-1);
+	}
+
+	cout << "Reading " << TasksReaderName << endl;
+
+        for (int i = 0; i < nSets; i++) {
 	    task_set_index = i;
             // to read a task set, which has nTasks tasks inside
             TaskSet tks;
@@ -158,6 +177,7 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
             bool rta_succ = RTA_LC(tks, CPUs);
             // if current task set is schedulable under RTA-LC, there is no need to call FORTS
             if (rta_succ) {
+		cout << "Schedulable by rta" << endl;
                 ofstream of;
                 of.open(SchedResultsName, ios::app);
                 of << "RTA-LC: " << ++rta_schedulable << ", FORTS: " << ++forts_schedulable << ", i: " << i << ", nSets: " << nSets << endl;
@@ -165,7 +185,9 @@ void run_tests()//int cpu, int nt, int bu, int bti, int brs, int bfs)
                 continue;
             }
 
-            // RTA-LC fails and weare going to try FORTS
+	    cout << "NOT Schedulable by rta" << endl;
+	    
+            // RTA-LC fails and we are going to try FORTS
             string template_model_name = string("../models/") + to_string(nTasks) + string("t-") + to_string(CPUs) + string("p.forts");
             std::ifstream ifs(template_model_name);
             std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>()); 

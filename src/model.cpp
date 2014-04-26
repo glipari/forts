@@ -224,7 +224,7 @@ void Model::SpaceExplorer()
 		//stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
 		next.push_back(*iit);
 	    }
-        if (Space.size() + current.size() + next.size()> 40000) {
+        if (Space.size() + current.size() + next.size()> LimitNumberOfStates) {
           unknown = string("unknown");
           return;
 
