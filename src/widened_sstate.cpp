@@ -13,7 +13,7 @@ Widened_Symbolic_State::Widened_Symbolic_State(std::vector<Location *> &location
 }
 
 Widened_Symbolic_State::Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
-		   const Valuations &dvars, const PPL::C_Polyhedron &pol) 
+		   const Valuations &dvars, const PPL::NNC_Polyhedron &pol) 
             : Symbolic_State(loc_names, dvars, pol)
 {
     //widen();
@@ -70,12 +70,12 @@ void Widened_Symbolic_State::widen()
     widened_cvx.remove_space_dimensions(vss);
 }
 
-const PPL::C_Polyhedron& Widened_Symbolic_State::get_cvx() const
+const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_cvx() const
 {
     return widened_cvx;
 }
 
-//const PPL::C_Polyhedron& Widened_Symbolic_State::get_featured_cvx() const
+//const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_featured_cvx() const
 //{
 //    return widened_cvx;
 //}

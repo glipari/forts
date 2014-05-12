@@ -27,7 +27,7 @@ struct model_stats {
 };
 
 
-enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED }; 
+enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED, DBM, OCT}; 
 
 class Model {
     enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
@@ -89,7 +89,7 @@ public:
     std::vector<std::shared_ptr<Symbolic_State> > Post(const std::shared_ptr<Symbolic_State>& pss);
 
     // TBM 
-    // PPL::C_Polyhedron get_invariant_cvx(Symbolic_State &ss);
+    // PPL::NNC_Polyhedron get_invariant_cvx(Symbolic_State &ss);
 
     // Initial symbolic state
     std::shared_ptr<Symbolic_State> init_sstate();

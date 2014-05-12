@@ -2,6 +2,25 @@
 
 using namespace std;
 
+void Location::abstract_rates(const VariableList &cvl, 
+						       const Valuations &dvl, 
+						       vector<int> &v_rates) const
+{
+    int pos = 0;
+    for ( auto it = cvl.begin(); it != cvl.end(); it++, pos++) {
+        auto x = *it;
+	    for ( auto iit = rates.begin(); iit != rates.end(); iit++) {
+	        if (x == iit->get_var()) {
+                int r = iit->eval(dvl);
+                v_rates[pos] = r;
+                break;
+            }
+        }
+    }
+
+}
+
+
 Linear_Constraint Location::rates_to_Linear_Constraint(const VariableList &cvl, 
 						       const Valuations &dvl, 
 						       VariableList &lvars) const

@@ -53,6 +53,7 @@ public:
 
     // returns the polyhedron that represents the rates
     Linear_Constraint rates_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl, VariableList& lvars) const;
+    void abstract_rates(const VariableList &cvl, const Valuations &dvl, std::vector<int> &v_rates) const;
     // returns the polyhedron that represent the invariant
     Linear_Constraint invariant_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
 };

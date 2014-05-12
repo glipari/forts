@@ -13,7 +13,7 @@ Box_Widened_Symbolic_State::Box_Widened_Symbolic_State(std::vector<Location *> &
 }
 
 Box_Widened_Symbolic_State::Box_Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
-						       const Valuations &dvars, const PPL::C_Polyhedron &pol) 
+						       const Valuations &dvars, const PPL::NNC_Polyhedron &pol) 
             : Widened_Symbolic_State(loc_names, dvars, pol)
 {
     //widen();

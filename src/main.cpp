@@ -33,13 +33,15 @@ int main(int argc, char *argv[])
 		    MODEL.set_sstate_type(BOX_WIDENED);
 	    else if (state_type == "widened") 
 		    MODEL.set_sstate_type(WIDENED);
-	    //else if (state_type == "dbm") 
-		//    MODEL.set_sstate_type(DBM);
+	    else if (state_type == "dbm") 
+		    MODEL.set_sstate_type(DBM);
+	    else if (state_type == "oct") 
+		    MODEL.set_sstate_type(OCT);
 	    else if (state_type == "origin")
 		    MODEL.set_sstate_type(ORIGIN);
 	    else {
-		cout << "Unknown state type : " << state_type << endl;
-		cout << "Possible values are: origin, widened, box" << endl;
+		    cout << "Unknown state type : " << state_type << endl;
+		    cout << "Possible values are: origin, widened, box_widened, dbm" << endl;
 	    }
 	    cout << "State set to :" << state_type << endl;
 	}

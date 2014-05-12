@@ -9,8 +9,11 @@
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
 #include "box_widened_sstate.hpp"
+#include "dbm_sstate.hpp"
+#include "oct_sstate.hpp"
 
 using namespace std;
+namespace PPL=Parma_Polyhedra_Library;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
 Model *Model::the_instance = nullptr;
@@ -19,9 +22,9 @@ Model::Model()
 {
 }
 
-// PPL::C_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
+// PPL::NNC_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
 // {
-//     PPL::C_Polyhedron invariant_cvx(cvars.size());
+//     PPL::NNC_Polyhedron invariant_cvx(cvars.size());
 //     for ( auto it = automata.begin(); it != automata.end(); it++){
 // 	Linear_Constraint lc;
 // 	string ln = ss.loc_names[it-automata.begin()];
@@ -50,8 +53,8 @@ void Model::reset()
 // void Model::continuous_step(Symbolic_State &ss)
 // {
 //     // 1) To do time_elapse_assign
-//     PPL::C_Polyhedron rates_cvx(cvars.size());
-//     PPL::C_Polyhedron invariant_cvx(cvars.size());
+//     PPL::NNC_Polyhedron rates_cvx(cvars.size());
+//     PPL::NNC_Polyhedron invariant_cvx(cvars.size());
 //     VariableList lvars = cvars;
 //     for ( auto it = automata.begin(); it != automata.end(); it++){
 // 	Linear_Constraint lc;
@@ -81,8 +84,8 @@ void Model::reset()
 // TODO : remember to change the e parameter into a const reference
 //void Model::discrete_step(Symbolic_State &ss, Combined_edge &edges)
 //{
-//    // PPL::C_Polyhedron guard_cvx(cvars.size());
-//    // PPL::C_Polyhedron ass_cvx(cvars.size());
+//    // PPL::NNC_Polyhedron guard_cvx(cvars.size());
+//    // PPL::NNC_Polyhedron ass_cvx(cvars.size());
 //    // Variables_Set vs;
 //
 //    // for (auto &e : edges.get_edges()) {
@@ -138,7 +141,7 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 {
     vector<Location *> locs;
     vector<std::string> loc_names;
-    PPL::C_Polyhedron cvx(cvars.size());
+    PPL::NNC_Polyhedron cvx(cvars.size());
 
     string ln="";
     for (auto it = automata.begin(); it != automata.end(); it++) {
@@ -149,7 +152,7 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 	ln += it->get_init_location();
     }
     cout << "init name " << ln << endl; 
-    cvx = C_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
+    cvx = NNC_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
     //Symbolic_State init(loc_names, dvars, cvx);
 
     //auto init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
@@ -160,6 +163,11 @@ shared_ptr<Symbolic_State> Model::init_sstate()
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
     else if (sstate_type == BOX_WIDENED)
         init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
+    else if (sstate_type == DBM)
+        init = make_shared<DBM_Symbolic_State>(loc_names, dvars, cvx);
+    else if (sstate_type == OCT) {
+        init = make_shared<OCT_Symbolic_State>(loc_names, dvars, cvx);
+    }
     else
         init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
