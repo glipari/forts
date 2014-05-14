@@ -12,8 +12,8 @@ OCT_Symbolic_State::OCT_Symbolic_State(std::vector<Location *> &locations,
 		   const Valuations &dvars) : Symbolic_State(locations, dvars)
 {
     oct_cvx = PPL::Octagonal_Shape<int>(cvx, PPL::ANY_COMPLEXITY);
-    //invariant_oct_cvx = get_invariant_oct();
-    invariant_oct_cvx = PPL::Octagonal_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
+    invariant_oct_cvx = get_invariant_oct();
+    //invariant_oct_cvx = PPL::Octagonal_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
     cvx.remove_higher_space_dimensions(0);
     invariant_cvx.remove_higher_space_dimensions(0);
     //accurate_cvx_is_inside = false;
@@ -24,8 +24,8 @@ OCT_Symbolic_State::OCT_Symbolic_State(const std::vector<std::string> &loc_names
             : Symbolic_State(loc_names, dvars, pol)
 {
     oct_cvx = PPL::Octagonal_Shape<int>(cvx, PPL::ANY_COMPLEXITY);
-    //invariant_oct_cvx = get_invariant_oct();
-    invariant_oct_cvx = PPL::Octagonal_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
+    invariant_oct_cvx = get_invariant_oct();
+    //invariant_oct_cvx = PPL::Octagonal_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
     //accurate_cvx_is_inside = false;
     cvx.remove_higher_space_dimensions(0);
     invariant_cvx.remove_higher_space_dimensions(0);
@@ -125,7 +125,7 @@ void OCT_Symbolic_State::continuous_step()
 {
     VariableList cvars = MODEL.get_cvars();
     //PPL::Octagonal_Shape<int> r_cvx(cvars.size());
-    //PPL::Octagonal_Shape<int> i_cvx(cvars.size());
+    PPL::Octagonal_Shape<int> i_cvx(cvars.size());
     
     VariableList lvars = cvars;
     vector<int> v_rates;
@@ -134,7 +134,7 @@ void OCT_Symbolic_State::continuous_step()
 
     for (auto p: locations) {
 	Linear_Constraint lc;
-	//i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
+	i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
 	//r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars, lvars));
     p->abstract_rates(cvars, dvars, v_rates);
     }
@@ -248,4 +248,17 @@ PPL::Octagonal_Shape<int> OCT_Symbolic_State::get_invariant_oct()
 int OCT_Symbolic_State::total_memory_in_bytes() const
 {
     return oct_cvx.total_memory_in_bytes() + invariant_oct_cvx.total_memory_in_bytes();
+}
+
+bool OCT_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
+{
+    bool res = Symbolic_State::equals(pss);
+    if ( not res)
+        return res;
+
+    auto mypss = dynamic_pointer_cast<OCT_Symbolic_State>(pss); 
+
+    return oct_cvx.contains(mypss->oct_cvx) && mypss->oct_cvx.contains(oct_cvx) 
+            && invariant_oct_cvx.contains(mypss->invariant_oct_cvx) && mypss->invariant_oct_cvx.contains(invariant_oct_cvx);
+
 }

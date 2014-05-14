@@ -12,8 +12,8 @@ DBM_Symbolic_State::DBM_Symbolic_State(std::vector<Location *> &locations,
 		   const Valuations &dvars) : Symbolic_State(locations, dvars)
 {
     dbm_cvx = PPL::BD_Shape<int>(cvx, PPL::ANY_COMPLEXITY);
-    //invariant_dbm_cvx = get_invariant_dbm();
-    invariant_dbm_cvx = PPL::BD_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
+    invariant_dbm_cvx = get_invariant_dbm();
+    //invariant_dbm_cvx = PPL::BD_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
     cvx.remove_higher_space_dimensions(0);
     invariant_cvx.remove_higher_space_dimensions(0);
     //accurate_cvx_is_inside = false;
@@ -24,8 +24,8 @@ DBM_Symbolic_State::DBM_Symbolic_State(const std::vector<std::string> &loc_names
             : Symbolic_State(loc_names, dvars, pol)
 {
     dbm_cvx = PPL::BD_Shape<int>(cvx, PPL::ANY_COMPLEXITY);
-    //invariant_dbm_cvx = get_invariant_dbm();
-    invariant_dbm_cvx = PPL::BD_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
+    invariant_dbm_cvx = get_invariant_dbm();
+    //invariant_dbm_cvx = PPL::BD_Shape<int>(invariant_cvx, PPL::ANY_COMPLEXITY);
     //accurate_cvx_is_inside = false;
     cvx.remove_higher_space_dimensions(0);
     invariant_cvx.remove_higher_space_dimensions(0);
@@ -125,7 +125,7 @@ void DBM_Symbolic_State::continuous_step()
 {
     VariableList cvars = MODEL.get_cvars();
     //PPL::BD_Shape<int> r_cvx(cvars.size());
-    //PPL::BD_Shape<int> i_cvx(cvars.size());
+    PPL::BD_Shape<int> i_cvx(cvars.size());
     
     VariableList lvars = cvars;
     vector<int> v_rates;
@@ -134,7 +134,7 @@ void DBM_Symbolic_State::continuous_step()
 
     for (auto p: locations) {
 	Linear_Constraint lc;
-	//i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
+	i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
 	//r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars, lvars));
     p->abstract_rates(cvars, dvars, v_rates);
     }
@@ -248,4 +248,17 @@ PPL::BD_Shape<int> DBM_Symbolic_State::get_invariant_dbm()
 int DBM_Symbolic_State::total_memory_in_bytes() const
 {
     return dbm_cvx.total_memory_in_bytes() + invariant_dbm_cvx.total_memory_in_bytes();
+}
+
+bool DBM_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
+{
+    bool res = Symbolic_State::equals(pss);
+    if ( not res)
+        return res;
+
+    auto mypss = dynamic_pointer_cast<DBM_Symbolic_State>(pss); 
+
+    return dbm_cvx.contains(mypss->dbm_cvx) && mypss->dbm_cvx.contains(dbm_cvx) 
+            && invariant_dbm_cvx.contains(mypss->invariant_dbm_cvx) && mypss->invariant_dbm_cvx.contains(invariant_dbm_cvx);
+
 }

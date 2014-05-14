@@ -33,7 +33,7 @@ public :
     const PPL::Octagonal_Shape<int>& get_oct() const;
     PPL::Octagonal_Shape<int> get_invariant_oct();
     //virtual const PPL::NNC_Polyhedron& get_cvx() const;
-    //virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
     //virtual void print() const;
     //virtual void widen();
 };

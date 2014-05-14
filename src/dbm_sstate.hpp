@@ -33,7 +33,7 @@ public :
     const PPL::BD_Shape<int>& get_dbm() const;
     PPL::BD_Shape<int> get_invariant_dbm();
     //virtual const PPL::NNC_Polyhedron& get_cvx() const;
-    //virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
+    virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
     //virtual void print() const;
     //virtual void widen();
 };

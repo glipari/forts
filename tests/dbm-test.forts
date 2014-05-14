@@ -1,0 +1,18 @@
+    x, y : continuous;
+
+automaton aton1 
+sync : lab;
+
+loc A : while x <= 2 wait {}
+    when x == 2 do {x'=0} goto B;
+    when true sync lab do {} goto C;
+
+loc B : while true wait {}
+
+loc C : while true wait {}
+
+end
+
+init := 
+    loc[aton1] == A & 
+    x == 0 & y == 0;
