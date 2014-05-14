@@ -48,7 +48,7 @@ static shared_ptr<Symbolic_State> build_state(const std::vector<std::string> &lo
     // }
     auto cv = MODEL.get_cvars();
     auto cs = build_a_constraint_tree(constraints);
-    PPL::C_Polyhedron cvx(cv.size());
+    PPL::NNC_Polyhedron cvx(cv.size());
     cvx.add_constraints(cs.to_Linear_Constraint(cv, dv));
     auto res = make_shared<Widened_Symbolic_State> (locs, dv, cvx );
     res->widen();
@@ -129,16 +129,16 @@ TEST_CASE("Simple widened model", "[model][Space]")
 
     CHECK(compare_state_sets(li, expected));
 
-    const C_Polyhedron & x = s_a->get_cvx();
-    const C_Polyhedron & y = s_b->get_cvx();
+    const NNC_Polyhedron & x = s_a->get_cvx();
+    const NNC_Polyhedron & y = s_b->get_cvx();
 
 
-    PPL::C_Polyhedron xx(2);
+    PPL::NNC_Polyhedron xx(2);
     xx.add_constraint( PPL::Variable(0) <= 0);
     REQUIRE(xx.contains(x));
     REQUIRE(x.contains(xx));
 
-    PPL::C_Polyhedron yy(2);
+    PPL::NNC_Polyhedron yy(2);
     yy.add_constraint( PPL::Variable(0) <= 2);
     yy.add_constraint( PPL::Variable(1) <= 2);
     yy.add_constraint( PPL::Variable(0) + PPL::Variable(1) <= 2);

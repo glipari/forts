@@ -57,7 +57,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         dvars.insert(make_pair("D2",4));
 
         vector<string> loc_names;
-        C_Polyhedron cvx(6);
+        NNC_Polyhedron cvx(6);
 
         // The sstate 0
         loc_names.push_back("wait_for_offset1");
@@ -78,7 +78,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
 
         // reset 
         loc_names.clear();
-        cvx = C_Polyhedron(6);
+        cvx = NNC_Polyhedron(6);
         
         //the sstate 1
         vector<shared_ptr<Symbolic_State> > nsss = MODEL.Post(curr);
@@ -111,7 +111,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
 
         // reset 
         loc_names.clear();
-        cvx = C_Polyhedron(6);
+        cvx = NNC_Polyhedron(6);
 
 
         

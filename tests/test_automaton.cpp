@@ -32,7 +32,7 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
         Constraint_System css;
         css.insert(A >= 10*B);
         css.insert(C <= 5);
-        C_Polyhedron cvx (css);
+        NNC_Polyhedron cvx (css);
         VariableList cvl1;
         Valuations dvl1;
         cvl1.insert("A");
@@ -41,7 +41,7 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
         dvl1.insert(make_pair("x",1));
         cout << cvx << endl;
         Linear_Constraint lc = e.guard_to_Linear_Constraint(cvl1, dvl1); 
-        C_Polyhedron poly(lc);
+        NNC_Polyhedron poly(lc);
         REQUIRE ( cvx.contains(poly));
         REQUIRE ( poly.contains(cvx));
 
@@ -77,7 +77,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         Constraint_System css;
         css.insert(A >= 10*B);
         css.insert(C <= 5);
-        C_Polyhedron cvx (css);
+        NNC_Polyhedron cvx (css);
         VariableList cvl1;
         Valuations dvl1;
         cvl1.insert("A");
@@ -86,7 +86,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         dvl1.insert(make_pair("x",1));
         cout << cvx << endl;
         Linear_Constraint lc = it.to_Linear_Constraint(cvl1, dvl1); 
-        C_Polyhedron poly(lc);
+        NNC_Polyhedron poly(lc);
         REQUIRE ( cvx.contains(poly));
         REQUIRE ( poly.contains(cvx));
 
@@ -99,8 +99,8 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         auto guard = e0.get_guard();
         Constraint_System g_css0;
         g_css0.insert( B==10);
-        C_Polyhedron g_cvx0(g_css0);
-        C_Polyhedron g_poly0(e0.guard_to_Linear_Constraint(cvl1,dvl1));
+        NNC_Polyhedron g_cvx0(g_css0);
+        NNC_Polyhedron g_poly0(e0.guard_to_Linear_Constraint(cvl1,dvl1));
         REQUIRE ( g_cvx0.contains(g_poly0));
         REQUIRE ( g_poly0.contains(g_cvx0));
 
@@ -114,8 +114,8 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         guard = e1.get_guard();
         Constraint_System g_css;
         g_css.insert( B>=10);
-        C_Polyhedron g_cvx(g_css);
-        C_Polyhedron g_poly(guard.to_Linear_Constraint(cvl1,dvl1));
+        NNC_Polyhedron g_cvx(g_css);
+        NNC_Polyhedron g_poly(guard.to_Linear_Constraint(cvl1,dvl1));
         cout << "g poly " << g_poly << endl;
         cout << "g cvx " << g_cvx << endl;
         REQUIRE ( g_cvx.contains(g_poly));

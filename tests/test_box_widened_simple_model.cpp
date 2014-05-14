@@ -21,7 +21,7 @@ public :
     }
 
     TEST_Box_Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
-                                   const Valuations &dvars, const PPL::C_Polyhedron &pol) 
+                                   const Valuations &dvars, const PPL::NNC_Polyhedron &pol) 
                 : Box_Widened_Symbolic_State(loc_names, dvars, pol)
     {
         //widen();
@@ -67,7 +67,7 @@ static shared_ptr<Symbolic_State> build_state(const std::vector<std::string> &lo
 {
     auto cv = MODEL.get_cvars();
     auto cs = build_a_constraint_tree(constraints);
-    PPL::C_Polyhedron cvx(cv.size());
+    PPL::NNC_Polyhedron cvx(cv.size());
     cvx.add_constraints(cs.to_Linear_Constraint(cv, dv));
     auto res = make_shared<TEST_Box_Widened_Symbolic_State> (locs, dv, cvx );
     res->widen();
