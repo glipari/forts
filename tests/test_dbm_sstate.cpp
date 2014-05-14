@@ -46,6 +46,7 @@ static shared_ptr<DBM_Symbolic_State> build_state(const std::vector<std::string>
     PPL::NNC_Polyhedron cvx(cv.size());
     cvx.add_constraints(cs.to_Linear_Constraint(cv, dv));
     auto res = make_shared<DBM_Symbolic_State> (locs, dv, cvx );
+    res->continuous_step();
     return res;
     
 }

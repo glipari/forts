@@ -70,6 +70,7 @@ static shared_ptr<Symbolic_State> build_state(const std::vector<std::string> &lo
     PPL::NNC_Polyhedron cvx(cv.size());
     cvx.add_constraints(cs.to_Linear_Constraint(cv, dv));
     auto res = make_shared<TEST_Box_Widened_Symbolic_State> (locs, dv, cvx );
+    res->continuous_step();
     res->widen();
     return res;
     

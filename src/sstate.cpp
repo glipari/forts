@@ -102,13 +102,13 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
     dvars(dv),
     cvx(pol)
 {
-    invariant_cvx = get_invariant_cvx();   
     int i = 0;
     for (auto l : loc_names) {  
 	Location *p = &(MODEL.get_automaton_at(i).get_location_by_name(l));
 	locations.push_back(p);
 	i++;
     }
+    invariant_cvx = get_invariant_cvx();   
     update_signature();
 }
 
@@ -175,12 +175,12 @@ void Symbolic_State::continuous_step()
 {
     VariableList cvars = MODEL.get_cvars();
     PPL::NNC_Polyhedron r_cvx(cvars.size());
-    PPL::NNC_Polyhedron i_cvx(cvars.size());
+    //PPL::NNC_Polyhedron i_cvx(cvars.size());
     
     VariableList lvars = cvars;
     for (auto p: locations) {
 	Linear_Constraint lc;
-	i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
+	//i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
 	r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars, lvars));
     }
 
@@ -192,7 +192,10 @@ void Symbolic_State::continuous_step()
 	r_cvx.add_constraint(atc);
     }
     cvx.time_elapse_assign(r_cvx);
-    cvx.intersection_assign(i_cvx);
+    //cvx.intersection_assign(i_cvx);
+    cvx.intersection_assign(invariant_cvx);
+    // invariant_cvx is only used in discrete and continuous steps 
+    invariant_cvx.remove_higher_space_dimensions(0);
 }
 
 
@@ -245,6 +248,8 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
 
     cvx.unconstrain(vs);
     cvx.intersection_assign(ass_cvx);
+    // To build the invariant_cvx, which is latter used and destroyed in continuous_step()
+    invariant_cvx = get_invariant_cvx();
     cvx.intersection_assign(invariant_cvx);
 }
 

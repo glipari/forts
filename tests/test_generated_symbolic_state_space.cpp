@@ -71,6 +71,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         cvx.add_constraint(d2==0);
 
         auto ss0 = make_shared<Symbolic_State>(loc_names, dvars, cvx);
+        ss0->continuous_step();
 
         REQUIRE(ss0->equals(curr));
         sstates.push_back(ss0);
@@ -104,6 +105,7 @@ TEST_CASE("Test the generated sumbolic states in Space", "[][]")
         cvx.add_constraint(d2==p1);
 
         auto ss1 = make_shared<Symbolic_State> (loc_names, dvars, cvx);
+        ss1->continuous_step();
 
         REQUIRE(ss1->equals(curr));
         sstates.push_back(ss1);

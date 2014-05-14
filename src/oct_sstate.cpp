@@ -150,6 +150,7 @@ void OCT_Symbolic_State::continuous_step()
     time_elapse_assign<int>(oct_cvx, v_rates);
     //oct_cvx.intersection_assign(i_cvx);
     oct_cvx.intersection_assign(invariant_oct_cvx);
+    invariant_oct_cvx.remove_higher_space_dimensions(0);
 }
 
 void OCT_Symbolic_State::print() const

@@ -49,7 +49,9 @@ shared_ptr<Symbolic_State> build_state(const std::vector<std::string> &locs,
     auto cs = build_a_constraint_tree(constraints);
     PPL::NNC_Polyhedron cvx(cv.size());
     cvx.add_constraints(cs.to_Linear_Constraint(cv, dv));
-    return make_shared<Symbolic_State> (locs, dv, cvx );
+    auto res = make_shared<Symbolic_State> (locs, dv, cvx );
+    res->continuous_step();
+    return res;
     
 }
 

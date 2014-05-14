@@ -150,6 +150,7 @@ void DBM_Symbolic_State::continuous_step()
     time_elapse_assign<int>(dbm_cvx, v_rates);
     //dbm_cvx.intersection_assign(i_cvx);
     dbm_cvx.intersection_assign(invariant_dbm_cvx);
+    invariant_dbm_cvx.remove_higher_space_dimensions(0);
 }
 
 void DBM_Symbolic_State::print() const
