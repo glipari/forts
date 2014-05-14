@@ -1,0 +1,130 @@
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==24, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 8, B >= 20, C >= 0, B - A = 12, A - C = 8, B - C = 20
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==26, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A = 0, B = 20, C = 0, B - A = 20, C - A = 0, B - C = 20
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==28, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A = 8, B = 0, C = 0, A - B = 8, A - C = 8, C - B = 0
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==30, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 0, A <= 8, B >= 0, B <= 8, C >= 0, C <= 8, B - A = 0, C - A = 0, C - B = 0
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==32, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 0, A <= 8, B >= 8, B <= 16, C >= 8, C <= 16, B - A = 8, C - A = 8, C - B = 0
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==34, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 0, A <= 4, B >= 16, B <= 20, C >= 16, C <= 20, B - A = 16, C - A = 16, C - B = 0
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==38, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 4, A <= 8, B >= 0, B <= 4, C >= 20, C <= 24, A - B = 4, C - A = 16, C - B = 20
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==40, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 0, A <= 8, B >= 4, B <= 12, C >= 24, C <= 32, B - A = 4, C - A = 24, C - B = 20
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==42, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 0, A <= 8, B >= 12, B <= 20, C >= 32, C <= 40, B - A = 12, C - A = 32, C - B = 20
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==44, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A = 0, B = 20, C = 40, B - A = 20, C - A = 40, C - B = 20
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==46, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A = 8, B = 0, C = 40, A - B = 8, C - A = 32, C - B = 40
+==============================
+Signature : 14
+State name : waiting1waiting2active3
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==48, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A >= 0, A <= 8, B >= 0, B <= 8, C >= 40, C <= 48, B - A = 0, C - A = 40, C - B = 40
+==============================
+Signature : 6
+State name : waiting1waiting2done
+Discrete variables : 
+C1==2, C2==4, C3==2, D1==8, D2==20, D3==50, F3==48, T1==8, T2==20, T3==50
+CVX : 
+true
+------------------------------
+DBM : 
+A = 8, B = 8, C = 48, B - A = 0, C - A = 40, C - B = 40
