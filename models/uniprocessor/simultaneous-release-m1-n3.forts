@@ -1,0 +1,39 @@
+
+    p1, p2, p3 : continuous;
+    T1 == 8, C1 == 2, D1 == 8, T2 == 20, C2 == 4, D2 == 20, T3 == 50, C3 == 2, D3 == 50, F3 == 24: discrete;
+
+automaton act1 
+sync : r1;
+loc waiting1 : while p1 <= T1 wait {}
+    when p1 == T1 sync r1 do {p1'=0} goto waiting1;
+end
+
+automaton act2 
+sync : r2;
+loc waiting2 : while p2 <= T2 wait {}
+    when p2 == T2 sync r2 do {p2'=0} goto waiting2;
+end
+
+automaton sched3
+sync : r1, r2;
+
+loc active3 : while p3 <= F3 & p3 <= D3 wait {}
+    when p3 == F3 do {} goto done;
+    when F3 >= D3 + 1 do {} goto error;
+    when p3 <= F3 - 1 sync r1 do {F3'=F3+C1} goto active3;
+    when p3 <= F3 - 1 sync r2 do {F3'=F3+C2} goto active3;
+     
+loc done : while true wait {}
+loc error : while true wait {}
+
+end
+
+
+
+init := 
+    loc[act1] == waiting1 &
+    loc[act2] == waiting2 &
+    loc[sched3] == active3 & 
+    p1==8 & p2==20 &
+    p3==0;
+bad := loc[sched3]==error;
