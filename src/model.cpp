@@ -224,8 +224,8 @@ void Model::SpaceExplorer()
 		    continue;
 		}
 		stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, next);
-		stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
-		stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
+		//stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
+		//stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
 		next.push_back(*iit);
 	    }
 	}
