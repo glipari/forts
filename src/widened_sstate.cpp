@@ -89,6 +89,7 @@ bool Widened_Symbolic_State::contains(const std::shared_ptr<Symbolic_State> &pss
 void Widened_Symbolic_State::print() const 
 {
     Symbolic_State::print();
+    cout << "Tasks Signature : " << signature.get_active_tasks() << endl;
     cout << "Widened cvx : \n";
     cout << widened_cvx << endl ;
 }
@@ -101,3 +102,4 @@ bool Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) 
     }
     return res;
 }
+

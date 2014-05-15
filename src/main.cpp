@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 	    else {
 		    cout << "Unknown state type : " << state_type << endl;
 		    cout << "Possible values are: origin, widened, box_widened, dbm" << endl;
+            return 0;
 	    }
 	    cout << "State set to :" << state_type << endl;
 	}

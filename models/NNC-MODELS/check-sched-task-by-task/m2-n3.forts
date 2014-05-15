@@ -1,6 +1,6 @@
 
     p1, p2, p3, c1, c2, c3 :continuous;
-    T1 == 2, C1 == 1, D1 == 2,     T2 == 30, C2 == 1, D2 == 30,     T3 == 6, C3 == 5, D3 == 6: discrete; 
+    T1 == 2, C1 == 1, D1 == 2,     T2 == 3, C2 == 1, D2 == 3,     T3 == 6, C3 == 4, D3 == 6: discrete; 
 
 automaton sched
 

@@ -11,6 +11,7 @@
 #include "box_widened_sstate.hpp"
 #include "dbm_sstate.hpp"
 #include "oct_sstate.hpp"
+#include "edge_factory.hpp"
 
 using namespace std;
 namespace PPL=Parma_Polyhedra_Library;
@@ -47,7 +48,8 @@ void Model::reset()
 {
     delete the_instance;
     the_instance = new Model();
-    cache_reset();
+    //cache_reset();
+    EdgeFactory::reset();
 }
 
 // void Model::continuous_step(Symbolic_State &ss)
@@ -235,6 +237,11 @@ void Model::SpaceExplorer()
 	cout << "-----------------------------" << endl;
 	if ( next.size() == 0)
 	    break;
+    if ( next.size() == 22) {
+        for (auto x : next)
+            cout << ", " << x->get_loc_names();
+    }
+    cout << endl;
 	current.splice(current.begin(), next);
     }
     end = clock();

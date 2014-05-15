@@ -9,27 +9,30 @@
 #include <memory>
 #include <ppl_adapt.hpp>
 
+#include "signature.hpp"
+
 namespace PPL = Parma_Polyhedra_Library;
 
 class Location;
 class Combined_edge;
-
-class Signature {
-    std::string str;
-    unsigned active_tasks;
-public :
-    Signature () {}
-    Signature (const std::string &s);
-    const std::string& get_str() const;
-    const unsigned& get_active_tasks() const;
-    bool operator == (const Signature &sig) const;
-    bool operator < (const Signature &sig) const;
-    bool includes(const Signature &sig) const;
-    
-};
+//
+//class Signature {
+//protected:
+//    std::string str;
+//    //unsigned active_tasks;
+//public:
+//    Signature () {}
+//    Signature (const std::string &s);
+//    const std::string& get_str() const;
+//    //const unsigned& get_active_tasks() const;
+//    bool operator == (const Signature &sig) const;
+//    bool operator < (const Signature &sig) const;
+//    //bool includes(const Signature &sig) const;
+//    
+//};
 
 /** Reset the cached combined edges. */
-void cache_reset();
+//void cache_reset();
 
 
 class Symbolic_State {
@@ -86,7 +89,7 @@ public:
 
     Signature get_signature() const;
 
-    void update_signature();
+    virtual void update_signature();
 };
 
 #endif

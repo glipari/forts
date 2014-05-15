@@ -4,66 +4,67 @@
 #include "automaton.hpp"
 #include "model.hpp"
 #include "combined_edge.hpp"
+#include "edge_factory.hpp"
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
-std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
+//std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
+//
+//void cache_reset()
+//{
+//    signature_to_combined_edges.clear();
+//}
 
-void cache_reset()
-{
-    signature_to_combined_edges.clear();
-}
+//const std::string& Signature::get_str() const
+//{
+//    return str;
+//}
 
-const std::string& Signature::get_str() const
-{
-    return str;
-}
+//const unsigned& Signature::get_active_tasks() const
+//{
+//    return active_tasks;
+//}
 
-const unsigned& Signature::get_active_tasks() const
-{
-    return active_tasks;
-}
+//Signature::Signature(const string &s) {
+//    str = s;
+    //active_tasks = 0;
 
-Signature::Signature(const string &s) {
-    str = s;
-    active_tasks = 0;
+    //// To parse the list of active tasks
+    //vector<string> acts;
+    ////vector<int> acts_i;
+    //string act = "";
+    //for ( auto it = s.begin(); it != s.end(); it ++) {
+    //    if ( *it <= '9' && *it >= '0') {
+    //        //cout << "Got one active task " << *it << endl;
+    //        act.push_back(*it);
+    //    }
+    //    else if ( act != "") {
+    //        acts.push_back(act);
+    //        act = "";
+    //    }
+    //}
+    //if ( act != "")
+    //    acts.push_back(act);
 
-    // To parse the list of active tasks
-    vector<string> acts;
-    //vector<int> acts_i;
-    string act = "";
-    for ( auto it = s.begin(); it != s.end(); it ++) {
-        if ( *it <= '9' && *it >= '0') {
-            //cout << "Got one active task " << *it << endl;
-            act.push_back(*it);
-        }
-        else if ( act != "") {
-            acts.push_back(act);
-            act = "";
-        }
-    }
-    if ( act != "")
-        acts.push_back(act);
+    //for (auto &x : acts)
+    //    active_tasks = active_tasks | 1 << atoi(x.c_str());
+//}
 
-    for (auto &x : acts)
-        active_tasks = active_tasks | 1 << atoi(x.c_str());
-}
+//bool Signature::includes(const Signature& sig) const
+//{
+//    return active_tasks == (active_tasks | sig.active_tasks);
+//}
 
-bool Signature::includes(const Signature& sig) const
-{
-    return active_tasks == (active_tasks | sig.active_tasks);
-}
-
-bool Signature::operator == (const Signature& sig) const
-{
-    return str == sig.str;
-}
-
-bool Signature::operator < (const Signature& sig) const
-{
-    return str < sig.str;
-}
+//bool Signature::operator == (const Signature& sig) const
+//{
+//    return str == sig.str;
+//}
+//
+//bool Signature::operator < (const Signature& sig) const
+//{
+//    return str < sig.str;
+//}
 
 string Symbolic_State::get_loc_names() const
 {
@@ -141,8 +142,8 @@ shared_ptr<Symbolic_State> Symbolic_State::clone() const
 void Symbolic_State::print() const
 {
   cout << "==============================" << endl;
-  cout << "Signature : ";
-      cout << signature.get_active_tasks() << endl;
+  //cout << "Signature : ";
+  //    cout << signature.get_active_tasks() << endl;
 
   cout << "State name : ";
   for ( auto n : locations)
@@ -279,47 +280,47 @@ bool Symbolic_State::is_empty() const
     return cvx.is_empty();
 }
 
-void combine(vector<Combined_edge> &edge_groups, const Location &l, 
-	     const vector<string> new_labels,
-	     bool first) 
-{
-    if (first) {
-	    vector<Edge> outgoings = l.get_edges();
-        if (outgoings.size() == 0) {
-            Combined_edge egroup(new_labels);
-            edge_groups.push_back(egroup);
-	        return;
-        }
-	    for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
-            Combined_edge egroup(*iit, iit->get_label(), new_labels);
-            // egroup.edges.push_back(*iit);
-            // //if ( iit->sync_label != "") {
-            //   egroup.sync_label = (iit->sync_label);
-            //   egroup.sync_set = new_labels;
-            // //}
-            edge_groups.push_back(egroup);
-	    }
-	    return;
-    } 
-    vector<Combined_edge> copy = edge_groups;
-    edge_groups.clear();
-    // to combine every outgoing from "l" with every "edge group"
-    vector<Edge> outgoings = l.get_edges();
-    for ( auto &egroup : copy) {
-      if ( outgoings.size() == 0) {
-        vector<Combined_edge> com = egroup.combine(new_labels);
-        for ( auto &eg : com)
-          if ( not contains(edge_groups, eg))
-            edge_groups.push_back(eg);
-      }
-      for ( auto it = outgoings.begin(); it != outgoings.end(); it++) {
-        vector<Combined_edge> com = egroup.combine(*it, new_labels);
-        for ( auto &eg : com)
-          if ( not contains(edge_groups, eg))
-            edge_groups.push_back(eg);
-      }
-    }
-}
+//void combine(vector<Combined_edge> &edge_groups, const Location &l, 
+//	     const vector<string> new_labels,
+//	     bool first) 
+//{
+//    if (first) {
+//	    vector<Edge> outgoings = l.get_edges();
+//        if (outgoings.size() == 0) {
+//            Combined_edge egroup(new_labels);
+//            edge_groups.push_back(egroup);
+//	        return;
+//        }
+//	    for (auto iit = outgoings.begin(); iit != outgoings.end(); iit++) {
+//            Combined_edge egroup(*iit, iit->get_label(), new_labels);
+//            // egroup.edges.push_back(*iit);
+//            // //if ( iit->sync_label != "") {
+//            //   egroup.sync_label = (iit->sync_label);
+//            //   egroup.sync_set = new_labels;
+//            // //}
+//            edge_groups.push_back(egroup);
+//	    }
+//	    return;
+//    } 
+//    vector<Combined_edge> copy = edge_groups;
+//    edge_groups.clear();
+//    // to combine every outgoing from "l" with every "edge group"
+//    vector<Edge> outgoings = l.get_edges();
+//    for ( auto &egroup : copy) {
+//      if ( outgoings.size() == 0) {
+//        vector<Combined_edge> com = egroup.combine(new_labels);
+//        for ( auto &eg : com)
+//          if ( not contains(edge_groups, eg))
+//            edge_groups.push_back(eg);
+//      }
+//      for ( auto it = outgoings.begin(); it != outgoings.end(); it++) {
+//        vector<Combined_edge> com = egroup.combine(*it, new_labels);
+//        for ( auto &eg : com)
+//          if ( not contains(edge_groups, eg))
+//            edge_groups.push_back(eg);
+//      }
+//    }
+//}
 //void combine(vector<Combined_edge> &edge_groups, const Location &l, 
 //	     const vector<string> new_labels,
 //	     bool first) 
@@ -354,44 +355,55 @@ void combine(vector<Combined_edge> &edge_groups, const Location &l,
 
 vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
 {
-    vector< vector<Edge> > v_edges;
-    vector<shared_ptr<Symbolic_State> > v_ss;
-    vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
-    vector<string> synch_labels; 
+    //vector< vector<Edge> > v_edges;
+    //vector<shared_ptr<Symbolic_State> > v_ss;
+    //vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
+    //vector<string> synch_labels; 
 
-    auto it = signature_to_combined_edges.find(signature);
-    if ( it != signature_to_combined_edges.end()) {
-        vector<Combined_edge> &edge_groups = it->second;
-        for (auto e : edge_groups) {
-        auto nss = clone(); //make_shared<Symbolic_State>(*this);
+    vector<shared_ptr<Symbolic_State> > sstates;
+    //auto it = signature_to_combined_edges.find(signature);
+    vector<Combined_edge> eg = EDGE_FACTORY.get_edges(signature, locations);
+    for (auto e : eg) {
+        auto nss = clone();
         nss->discrete_step(e);
         nss->continuous_step();
         /** Do not forget to update the signature for the next sstate. */
         nss->update_signature();
         sstates.push_back(nss);
-        }
-        
     }
-    else {
-        vector<Combined_edge> edge_groups;
-        bool first = true;
-        for (auto p : locations) {
-            vector<string> new_labels = p->get_automaton().get_labels(); 
-            combine(edge_groups, *p, new_labels, first);
-	        first = false;
-        }
 
-        signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
+    //if ( it != signature_to_combined_edges.end()) {
+    //    vector<Combined_edge> &edge_groups = it->second;
+    //    for (auto e : edge_groups) {
+    //    auto nss = clone(); //make_shared<Symbolic_State>(*this);
+    //    nss->discrete_step(e);
+    //    nss->continuous_step();
+    //    /** Do not forget to update the signature for the next sstate. */
+    //    nss->update_signature();
+    //    sstates.push_back(nss);
+    //    }
+    //    
+    //}
+    //else {
+    //    vector<Combined_edge> edge_groups;
+    //    bool first = true;
+    //    for (auto p : locations) {
+    //        vector<string> new_labels = p->get_automaton().get_labels(); 
+    //        combine(edge_groups, *p, new_labels, first);
+	//        first = false;
+    //    }
 
-        for (auto e : edge_groups) {
-	    auto nss = clone(); //make_shared<Symbolic_State>(*this);
-	    nss->discrete_step(e);
-	    nss->continuous_step();
-        /** Do not forget to update the signature for the next sstate. */
-        nss->update_signature();
-	    sstates.push_back(nss);
-        }
-    }
+    //    signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
+
+    //    for (auto e : edge_groups) {
+	//    auto nss = clone(); //make_shared<Symbolic_State>(*this);
+	//    nss->discrete_step(e);
+	//    nss->continuous_step();
+    //    /** Do not forget to update the signature for the next sstate. */
+    //    nss->update_signature();
+	//    sstates.push_back(nss);
+    //    }
+    //}
     
     return sstates;
 }
