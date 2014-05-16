@@ -124,30 +124,38 @@ void OCT_Symbolic_State::discrete_step(Combined_edge &edges)
 void OCT_Symbolic_State::continuous_step()
 {
     VariableList cvars = MODEL.get_cvars();
-    //PPL::Octagonal_Shape<int> r_cvx(cvars.size());
-    PPL::Octagonal_Shape<int> i_cvx(cvars.size());
-    
+    //PPL::Octagonal_Shape<int> i_cvx(cvars.size());
+#ifndef FORTS_PPL_PATCH
+    PPL::Octagonal_Shape<int> r_cvx(cvars.size());    
     VariableList lvars = cvars;
+#else
     vector<int> v_rates;
     for ( int i = 0; i < cvars.size(); i++)
         v_rates.push_back(1);
+#endif
 
     for (auto p: locations) {
-	Linear_Constraint lc;
-	i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
-	//r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars, lvars));
-    p->abstract_rates(cvars, dvars, v_rates);
+	    Linear_Constraint lc;
+	    //i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
+#ifndef FORTS_PPL_PATCH
+	    r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars, lvars));
+#else
+        p->abstract_rates(cvars, dvars, v_rates);
+#endif
     }
 
-    //for (auto &v : lvars) {
-	//PPL::Variable var = get_ppl_variable(cvars, v);
-	//Linear_Expr le;
-	//le += 1;
-	//AT_Constraint atc = (var == le);
-	//r_cvx.add_constraint(atc);
-    //}
-    //oct_cvx.time_elapse_assign(r_cvx);
+#ifndef FORTS_PPL_PATCH
+    for (auto &v : lvars) {
+	    PPL::Variable var = get_ppl_variable(cvars, v);
+	    Linear_Expr le;
+	    le += 1;
+	    AT_Constraint atc = (var == le);
+	    r_cvx.add_constraint(atc);
+    }
+    oct_cvx.time_elapse_assign(r_cvx);
+#else
     time_elapse_assign<int>(oct_cvx, v_rates);
+#endif
     //oct_cvx.intersection_assign(i_cvx);
     oct_cvx.intersection_assign(invariant_oct_cvx);
     invariant_oct_cvx.remove_higher_space_dimensions(0);

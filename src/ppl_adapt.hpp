@@ -6,6 +6,8 @@
 #include <ppl.hh>
 namespace PPL = Parma_Polyhedra_Library;
 
+#define FORTS_PPL_PATCH
+
 // A few typedefs...
 typedef PPL::Constraint_System   Linear_Constraint;
 typedef PPL::Constraint          AT_Constraint;
@@ -21,7 +23,7 @@ void time_elapse_assign(PPL::BD_Shape<int64_t> & bds, std::vector<int> &rates);
 void time_elapse_assign(PPL::Octagonal_Shape<int64_t> & bds, std::vector<int> &rates); 
 
 
-
+#ifdef FORTS_PPL_PATCH
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace PPL;
 
@@ -125,5 +127,6 @@ void time_elapse_assign(PPL::Octagonal_Shape<T> & oct, std::vector<int> &rates)
     //! Marks \p *this as possibly not strongly closed.
     oct.reset_strongly_closed();
 }
+#endif
 
 #endif
