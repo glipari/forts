@@ -25,7 +25,7 @@ TEST_CASE("Parsing of parameter list in a model", "[model][parameters]")
         //Parameter param1("P3", 10, 100);
         //Parameter param2("P2", 1, 9);
         //Parameter param3("P1", 0, 10);
-        vector<Parameter> expected = { {"P3", 10, 100}, {"P2", 1, 9}, {"P1", 0, 10}};
+        vector<Parameter> expected = { {"P1", 0, 10}, {"P2", 1, 9}, {"P3", 10, 100}};
         for ( int i = 0; i < 3; i++) {
             REQUIRE (parameters[i].min == expected[i].min);
             REQUIRE (parameters[i].max == expected[i].max);

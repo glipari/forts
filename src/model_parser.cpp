@@ -106,8 +106,9 @@ void model_builder::collect_parameters(tipa::parser_context &pc)
     cout << endl;
     for (auto &xx : x)
       cout << xx.second << endl;
-    auto it = x.rbegin();
-    while ( it != x.rend()) {
+    cout << endl;
+    auto it = x.begin();
+    while ( it != x.end()) {
       if ( it->second == "parameters") {
         it ++;
         continue;
@@ -117,7 +118,7 @@ void model_builder::collect_parameters(tipa::parser_context &pc)
        * Each parameter is specified in the form of 
        *        lhs <= name <= rhs
        **/
-      int rhs = atoi(it->second.c_str());
+      int lhs = atoi(it->second.c_str());
       if ( not an_integer(it->second))
         throw parse_exc("Error in collecting parameters."); 
       it ++;
@@ -127,7 +128,7 @@ void model_builder::collect_parameters(tipa::parser_context &pc)
         throw parse_exc("Error in collecting parameters."); 
       it ++;
 
-      int lhs = atoi(it->second.c_str());
+      int rhs = atoi(it->second.c_str());
       if ( not an_integer(it->second))
         throw parse_exc("Error in collecting parameters."); 
       it ++;
