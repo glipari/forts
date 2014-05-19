@@ -27,9 +27,18 @@ struct model_stats {
 };
 
 
+struct Parameter {
+    std::string name;
+    int min;
+    int max;
+    Parameter(std::string n, int mi, int ma);
+//    Parameter();
+};
+
 enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED, DBM, OCT}; 
 
 class Model {
+protected:
     enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
     // continuous vars for this model
     VariableList cvars;
@@ -55,6 +64,10 @@ class Model {
 
     bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
     int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
+
+
+    /** Model with parameters */
+    std::vector<Parameter> parameters; 
 
 public:
     Model(const Model &other) = delete;
@@ -119,6 +132,12 @@ public:
     void print_log(const std::string fname= ".log") const;
 
     void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
+
+
+
+    /** Model with parameters */
+    void add_param(const Parameter &param);
+    const std::vector<Parameter>& get_parameters() const;
 };
 
 #endif

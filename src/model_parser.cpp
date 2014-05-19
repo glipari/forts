@@ -100,6 +100,44 @@ void model_builder::dvars(tipa::parser_context &pc)
 
 }
 
+void model_builder::collect_parameters(tipa::parser_context &pc)
+{
+    auto x = pc.collect_tokens();
+    cout << endl;
+    for (auto &xx : x)
+      cout << xx.second << endl;
+    auto it = x.rbegin();
+    while ( it != x.rend()) {
+      if ( it->second == "parameters") {
+        it ++;
+        continue;
+      }
+      
+      /** 
+       * Each parameter is specified in the form of 
+       *        lhs <= name <= rhs
+       **/
+      int rhs = atoi(it->second.c_str());
+      if ( not an_integer(it->second))
+        throw parse_exc("Error in collecting parameters."); 
+      it ++;
+
+      string name = it->second;
+      if ( an_integer(name))
+        throw parse_exc("Error in collecting parameters."); 
+      it ++;
+
+      int lhs = atoi(it->second.c_str());
+      if ( not an_integer(it->second))
+        throw parse_exc("Error in collecting parameters."); 
+      it ++;
+      //Parameter param(name,lhs,rhs);
+      MODEL.add_param(Parameter(name, lhs, rhs));
+      //Parameter param(name,lhs,rhs);
+      //MODEL.add_param(param);
+    }
+
+}
 
 //void model_builder::dv_lhs(tipa::parser_context &pc)
 //{
@@ -128,8 +166,8 @@ void model_builder::an_automaton(tipa::parser_context &pc)
 
 rule prepare_model_rule(model_builder &m_builder)
 {
-    rule r_mod, r_cvars, r_dvars, r_automaton, 
-	r_cvar, r_dvar, dv_lhs, dv_rhs, r_init, 
+    rule r_mod, r_cvars, r_dvars, r_params, r_automaton, 
+	r_cvar, r_dvar, dv_lhs, dv_rhs, r_init, r_param,
 	r_init_constraint, 
 	r_aton_name, r_loc_name, r_aton_loc_pair, 
 	r_bad_locs, r_init_locs;
@@ -157,13 +195,15 @@ rule prepare_model_rule(model_builder &m_builder)
     dv_rhs = rule(tk_int);
     //r_dvar = dv_lhs >> -(rule("==") >> dv_rhs);
     r_dvar = rule(tk_ident) >> -(rule("==") >> rule(tk_int));
+    r_param = rule(tk_int) >> rule("<=") >> rule(tk_ident) >> rule("<=") >> rule(tk_int);
 
     r_cvars     = r_cvar >> *(rule(',') >> r_cvar) >> rule(':') >> keyword("continuous") >> rule(';');
     r_dvars     = r_dvar >> *(rule(',') >> r_dvar) >> rule(':') >> keyword("discrete")   >> rule(';');
+    r_params    = r_param >> *(rule(',') >> r_param) >> rule(':') >> keyword("parameters")   >> rule(';');
 
     r_automaton = prepare_automaton_rule(m_builder.a_builder);
 
-    r_mod       = r_cvars >> -(r_dvars) >> *(r_automaton) >> r_init >> -(r_bad_locs);
+    r_mod       = r_cvars >> -(r_dvars) >> -(r_params) >> *(r_automaton) >> r_init >> -(r_bad_locs);
 
     using namespace placeholders;
     r_aton_name       [bind(&model_builder::aton_name,           &m_builder, _1)];
@@ -173,6 +213,7 @@ rule prepare_model_rule(model_builder &m_builder)
     r_bad_locs        [bind(&model_builder::bad_locs,            &m_builder, _1)];
     r_cvar            [bind(&model_builder::a_cvar,              &m_builder, _1)];
     r_dvars            [bind(&model_builder::dvars,              &m_builder, _1)];
+    r_params            [bind(&model_builder::collect_parameters,              &m_builder, _1)];
     //dv_lhs            [bind(&model_builder::dv_lhs,              &m_builder, _1)];
     //dv_rhs            [bind(&model_builder::dv_rhs,              &m_builder, _1)];
     r_automaton       [bind(&model_builder::an_automaton,        &m_builder, _1)];

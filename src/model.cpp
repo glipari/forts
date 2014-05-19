@@ -328,6 +328,19 @@ void Model::print() const
 	cout << it->first << " = " << it->second;
     }
     cout << ": discrete;" << endl;
+    
+    ////////////// Model with parameters /////////////////////////////////
+    if ( parameters.size() != 0) {
+        for (auto it = parameters.begin(); it != parameters.end(); it++)
+        {
+	        if (it != parameters.begin())
+	            cout << ", ";
+	        cout << it->min << "<=" << it->name << "<=" << it->max;
+        }
+        cout << ": parameters;" << endl;
+    }
+    /////////////////////////////////////////////////////////////////////
+
     for (auto it = automata.begin(); it != automata.end(); it++) {
 	it->print();
     }
@@ -417,3 +430,5 @@ void Model::set_sstate_type(enum SYMBOLIC_STATE_TYPE t)
 {
     sstate_type = t;
 }
+
+
