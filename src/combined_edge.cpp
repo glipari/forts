@@ -2,14 +2,20 @@
 
 using namespace std;
 
-Combined_edge::Combined_edge(const Edge &e, const std::string &sync, 
-			     const vector<string> &labels) :
+Combined_edge::Combined_edge() {}
+
+Combined_edge::Combined_edge(const Edge &e, const std::string &sync, const vector<string> &labels) :
     edges{e}, sync_label(sync), sync_set(labels)
 {
 }
 
 Combined_edge::Combined_edge(const vector<string> &labels) :
     sync_set(labels)
+{
+}
+
+Combined_edge::Combined_edge(const vector<Edge> &es, const std::string &sync, const vector<string> &labels) :
+    edges(es), sync_label(sync), sync_set(labels)
 {
 }
 
@@ -95,4 +101,14 @@ std::vector<Combined_edge> Combined_edge::combine(const Edge &e,
     }
 
     return after_combination;
+}
+
+void Combined_edge::set_locations(const std::vector<Location *>& locs)
+{
+    locations = locs;
+}
+
+const vector<Location *> & Combined_edge::get_locations() const
+{
+    return locations;
 }

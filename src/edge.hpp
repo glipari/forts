@@ -25,14 +25,18 @@ class Edge {
     automaton *aut;
     Location *src_location;
 
-    const std::string dest;
+    //const std::string dest;
+    std::string dest;
     Location *dst_location;
 
-    const std::string sync_label;
-    const constraint_node guard;
+    //const std::string sync_label;
+    //const constraint_node guard;
+    std::string sync_label;
+    constraint_node guard;
     std::vector<Assignment> assignments;
 
 public:
+
 
     Edge(const std::string &destination, 
 	 const std::string &label,

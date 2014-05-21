@@ -10,30 +10,12 @@
 #include <ppl_adapt.hpp>
 
 #include "signature.hpp"
+#include "combined_edge.hpp"
 
 namespace PPL = Parma_Polyhedra_Library;
 
 class Location;
-class Combined_edge;
-//
-//class Signature {
-//protected:
-//    std::string str;
-//    //unsigned active_tasks;
-//public:
-//    Signature () {}
-//    Signature (const std::string &s);
-//    const std::string& get_str() const;
-//    //const unsigned& get_active_tasks() const;
-//    bool operator == (const Signature &sig) const;
-//    bool operator < (const Signature &sig) const;
-//    //bool includes(const Signature &sig) const;
-//    
-//};
-
-/** Reset the cached combined edges. */
-//void cache_reset();
-
+//class Combined_edge;
 
 class Symbolic_State {
 protected:
@@ -49,6 +31,10 @@ protected:
     PPL::NNC_Polyhedron invariant_cvx;
     
     virtual std::shared_ptr<Symbolic_State> clone() const;
+
+    // keep a track of ancester of current state : prior ===incoming_edge===>
+    std::shared_ptr<Symbolic_State> prior;
+    Combined_edge incoming_edge;
 
 public:
 
@@ -90,6 +76,12 @@ public:
     Signature get_signature() const;
 
     virtual void update_signature();
+
+
+    void mark_prior(std::shared_ptr<Symbolic_State> p);
+    std::shared_ptr<Symbolic_State> get_prior() const;
+    Combined_edge get_incoming_edge() const;
+    const std::vector<Location *>& get_locations() const;
 };
 
 #endif

@@ -52,9 +52,11 @@ TEST_CASE("Test the combination operation of edges", "[Combined_Edge][combine]")
 
       vector<string> union_labs;
       set_union(synclabs1.begin(), synclabs1.end(), synclabs2.begin(), synclabs2.end(), back_inserter(union_labs));
-      Combined_edge ce1(e1, "r1", union_labs);
-      vector<Edge> &edges = ce1.get_edges();
-      edges.push_back(e2);
+      vector<Edge> edges = {e1, e2};
+      Combined_edge ce1(edges, "r1", union_labs);
+      //Combined_edge ce1(e1, "r1", union_labs);
+      //const vector<Edge> &edges = ce1.get_edges();
+      //edges.push_back(e2);
 
       REQUIRE(ce1 == egroups.at(0));
 

@@ -115,26 +115,6 @@ void Model::discrete_step(shared_ptr<Symbolic_State> &pss, Combined_edge &edges)
 
 vector<shared_ptr<Symbolic_State> > Model::Post(const shared_ptr<Symbolic_State>& pss)
 {
-    // vector< vector<Edge> > v_edges;
-    // vector<Symbolic_State> v_ss;
-    // vector<Symbolic_State> &sstates = v_ss;
-    // vector<string> synch_labels; 
-
-    // int a_index;
-    // vector<Combined_edge> edge_groups;
-    // for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
-    //     a_index = loc_it - ss.loc_names.begin();
-    // 	Location &l = automata[a_index].get_location_by_name(*loc_it);
-    //     vector<string> new_labels = automata[a_index].get_labels();
-    //     combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
-    //     //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
-    // }
-    // for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
-    // 	Symbolic_State nss = ss;
-    // 	discrete_step(nss, *it);
-    // 	continuous_step(nss);
-    // 	sstates.push_back(nss);
-    // }
 
     return pss->post();
 }
@@ -204,6 +184,7 @@ void Model::SpaceExplorer()
 	    stats.total_states += nsstates.size();
 
 	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
+            (*iit)->mark_prior(*it);
 		if ( (*iit)->is_empty()) {
 		    stats.eliminated++;
 		    continue;

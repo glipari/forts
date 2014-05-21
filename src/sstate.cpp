@@ -9,63 +9,6 @@
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
-//std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
-//
-//void cache_reset()
-//{
-//    signature_to_combined_edges.clear();
-//}
-
-//const std::string& Signature::get_str() const
-//{
-//    return str;
-//}
-
-//const unsigned& Signature::get_active_tasks() const
-//{
-//    return active_tasks;
-//}
-
-//Signature::Signature(const string &s) {
-//    str = s;
-    //active_tasks = 0;
-
-    //// To parse the list of active tasks
-    //vector<string> acts;
-    ////vector<int> acts_i;
-    //string act = "";
-    //for ( auto it = s.begin(); it != s.end(); it ++) {
-    //    if ( *it <= '9' && *it >= '0') {
-    //        //cout << "Got one active task " << *it << endl;
-    //        act.push_back(*it);
-    //    }
-    //    else if ( act != "") {
-    //        acts.push_back(act);
-    //        act = "";
-    //    }
-    //}
-    //if ( act != "")
-    //    acts.push_back(act);
-
-    //for (auto &x : acts)
-    //    active_tasks = active_tasks | 1 << atoi(x.c_str());
-//}
-
-//bool Signature::includes(const Signature& sig) const
-//{
-//    return active_tasks == (active_tasks | sig.active_tasks);
-//}
-
-//bool Signature::operator == (const Signature& sig) const
-//{
-//    return str == sig.str;
-//}
-//
-//bool Signature::operator < (const Signature& sig) const
-//{
-//    return str < sig.str;
-//}
-
 string Symbolic_State::get_loc_names() const
 {
     string str = "";
@@ -113,23 +56,9 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
     update_signature();
 }
 
-//bool Symbolic_State::contains(const Symbolic_State &ss) const
-//{
-//    //for ( int i = 0; i < loc_names.size(); i++)
-//    //if ( loc_names[i] != ss.loc_names[i])
-//    //return false;
-//    for (unsigned i = 0; i<locations.size(); i++) 
-//	if (locations[i]->get_name() != ss.locations[i]->get_name()) 
-//	    return false;
-//    return cvx.contains(ss.cvx);
-//}
-
 bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
 {
     if (not (signature == pss->signature)) return false;
-    // for (unsigned i = 0; i<locations.size(); i++) 
-    // 	if (locations[i]->get_name() != pss->locations[i]->get_name()) 
-    // 	    return false;
     return cvx.contains(pss->cvx);
 }
 
@@ -212,6 +141,9 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
     PPL::NNC_Polyhedron ass_cvx(cvars.size()*2);
 
     Variables_Set vs;
+    
+    // locations before discrete transition
+    auto l = locations;
 
     for (auto &e : edges.get_edges()) {
 	// find location source location with that name
@@ -252,6 +184,9 @@ void Symbolic_State::discrete_step(Combined_edge &edges)
     // To build the invariant_cvx, which is latter used and destroyed in continuous_step()
     invariant_cvx = get_invariant_cvx();
     cvx.intersection_assign(invariant_cvx);
+
+    incoming_edge = edges;
+    incoming_edge.set_locations(l);
 }
 
 
@@ -355,11 +290,6 @@ bool Symbolic_State::is_empty() const
 
 vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
 {
-    //vector< vector<Edge> > v_edges;
-    //vector<shared_ptr<Symbolic_State> > v_ss;
-    //vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
-    //vector<string> synch_labels; 
-
     vector<shared_ptr<Symbolic_State> > sstates;
     //auto it = signature_to_combined_edges.find(signature);
     vector<Combined_edge> eg = EDGE_FACTORY.get_edges(signature, locations);
@@ -372,39 +302,6 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
         sstates.push_back(nss);
     }
 
-    //if ( it != signature_to_combined_edges.end()) {
-    //    vector<Combined_edge> &edge_groups = it->second;
-    //    for (auto e : edge_groups) {
-    //    auto nss = clone(); //make_shared<Symbolic_State>(*this);
-    //    nss->discrete_step(e);
-    //    nss->continuous_step();
-    //    /** Do not forget to update the signature for the next sstate. */
-    //    nss->update_signature();
-    //    sstates.push_back(nss);
-    //    }
-    //    
-    //}
-    //else {
-    //    vector<Combined_edge> edge_groups;
-    //    bool first = true;
-    //    for (auto p : locations) {
-    //        vector<string> new_labels = p->get_automaton().get_labels(); 
-    //        combine(edge_groups, *p, new_labels, first);
-	//        first = false;
-    //    }
-
-    //    signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
-
-    //    for (auto e : edge_groups) {
-	//    auto nss = clone(); //make_shared<Symbolic_State>(*this);
-	//    nss->discrete_step(e);
-	//    nss->continuous_step();
-    //    /** Do not forget to update the signature for the next sstate. */
-    //    nss->update_signature();
-	//    sstates.push_back(nss);
-    //    }
-    //}
-    
     return sstates;
 }
 
@@ -453,4 +350,24 @@ bool Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
     return cvx.contains(pss->cvx) && pss->cvx.contains(cvx) 
             && invariant_cvx.contains(pss->invariant_cvx) && pss->invariant_cvx.contains(invariant_cvx);
 
+}
+
+void Symbolic_State::mark_prior(shared_ptr<Symbolic_State> p)
+{
+    prior = p;
+}
+
+shared_ptr<Symbolic_State> Symbolic_State::get_prior() const
+{
+    return prior;
+}
+
+Combined_edge Symbolic_State::get_incoming_edge() const
+{
+    return incoming_edge;
+}
+
+const vector<Location *> & Symbolic_State::get_locations() const
+{
+    return locations;
 }

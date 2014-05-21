@@ -11,6 +11,6 @@ test_SOURCES = test_main.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp
         test_generated_symbolic_state_space.cpp \
 	test_simple_model.cpp test_widened_simple_model.cpp test_signature.cpp test_box_widened_simple_model.cpp \
     test_dbm_sstate.cpp test_oct_sstate.cpp \
-    test_param_list.cpp
+    test_param_list.cpp test_time_abstract_state.cpp
 
 #LIBS = -ltinyparser

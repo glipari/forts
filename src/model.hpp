@@ -68,6 +68,8 @@ protected:
 
     /** Model with parameters */
     std::vector<Parameter> parameters; 
+    std::list<std::shared_ptr<Symbolic_State> > current;
+    std::list<std::shared_ptr<Symbolic_State> > next;
 
 public:
     Model(const Model &other) = delete;

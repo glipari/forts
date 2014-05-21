@@ -7,7 +7,7 @@ libefforts_la_SOURCES = common.cpp model.cpp constraint_parser.cpp \
 	sstate.cpp unique_index.cpp combined_edge.cpp edge.cpp assignment.cpp \
 	widened_sstate.cpp statistics.cpp box_widened_sstate.cpp dbm_sstate.cpp \
     oct_sstate.cpp edge_factory.cpp signature.cpp \
-    p_model.cpp
+    p_model.cpp time_abstract_state.cpp
 
 libefforts_la_LIBADD = -lppl -lgmp $(TIPA_LIBS)
 
