@@ -8,6 +8,7 @@
 #include "sstate.hpp"
 #include "automaton.hpp"
 #include "statistics.hpp"
+#include "time_abstract_state.hpp"
 
 typedef constraint_node constraint;
 
@@ -68,8 +69,12 @@ protected:
 
     /** Model with parameters */
     std::vector<Parameter> parameters; 
-    std::list<std::shared_ptr<Symbolic_State> > current;
-    std::list<std::shared_ptr<Symbolic_State> > next;
+    std::vector<Time_Abstract_State> UNReach, Acyclic, BS;
+    std::vector<std::pair<Time_Abstract_State, Time_Abstract_State> > Contained;
+    bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
+    void build_a_tile();
+    PPL::NNC_Polyhedron trace_to_cvx(const std::vector<Combined_edge>& tr);
+    void map_to_parameters(PPL::NNC_Polyhedron &poly);
 
 public:
     Model(const Model &other) = delete;
@@ -140,6 +145,9 @@ public:
     /** Model with parameters */
     void add_param(const Parameter &param);
     const std::vector<Parameter>& get_parameters() const;
+    void BEEP(const Valuations &pi0);
+    void BEEP();
+    bool is_parameter(const std::string& s) const;
 };
 
 #endif

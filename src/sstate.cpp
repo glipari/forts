@@ -117,7 +117,10 @@ void Symbolic_State::continuous_step()
     for (auto &v : lvars) {
 	PPL::Variable var = get_ppl_variable(cvars, v);
 	Linear_Expr le;
-	le += 1;
+    if( MODEL.is_parameter(v))
+	    le += 0;
+    else
+	    le += 1;
 	AT_Constraint atc = (var == le);
 	r_cvx.add_constraint(atc);
     }
@@ -129,7 +132,7 @@ void Symbolic_State::continuous_step()
 }
 
 
-void Symbolic_State::discrete_step(Combined_edge &edges)
+void Symbolic_State::discrete_step(const Combined_edge &edges)
 {
     VariableList cvars = MODEL.get_cvars();
 
@@ -371,3 +374,13 @@ const vector<Location *> & Symbolic_State::get_locations() const
 {
     return locations;
 }
+    
+bool Symbolic_State::no_outgoings() const
+{
+    for (auto &x : locations) {
+        if (x->get_edges().size() != 0)
+            return false;
+    }
+    return true;
+}
+

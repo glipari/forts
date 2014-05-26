@@ -11,6 +11,8 @@ public:
     Time_Abstract_State(const std::shared_ptr<Symbolic_State> & ss); 
 
     const std::vector<Combined_edge>& get_trace() const;
+
+    void print() const;
 }; 
 
 

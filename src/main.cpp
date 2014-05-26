@@ -12,6 +12,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    bool beep = false;
     if (argc == 1) {
 	cout << "Usage: " << argv[0] << " [options] <filename> " << endl;
         return 0;
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
     int c = -1;
     int parall = 1;
     string state_type = "";
-    while ((c = getopt(argc, argv, "p:s:")) != -1) {
+    while ((c = getopt(argc, argv, "p:s:r:")) != -1) {
 	if (c == 'p') {
 	    cout << "Parallelism set to :";
 	    parall = atoi(optarg);
@@ -46,6 +47,19 @@ int main(int argc, char *argv[])
 	    }
 	    cout << "State set to :" << state_type << endl;
 	}
+	if (c == 'r') {
+	    string robustness_type = string(optarg);
+	    if (robustness_type == "beep") {
+            beep = true;
+		    //MODEL.BEEP();
+            //return 0;
+        }
+        else {
+            cout << "Unknown type for robustness analysis : " << robustness_type << endl;
+            cout << "Possible values are : beep" << endl;
+            return 0;
+        }
+    }
     }
 
     /** argv[1] in the input file name. */
@@ -60,12 +74,18 @@ int main(int argc, char *argv[])
 
     build_a_model(str);
     try {
-        MODEL.check_consistency();
         /** To print out the model? */
         //MODEL.print();
 //        MODEL.set_sstate_type(BOX_WIDENED);
 //        MODEL.set_sstate_type(WIDENED);
-        MODEL.SpaceExplorer();
+        if ( beep) {
+            MODEL.BEEP();
+            //return 0;
+        }
+        else {
+            MODEL.check_consistency();
+            MODEL.SpaceExplorer();
+        }
 	// MODEL.set_concurrency(2);
         MODEL.print_log();
     } catch(const string &s) {

@@ -25,3 +25,23 @@ const vector<Combined_edge>& Time_Abstract_State::get_trace() const
     return trace;
 }
 
+void Time_Abstract_State::print() const {
+    bool begin = true;
+    for( auto &x: trace) {
+        string name = "";
+        for(auto &y: x.get_locations()) {
+            name += y->get_name();
+        }
+        if(begin)
+            begin = false;
+        else
+            cout << "==>";
+        cout << name;
+    }
+    auto &x = trace.back();
+    string name = "";
+    for(auto &y:x.get_edges())
+        name += y.get_dest();
+    cout << name;
+    cout << endl;
+}

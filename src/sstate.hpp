@@ -51,7 +51,7 @@ public:
     virtual bool is_bad() const ; 
 
     virtual void continuous_step();
-    virtual void discrete_step(Combined_edge &edges);
+    virtual void discrete_step(const Combined_edge &edges);
 
     PPL::NNC_Polyhedron get_invariant_cvx();
 
@@ -82,6 +82,7 @@ public:
     std::shared_ptr<Symbolic_State> get_prior() const;
     Combined_edge get_incoming_edge() const;
     const std::vector<Location *>& get_locations() const;
+    bool no_outgoings() const;
 };
 
 #endif

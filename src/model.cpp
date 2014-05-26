@@ -127,13 +127,13 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     string ln="";
     for (auto it = automata.begin(); it != automata.end(); it++) {
-	cout << "loc name " << it->get_init_location() << endl;
+	//cout << "loc name " << it->get_init_location() << endl;
 	//init.loc_names.push_back(it->get_init_location());
 	loc_names.push_back(it->get_init_location());
 	locs.push_back(&(it->get_location_by_name(it->get_init_location())));
 	ln += it->get_init_location();
     }
-    cout << "init name " << ln << endl; 
+    //cout << "init name " << ln << endl; 
     cvx = NNC_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
     //Symbolic_State init(loc_names, dvars, cvx);
 
@@ -153,10 +153,10 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     else
         init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
-    init->print();
+    //init->print();
     init->continuous_step();
-    cout << "cvx after continuous step : ";
-    init->print();
+    //cout << "cvx after continuous step : ";
+    //init->print();
     return init;
 }
 
@@ -411,5 +411,4 @@ void Model::set_sstate_type(enum SYMBOLIC_STATE_TYPE t)
 {
     sstate_type = t;
 }
-
 
