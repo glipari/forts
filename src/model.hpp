@@ -68,13 +68,17 @@ protected:
 
 
     /** Model with parameters */
+    std::vector<PPL::Pointset_Powerset<PPL::NNC_Polyhedron> > good_tiles;
+    std::vector<PPL::NNC_Polyhedron> bad_tiles;
     std::vector<Parameter> parameters; 
     std::vector<Time_Abstract_State> UNReach, Acyclic, BS;
     std::vector<std::pair<Time_Abstract_State, Time_Abstract_State> > Contained;
     bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
-    void build_a_tile();
+    void build_a_good_tile();
+    void build_a_bad_tile();
     PPL::NNC_Polyhedron trace_to_cvx(const std::vector<Combined_edge>& tr);
     void map_to_parameters(PPL::NNC_Polyhedron &poly);
+    bool in_a_tile(const Valuations &v) const;
 
 public:
     Model(const Model &other) = delete;
@@ -148,6 +152,7 @@ public:
     void BEEP(const Valuations &pi0);
     void BEEP();
     bool is_parameter(const std::string& s) const;
+    Parameter get_parameter_by_name(const std::string& s) const;
 };
 
 #endif
