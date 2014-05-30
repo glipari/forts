@@ -28,13 +28,13 @@ struct model_stats {
 };
 
 
-struct Parameter {
-    std::string name;
-    int min;
-    int max;
-    Parameter(std::string n, int mi, int ma);
-//    Parameter();
-};
+//struct Parameter {
+//    std::string name;
+//    int min;
+//    int max;
+//    Parameter(std::string n, int mi, int ma);
+////    Parameter();
+//};
 
 enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED, DBM, OCT}; 
 
@@ -66,19 +66,6 @@ protected:
     bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
     int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
 
-
-    /** Model with parameters */
-    std::vector<PPL::Pointset_Powerset<PPL::NNC_Polyhedron> > good_tiles;
-    std::vector<PPL::NNC_Polyhedron> bad_tiles;
-    std::vector<Parameter> parameters; 
-    std::vector<Time_Abstract_State> UNReach, Acyclic, BS;
-    std::vector<std::pair<Time_Abstract_State, Time_Abstract_State> > Contained;
-    bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
-    void build_a_good_tile();
-    void build_a_bad_tile();
-    PPL::NNC_Polyhedron trace_to_cvx(const std::vector<Combined_edge>& tr);
-    void map_to_parameters(PPL::NNC_Polyhedron &poly);
-    bool in_a_tile(const Valuations &v) const;
 
 public:
     Model(const Model &other) = delete;
@@ -144,15 +131,49 @@ public:
 
     void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
 
+    /********************************* Model with parameters ***************************/
+protected:
+    bool on_the_fly = false;
 
+    std::vector<PPL::Pointset_Powerset<PPL::NNC_Polyhedron> > good_tiles;
+    std::vector<PPL::NNC_Polyhedron> bad_tiles;
+    //std::vector<PPL::NNC_Polyhedron> good_tiles_heuristic;
+    std::vector<Parameter> parameters; 
+
+    std::vector<Time_Abstract_State> UNReach, Acyclic, BS;
+    //std::vector<Time_Abstract_State> pre_UNReach_cvx, UNReach_cvx, Acyclic_cvx;
+    std::vector<std::pair<Time_Abstract_State, Time_Abstract_State> > Contained;
+    //std::vector<std::pair<Time_Abstract_State, Time_Abstract_State> > Contained_cvx;
+
+    bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
+    void build_a_good_tile();
+    void build_a_bad_tile();
+    PPL::NNC_Polyhedron trace_to_cvx(const Trace& tr);
+    void map_to_parameters(PPL::NNC_Polyhedron &poly);
+    void map_to_parameters(PPL::NNC_Polyhedron &poly, const VariableList& cvars);
+    bool in_a_tile(const Valuations &v) const;
+    std::pair<PPL::NNC_Polyhedron, PPL::NNC_Polyhedron> unreach_trace_to_cvx(const Trace& tr);
+
+    //void build_a_good_tile_c();
+    //int try_addC_and_check_ending(const std::shared_ptr<Symbolic_State> &ss, PPL::NNC_Polyhedron& reach, std::vector<NNC_Polyhedron>& unreach);
+
+    std::shared_ptr<Symbolic_State> beep_init_sstate();
+
+    bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss, PPL::NNC_Polyhedron conjunction_part);
+
+public:
 
     /** Model with parameters */
     void add_param(const Parameter &param);
     const std::vector<Parameter>& get_parameters() const;
     void BEEP(const Valuations &pi0);
+    void on_the_fly_BEEP(const Valuations &pi0);
     void BEEP();
     bool is_parameter(const std::string& s) const;
     Parameter get_parameter_by_name(const std::string& s) const;
+    void print_points(std::string fname) const;
+
+    void beep_set_on_the_fly();
 };
 
 #endif

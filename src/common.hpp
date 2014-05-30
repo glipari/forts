@@ -40,6 +40,15 @@ void set_valuation(Valuations &v, const std::string &n, int val);
 // TO check if a string is an integer
 bool an_integer(const std::string &s);
 
+struct Parameter {
+    std::string name;
+    int min;
+    int max;
+    Parameter(std::string n, int mi, int ma);
+//    Parameter();
+};
+
+
 // // A VARIABLE is a pair (variable name, integer valuation)
 // // typedef pair<string, int> VARIABLE; 
 // struct variable {
