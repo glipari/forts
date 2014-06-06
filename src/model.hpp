@@ -151,6 +151,7 @@ protected:
     PPL::NNC_Polyhedron trace_to_cvx(const Trace& tr);
     void map_to_parameters(PPL::NNC_Polyhedron &poly);
     void map_to_parameters(PPL::NNC_Polyhedron &poly, const VariableList& cvars);
+    void map_to_parameters(PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &poly, const VariableList& cvars);
     bool in_a_tile(const Valuations &v) const;
     std::pair<PPL::NNC_Polyhedron, PPL::NNC_Polyhedron> unreach_trace_to_cvx(const Trace& tr);
 
@@ -159,7 +160,7 @@ protected:
 
     std::shared_ptr<Symbolic_State> beep_init_sstate();
 
-    bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss, PPL::NNC_Polyhedron conjunction_part);
+    bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss, PPL::NNC_Polyhedron& conjunction_part);
 
 public:
 
@@ -169,11 +170,27 @@ public:
     void BEEP(const Valuations &pi0);
     void on_the_fly_BEEP(const Valuations &pi0);
     void BEEP();
+    void BEEP1();
     bool is_parameter(const std::string& s) const;
     Parameter get_parameter_by_name(const std::string& s) const;
     void print_points(std::string fname) const;
 
     void beep_set_on_the_fly();
+
+    bool backtrack(const std::shared_ptr<Symbolic_State> &ss, std::vector<std::shared_ptr<Symbolic_State> >& dominating, std::vector<std::shared_ptr<Symbolic_State> >& dominated) const;
+
+
+    bool be_outside(const int i, const double v, const PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &domain) const;
+
+    void grow_by_steps(PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &good_tile, const std::shared_ptr<Symbolic_State> &dominating, const std::shared_ptr<Symbolic_State> &dominated, const Valuations &pi0, const double step = 1.0) const;
+
+    void cut_tile(const int i, const int i_trial_upper_bound, const bool up, const int i_lower_bound, const bool down, PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &trial_refined_tile) const;
+
+    int dominated_relation(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &li, std::vector<std::shared_ptr<Symbolic_State> >& dominating, std::vector<std::shared_ptr<Symbolic_State> >& dominated) const;
+
+    Parameter valuation_index_to_parameter(const Valuations& v, const int index) const;
+    std::vector<Valuations> increase_by_one_step(const Valuations& x) const;
+    bool existing_point(const Valuations &v, const std::vector<Valuations> &vv) const;
 };
 
 #endif

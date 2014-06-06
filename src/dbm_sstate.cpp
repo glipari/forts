@@ -60,7 +60,7 @@ bool DBM_Symbolic_State::contains(const std::shared_ptr<Symbolic_State> &pss) co
     return dbm_cvx.contains(myptr->dbm_cvx);
 }
 
-void DBM_Symbolic_State::discrete_step(Combined_edge &edges)
+void DBM_Symbolic_State::discrete_step(const Combined_edge &edges)
 {
     //cout << "inside dbm discrete step\n";
     VariableList cvars = MODEL.get_cvars();

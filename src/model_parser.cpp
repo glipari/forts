@@ -109,7 +109,8 @@ void model_builder::collect_parameters(tipa::parser_context &pc)
     cout << endl;
     auto it = x.begin();
     while ( it != x.end()) {
-      if ( it->second == "parameters") {
+      /** If there is no discrete variable list, then it->second may encounter "continuous". */
+      if ( it->second == "parameters" || it->second == "continuous") {
         it ++;
         continue;
       }

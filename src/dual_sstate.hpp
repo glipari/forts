@@ -58,6 +58,8 @@ public:
 
     const VariableList & get_dual_cvars() const;
 
+    const Valuations & get_dual_dvars() const;
+
     virtual void print() const;
 };
 

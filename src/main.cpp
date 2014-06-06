@@ -95,7 +95,9 @@ int main(int argc, char *argv[])
             //return 0;
         }
         else {
+            cout << "here : " << endl;
             MODEL.check_consistency();
+            cout << "here2 : " << endl;
             MODEL.SpaceExplorer();
         }
 	// MODEL.set_concurrency(2);

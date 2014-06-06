@@ -155,8 +155,8 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     //init->print();
     init->continuous_step();
-    //cout << "cvx after continuous step : ";
-    //init->print();
+    cout << "cvx after continuous step : ";
+    init->print();
     return init;
 }
 
@@ -218,11 +218,6 @@ void Model::SpaceExplorer()
 	cout << "-----------------------------" << endl;
 	if ( next.size() == 0)
 	    break;
-    if ( next.size() == 22) {
-        for (auto x : next)
-            cout << ", " << x->get_loc_names();
-    }
-    cout << endl;
 	current.splice(current.begin(), next);
     }
     end = clock();

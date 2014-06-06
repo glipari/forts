@@ -24,7 +24,7 @@ public :
 
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void continuous_step();
-    virtual void discrete_step(Combined_edge &edges);
+    virtual void discrete_step(const Combined_edge &edges);
     virtual void print() const;
     virtual bool is_empty() const; 
     virtual bool is_bad(); 

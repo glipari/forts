@@ -103,6 +103,7 @@ bool Symbolic_State::is_bad() const
 
 void Symbolic_State::continuous_step()
 {
+    //cout << "enter a continuous step ... " << endl;
     VariableList cvars = MODEL.get_cvars();
     PPL::NNC_Polyhedron r_cvx(cvars.size());
     //PPL::NNC_Polyhedron i_cvx(cvars.size());
@@ -117,9 +118,9 @@ void Symbolic_State::continuous_step()
     for (auto &v : lvars) {
 	PPL::Variable var = get_ppl_variable(cvars, v);
 	Linear_Expr le;
-    if( MODEL.is_parameter(v))
-	    le += 0;
-    else
+    //if( MODEL.is_parameter(v))
+	//    le += 0;
+    //else
 	    le += 1;
 	AT_Constraint atc = (var == le);
 	r_cvx.add_constraint(atc);
@@ -129,11 +130,13 @@ void Symbolic_State::continuous_step()
     cvx.intersection_assign(invariant_cvx);
     // invariant_cvx is only used in discrete and continuous steps 
     invariant_cvx.remove_higher_space_dimensions(0);
+    //cout << "leave a continuous step ... " << endl;
 }
 
 
 void Symbolic_State::discrete_step(const Combined_edge &edges)
 {
+    //cout << "enter a discrete step ... " << endl;
     VariableList cvars = MODEL.get_cvars();
 
     PPL::NNC_Polyhedron guard_cvx(cvars.size());
@@ -190,6 +193,7 @@ void Symbolic_State::discrete_step(const Combined_edge &edges)
 
     incoming_edge = edges;
     incoming_edge.set_locations(l);
+    //cout << "leave a discrete step ... " << endl;
 }
 
 

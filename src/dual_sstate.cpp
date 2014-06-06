@@ -93,6 +93,7 @@ void Dual_Symbolic_State::continuous_step()
 {
     Symbolic_State::continuous_step();
 
+
     PPL::NNC_Polyhedron r_cvx(dual_cvars.size());
     
     VariableList lvars = dual_cvars;
@@ -135,6 +136,11 @@ const PPL::NNC_Polyhedron & Dual_Symbolic_State::get_dual_cvx() const
 const VariableList & Dual_Symbolic_State::get_dual_cvars() const
 {
     return dual_cvars;
+}
+ 
+const Valuations & Dual_Symbolic_State::get_dual_dvars() const
+{
+    return dual_dvars;
 }
  
 void Dual_Symbolic_State::print() const

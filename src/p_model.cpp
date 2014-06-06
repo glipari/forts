@@ -53,7 +53,7 @@ static vector<Valuations> generate_valuations_list(const vector<Parameter> &vp)
     return res_vv;
 }
 
-void Model::BEEP()
+void Model::BEEP1()
 {
     /////////////////// This part is only used for call check_consistency() //////////////////////////////////
     Valuations param_vars;
@@ -91,16 +91,7 @@ void Model::BEEP()
         }
         cout << "is not contained in a generated tile." << endl;
 
-        if( on_the_fly) 
-            on_the_fly_BEEP(x);
-        else {
-            BEEP(x);
-
-            if( BS.size() == 0)
-                build_a_good_tile();
-            else
-                build_a_bad_tile();
-        }
+        BEEP(x);
     }
 
     cout << endl << endl;
@@ -118,70 +109,70 @@ void Model::BEEP()
     }
 }
 
-void Model::BEEP(const Valuations &pi0)
-{
-    Valuations old = dvars;
-    dvars.insert(pi0.begin(), pi0.end());
-    //for ( auto x:dvars) {
-    //    cout << x.first << " " << x.second << endl;
-    //}
-
-    set_sstate_type(ORIGIN);
-
-    shared_ptr<Symbolic_State> init = init_sstate();
-    list<shared_ptr<Symbolic_State> > next;
-    list<shared_ptr<Symbolic_State> > current;
-    current.push_back(init);
-    int step = 0;
-
-    while( true) {
-        for (auto it = current.begin(); it != current.end(); it++) {
-            vector<shared_ptr<Symbolic_State> > nsstates = Post(*it);
-            for ( auto &x : nsstates) {
-                x->mark_prior(*it);
-                if (x->is_empty()) {
-                    UNReach.push_back(Time_Abstract_State(x));
-                    continue;
-                }
-                if(x->is_bad()) {
-                    BS.push_back(Time_Abstract_State(x));
-                    dvars = old;
-                    return;
-                }
-
-                if(contained_in_then_store(x, current)) continue;
-                if(contained_in_then_store(x, next)) continue;
-                if(contained_in_then_store(x, Space)) continue;
-
-                if(x->no_outgoings()) {
-                    Acyclic.push_back(Time_Abstract_State(x));
-                }
-
-                next.push_back(x);
-
-            }
-        }
-        Space.splice(Space.end(), current);
-        //cout << "---------------------------------------------------" << endl;
-        //cout << "Step : " << ++step << endl;
-        //cout << "Number of passed states : " << Space.size() + current.size()<< endl;
-        //cout << "Number of generated states : " << next.size() << endl;
-        //cout << "---------------------------------------------------" << endl;
-        if( next.size() == 0) {
-            break;
-        }
-        current.splice(current.end(), next);
-
-    }
-
-    cout << "---------------------------------------------------" << endl;
-    cout << "UNReach    : " << UNReach.size() << endl;
-    cout << "Acyclic    : " << Acyclic.size() << endl;
-    cout << "Contained  : " << Contained.size() << endl;
-    cout << "BS         : " << BS.size() << endl;
-    cout << "---------------------------------------------------" << endl;
-    dvars = old;
-}
+//void Model::BEEP(const Valuations &pi0)
+//{
+//    Valuations old = dvars;
+//    dvars.insert(pi0.begin(), pi0.end());
+//    //for ( auto x:dvars) {
+//    //    cout << x.first << " " << x.second << endl;
+//    //}
+//
+//    set_sstate_type(ORIGIN);
+//
+//    shared_ptr<Symbolic_State> init = init_sstate();
+//    list<shared_ptr<Symbolic_State> > next;
+//    list<shared_ptr<Symbolic_State> > current;
+//    current.push_back(init);
+//    int step = 0;
+//
+//    while( true) {
+//        for (auto it = current.begin(); it != current.end(); it++) {
+//            vector<shared_ptr<Symbolic_State> > nsstates = Post(*it);
+//            for ( auto &x : nsstates) {
+//                x->mark_prior(*it);
+//                if (x->is_empty()) {
+//                    UNReach.push_back(Time_Abstract_State(x));
+//                    continue;
+//                }
+//                if(x->is_bad()) {
+//                    BS.push_back(Time_Abstract_State(x));
+//                    dvars = old;
+//                    return;
+//                }
+//
+//                if(contained_in_then_store(x, current)) continue;
+//                if(contained_in_then_store(x, next)) continue;
+//                if(contained_in_then_store(x, Space)) continue;
+//
+//                if(x->no_outgoings()) {
+//                    Acyclic.push_back(Time_Abstract_State(x));
+//                }
+//
+//                next.push_back(x);
+//
+//            }
+//        }
+//        Space.splice(Space.end(), current);
+//        //cout << "---------------------------------------------------" << endl;
+//        //cout << "Step : " << ++step << endl;
+//        //cout << "Number of passed states : " << Space.size() + current.size()<< endl;
+//        //cout << "Number of generated states : " << next.size() << endl;
+//        //cout << "---------------------------------------------------" << endl;
+//        if( next.size() == 0) {
+//            break;
+//        }
+//        current.splice(current.end(), next);
+//
+//    }
+//
+//    cout << "---------------------------------------------------" << endl;
+//    cout << "UNReach    : " << UNReach.size() << endl;
+//    cout << "Acyclic    : " << Acyclic.size() << endl;
+//    cout << "Contained  : " << Contained.size() << endl;
+//    cout << "BS         : " << BS.size() << endl;
+//    cout << "---------------------------------------------------" << endl;
+//    dvars = old;
+//}
 
 bool Model::contained_in_then_store(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
 {
@@ -278,6 +269,19 @@ Parameter Model::get_parameter_by_name(const std::string& s) const {
 }
 
 void Model::map_to_parameters(PPL::NNC_Polyhedron &poly, const VariableList& cvars)
+{
+    PPL::Variables_Set vars;
+    int pos = 0;
+    for( auto &x:cvars) {
+        //cout << x << endl;
+        if(not is_parameter(x))
+            vars.insert(PPL::Variable(pos));
+        pos++;
+    }
+    poly.remove_space_dimensions(vars);
+}
+
+void Model::map_to_parameters(PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &poly, const VariableList& cvars)
 {
     PPL::Variables_Set vars;
     int pos = 0;
@@ -668,20 +672,17 @@ void Model::on_the_fly_BEEP(const Valuations &pi0)
             vector<shared_ptr<Symbolic_State> > nsstates = Post(*it);
             for ( auto &x : nsstates) {
                 x->mark_prior(*it);
-                //x->print();
-                //cout << endl << endl;
                 if (x->is_empty()) {
-                    //UNReach.push_back(Time_Abstract_State(x));
-                    // to synthesize the parameter constraint for a un-reachable trace
                     auto myx = dynamic_pointer_cast<Dual_Symbolic_State>(x);
                     auto myxp = dynamic_pointer_cast<Dual_Symbolic_State>(x->get_prior());
                     PPL::NNC_Polyhedron reach = myxp->get_dual_cvx();
                     map_to_parameters(reach, myxp->get_dual_cvars());
                     conjunction_part.intersection_assign(reach);
                     PPL::NNC_Polyhedron unreach = myx->get_dual_cvx();
-                    map_to_parameters(unreach, myx->get_dual_cvars());
-                    if( not unreach.is_empty())
+                    if( not unreach.is_empty()) {
+                        map_to_parameters(unreach, myx->get_dual_cvars());
                         disjunction_part.push_back(unreach);
+                    }
                     continue;
                 }
                 if(x->is_bad()) {
@@ -700,7 +701,10 @@ void Model::on_the_fly_BEEP(const Valuations &pi0)
                 if(contained_in_then_store(x, Space, conjunction_part)) continue;
 
                 if(x->no_outgoings()) {
-                    Acyclic.push_back(Time_Abstract_State(x));
+                    auto myx = dynamic_pointer_cast<Dual_Symbolic_State>(x);
+                    PPL::NNC_Polyhedron reach = myx->get_dual_cvx();
+                    map_to_parameters(reach, myx->get_dual_cvars());
+                    conjunction_part.intersection_assign(reach);
                 }
 
                 next.push_back(x);
@@ -728,14 +732,54 @@ void Model::on_the_fly_BEEP(const Valuations &pi0)
     cout << "---------------------------------------------------" << endl;
 
     PPL::Pointset_Powerset<PPL::NNC_Polyhedron> good_tile(conjunction_part);
-    for( auto &x: disjunction_part)
-        good_tile.difference_assign(PPL::Pointset_Powerset<NNC_Polyhedron>(x)); 
+    for( auto &x: disjunction_part) {
+        //cout << "x : " << x << endl;
+        good_tile.difference_assign(Pointset_Powerset<NNC_Polyhedron>(x));
+        //cout << "good tile after df : " << good_tile << endl;
+        //PPL::Pointset_Powerset<PPL::NNC_Polyhedron> neg(cvars.size()+parameters.size(), EMPTY);
+        //// maybe difference assign is not a good way to negate a NNC_Polyhedron x
+        ////good_tile.difference_assign(PPL::Pointset_Powerset<NNC_Polyhedron>(x)); 
+        //// we are going to negate every inequality in x manually
+        //for( auto &c : x.constraints()) {
+        //    //cout << "c : " << c << endl;
+        //    Constraint cc = c;
+        //    Linear_Expression e;
+        //    for( PPL::dimension_type i = cc.space_dimension(); i-->0;) {
+        //       e += cc.coefficient(Variable(i))*Variable(i);
+        //    }
+        //    e += cc.inhomogeneous_term();
+        //    if( cc.is_equality()) {
+        //            //cout << "equality : " << cc << endl;
+        //            Constraint cc2 = (e<0);
+        //            //cout << "cc2 " << cc2 << endl;
+        //            neg.add_disjunct(NNC_Polyhedron(Constraint_System(cc2)));
+        //            Constraint cc3 = (e>0);
+        //            //cout << "cc3 " << cc3 << endl;
+        //            neg.add_disjunct(NNC_Polyhedron(Constraint_System(cc3)));
+        //      //      cout << "neg : " << neg << endl;
+        //    }
+        //    else {
+
+        //        //cout << "inequality : " << cc << endl;
+        //        Constraint cc2 = cc.is_strict_inequality() ? (e<=0) : (e<0);
+        //        neg.add_disjunct(NNC_Polyhedron(Constraint_System(cc2)));
+        //        //    cout << "neg : " << neg << endl;
+        //    }
+        //}
+        ////cout << "final neg: " << neg << endl;
+        ////cout << "good tile : " << good_tile << endl;
+        //good_tile.intersection_assign(neg);
+        ////cout << "after difference good tile : " << good_tile << endl;
+    }
+    //auto myinit = dynamic_pointer_cast<Dual_Symbolic_State>(init); 
+    //cout << "A good tile before map: " << good_tile << endl;
+    //map_to_parameters(good_tile, myinit->get_dual_cvars()); 
     good_tiles.push_back(good_tile);
     cout << "A good tile : " << good_tile << endl;
     dvars = old;
 }
 
-bool Model::contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss, PPL::NNC_Polyhedron conjunction_part)
+bool Model::contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss, PPL::NNC_Polyhedron& conjunction_part)
 {
     for ( auto it = lss.begin(); it != lss.end(); it++) {
 	    bool f = (*it)->contains(ss);
@@ -745,20 +789,29 @@ bool Model::contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, c
             NNC_Polyhedron cvx1 = myx1->get_dual_cvx();
             NNC_Polyhedron cvx2 = myx2->get_dual_cvx();
 
-            // cvx1 is included in cvx2
-            cvx2.concatenate_assign(cvx1);
-            int pos = 0;
-            PPL::Variables_Set vars;
+            //cvx1.intersesction_assign(conjunction_part);
+            //cvx2.intersesction_assign(conjunction_part);
+            //if(
+
             auto dual_cvars = myx1->get_dual_cvars();
-            for( auto &x:dual_cvars) {
-                cvx2.add_constraint(PPL::Variable(pos) == PPL::Variable(pos+dual_cvars.size()));
-                if( not is_parameter(x))
+
+
+            cvx1.concatenate_assign(cvx2);
+            PPL::Variables_Set vars;
+            int pos = 0;
+            for( auto &x : dual_cvars){
+                cvx1.add_constraint(PPL::Variable(pos) == PPL::Variable(pos+dual_cvars.size()));
+                if( not is_parameter(x)) {
                     vars.insert(PPL::Variable(pos));
+                    vars.insert(PPL::Variable(pos+dual_cvars.size()));
+                }
+                else
+                    vars.insert(PPL::Variable(pos+dual_cvars.size()));
                 pos ++;
             }
-            cvx2.remove_higher_space_dimensions(dual_cvars.size());
-            cvx2.remove_space_dimensions(vars);
-            conjunction_part.intersection_assign(cvx2);
+            cvx1.remove_space_dimensions(vars);
+
+            conjunction_part.intersection_assign(cvx1);
             return true;
         }
     }
@@ -799,6 +852,8 @@ shared_ptr<Symbolic_State> Model::beep_init_sstate()
     PPL::NNC_Polyhedron dual_cvx(dual_cvars.size());
     dual_cvx = NNC_Polyhedron(init_constraint.to_Linear_Constraint(dual_cvars, dual_dvars));
 
+    //cout << "dual cvx " << dual_cvx << endl;
+
 
 
     shared_ptr<Symbolic_State> beep_init;
@@ -814,4 +869,493 @@ shared_ptr<Symbolic_State> Model::beep_init_sstate()
 void Model::beep_set_on_the_fly()
 {
     on_the_fly = true;
+}
+
+
+
+
+
+/************** Corrected codes for path formulation and parameter synthesis *******************************/
+
+void Model::BEEP(const Valuations &pi0)
+{
+    /** Keep a copy of real discrete variables. **/
+    Valuations old = dvars;
+    dvars.insert(pi0.begin(), pi0.end());
+
+
+    shared_ptr<Symbolic_State> init = beep_init_sstate();
+    list<shared_ptr<Symbolic_State> > next;
+    list<shared_ptr<Symbolic_State> > current;
+    current.push_back(init);
+    
+    /** Constraint on parameters obtained from acyclic trace and reachable part of an unreachable trace. */
+    PPL::NNC_Polyhedron conjunction_part(parameters.size());
+    /** Constraints on unreachable part of an unreachable trace. */
+    vector<PPL::NNC_Polyhedron> disjunction_part;
+
+    /** States that identify cyclic traces */
+    vector<shared_ptr<Symbolic_State> > dominating;
+    vector<shared_ptr<Symbolic_State> > dominated;
+
+    int step = 0;
+
+    while( true) {
+        for (auto it = current.begin(); it != current.end(); it++) {
+            vector<shared_ptr<Symbolic_State> > nsstates = Post(*it);
+            for ( auto &x : nsstates) {
+                x->mark_prior(*it);
+                if (x->is_empty()) { // an unreachable trace is met
+                    auto myx = dynamic_pointer_cast<Dual_Symbolic_State>(x);
+                    auto myxp = dynamic_pointer_cast<Dual_Symbolic_State>(x->get_prior());
+                    // parameter constraint on the reach part of the trace can be
+                    // added into "conjunction_part" directly
+                    PPL::NNC_Polyhedron reach = myxp->get_dual_cvx();
+                    map_to_parameters(reach, myxp->get_dual_cvars());
+                    conjunction_part.intersection_assign(reach);
+
+                    PPL::NNC_Polyhedron unreach = myx->get_dual_cvx();
+                    if( not unreach.is_empty()) {
+                        map_to_parameters(unreach, myx->get_dual_cvars());
+                        // For the reason of efficiency, we leave the merge of parameter 
+                        // synthesis on the unreach part in the further
+                        disjunction_part.push_back(unreach);
+                    }
+                    continue;
+                }
+                if(x->is_bad()) { // The bad location is met and a bad tile can be returned directly
+                    auto myx = dynamic_pointer_cast<Dual_Symbolic_State>(x); 
+                    PPL::NNC_Polyhedron bad_cvx = myx->get_dual_cvx();
+                    map_to_parameters(bad_cvx, myx->get_dual_cvars());
+                    bad_tiles.push_back(bad_cvx);
+                    cout << "A bad tile : " << bad_cvx << endl;
+                    //BS.push_back(Time_Abstract_State(x));
+                    dvars = old;
+                    return;
+                }
+
+                //if(contained_in_then_store(x, current, conjunction_part, dominating, dominated)) continue;
+                //if(contained_in_then_store(x, next, conjunction_part,dominating, dominated)) continue;
+                //if(contained_in_then_store(x, Space, conjunction_part, dominating, dominated)) continue;
+
+                /** To detect a cycle, we backtrack and check if some precedent state contains current state. */
+                //if( backtrack(x, dominating, dominated))
+                    //continue;
+                if( dominated_relation(x, current, dominating, dominated) +
+                    dominated_relation(x, next, dominating, dominated) +
+                    dominated_relation(x, Space, dominating, dominated) > 0) 
+                    continue;
+
+
+                if(x->no_outgoings()) { // acyclic trace is here
+                    auto myx = dynamic_pointer_cast<Dual_Symbolic_State>(x);
+                    PPL::NNC_Polyhedron reach = myx->get_dual_cvx();
+                    map_to_parameters(reach, myx->get_dual_cvars());
+                    conjunction_part.intersection_assign(reach);
+                }
+
+                next.push_back(x);
+
+            }
+        }
+        Space.splice(Space.end(), current);
+        //cout << "---------------------------------------------------" << endl;
+        //cout << "Step : " << ++step << endl;
+        //cout << "Number of passed states : " << Space.size() + current.size()<< endl;
+        //cout << "Number of generated states : " << next.size() << endl;
+        //cout << "---------------------------------------------------" << endl;
+        if( next.size() == 0) {
+            break;
+        }
+        current.splice(current.end(), next);
+
+    }
+
+    cout << "---------------------------------------------------" << endl;
+    cout << "Number of states    : " << Space.size() << endl;
+    //cout << "Acyclic    : " << Acyclic.size() << endl;
+    cout << "Domination  : " << dominated.size() << endl;
+    //cout << "BS         : " << BS.size() << endl;
+    cout << "---------------------------------------------------" << endl;
+
+    PPL::Pointset_Powerset<PPL::NNC_Polyhedron> good_tile(conjunction_part);
+    for( auto &x: disjunction_part) {
+        good_tile.difference_assign(Pointset_Powerset<NNC_Polyhedron>(x));
+    }
+
+    //cout << "good tile before growing parameter constraints " << good_tile << endl;
+
+    for( int i = 0; i < dominating.size(); i++) {
+        auto mying = dynamic_pointer_cast<Dual_Symbolic_State>(dominating[i]); 
+        auto myed = dynamic_pointer_cast<Dual_Symbolic_State>(dominated[i]); 
+        //cout << "   dominating: " << mying->get_dual_cvx() << endl;
+        //cout << "   dominated: " << myed->get_dual_cvx() << endl;
+        grow_by_steps(good_tile, dominating[i], dominated[i], pi0);
+    }
+
+    //auto myinit = dynamic_pointer_cast<Dual_Symbolic_State>(init); 
+    //cout << "A good tile before map: " << good_tile << endl;
+    //map_to_parameters(good_tile, myinit->get_dual_cvars()); 
+    good_tiles.push_back(good_tile);
+    cout << "A good tile : " << good_tile << endl;
+    dvars = old;
+}
+
+int Model::dominated_relation(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &li, std::vector<shared_ptr<Symbolic_State> >& dominating, std::vector<shared_ptr<Symbolic_State> >& dominated) const
+{
+    int c = 0;
+    for( auto &x : li) {
+        if( x->contains(ss)) {
+            c++;
+            dominating.push_back(x);
+            dominated.push_back(ss);
+            return c;
+        }
+    }
+    return c;
+}
+
+//bool Model::backtrack(const std::shared_ptr<Symbolic_State> &ss, std::vector<shared_ptr<Symbolic_State> >& dominating, std::vector<shared_ptr<Symbolic_State> >& dominated) const
+//{
+//    auto p = ss->get_prior();
+//    while ( p != nullptr) {
+//        if( p->contains(ss)) {
+//            dominating.push_back(p);
+//            dominated.push_back(ss);
+//            return true;
+//        }
+//        p = p->get_prior();
+//    }
+//
+//    return false;
+//}
+
+        
+        
+void Model::grow_by_steps(Pointset_Powerset<NNC_Polyhedron> &good_tile, const shared_ptr<Symbolic_State> &dominating, const shared_ptr<Symbolic_State> &dominated, const Valuations &pi0, const double step) const
+{
+    auto mydominating = dynamic_pointer_cast<Dual_Symbolic_State>(dominating);
+    auto mydominated = dynamic_pointer_cast<Dual_Symbolic_State>(dominated);
+
+    const NNC_Polyhedron & dominating_cvx = mydominating->get_dual_cvx();
+    const NNC_Polyhedron & dominated_cvx = mydominated->get_dual_cvx();
+
+    // A copy of original cvx we are going to manupilate
+    Pointset_Powerset<NNC_Polyhedron> ing(dominating_cvx);
+    Pointset_Powerset<NNC_Polyhedron> ed(dominated_cvx);
+    ing.concatenate_assign(good_tile);
+    ed.concatenate_assign(good_tile);
+
+    auto dual_cvars = mydominating->get_dual_cvars();
+
+    /********************************************************************************************************************************************/
+    /** If ing contains ed for all parameters valuations inside current good tile, then we are lucky and there is no need to change good_tile **/
+    int j = 0;
+    for( auto &x: dual_cvars) {
+        if( is_parameter(x)) {
+            ing.add_constraint(Variable(j) == Variable(dual_cvars.size()+j));
+            ed.add_constraint(Variable(j) == Variable(dual_cvars.size()+j));
+        }
+        j++;
+    }
+
+    if( ing.contains(ed))
+        return;
+    /********************************************************************************************************************************************/
+
+    // We are going to grow bounds on each parameter
+    vector<double> bounds;
+    for( auto &x : pi0)
+        bounds.push_back(x.second);
+
+    Pointset_Powerset<NNC_Polyhedron> refined_tile = good_tile;
+
+    for( int i = 0; i < bounds.size(); i++) {
+
+        //cout << "parameter " << valuation_index_to_parameter(pi0,i).name << " " << bounds[i] << endl;
+        double i_upper_bound = bounds[i], i_lower_bound = bounds[i]; 
+        double i_trial_upper_bound = bounds[i], i_trial_lower_bound = bounds[i]; 
+        // We first increase the i-th parameter in positive direction, then negative direction
+        bool positive_dir = true;
+        // "true" denotes "<=" or ">="; and "false" denotes "<" or ">" 
+        bool up_cut_flag = true, down_cut_flag = true;
+        // if the past value of parameter is included in the tile, if two successive values are both outside the tile, there is no need to go further
+        bool past = true;
+        // currently refined tile
+        Pointset_Powerset<NNC_Polyhedron> curr_refined_tile = refined_tile;
+        cut_tile(i, i_trial_upper_bound, up_cut_flag, i_lower_bound, down_cut_flag, refined_tile);
+        //cout << "refined tile " << refined_tile << endl;
+
+        /** Start to compute the region of the i-th parameter. */
+        while( true) {
+            /** Start to increase the i-th parameter step by step. */
+            if( positive_dir) {
+                //cout << "positive direction" << endl;
+                bool up = not up_cut_flag;
+                bool down = down_cut_flag;
+                if( up == false) { // open cut "<"
+                    i_trial_upper_bound += step;
+                    //cout << "i_trial_upper_bound = " << i_trial_upper_bound << endl;
+                }
+
+                if( be_outside(i, i_trial_upper_bound, refined_tile)) {
+                    if( past) {
+                        past = false;
+                    } 
+                    else {
+                        positive_dir = false;
+                        past = true;
+                        continue;
+                    }
+                }
+                //cout << "should not be outside " << endl;
+
+                Pointset_Powerset<NNC_Polyhedron> trial_refined_tile = refined_tile;
+                cut_tile(i, i_trial_upper_bound, up, i_lower_bound, down, trial_refined_tile);
+
+                ing = Pointset_Powerset<NNC_Polyhedron>(dominating_cvx);
+                ed = Pointset_Powerset<NNC_Polyhedron>(dominated_cvx);
+
+                ing.concatenate_assign(trial_refined_tile);
+                ed.concatenate_assign(trial_refined_tile);
+
+                int j = 0;
+                for( auto &x: dual_cvars) {
+                    if( is_parameter(x)) {
+                        ing.add_constraint(Variable(j) == Variable(dual_cvars.size()+j));
+                        ed.add_constraint(Variable(j) == Variable(dual_cvars.size()+j));
+                    }
+                    j++;
+                }
+
+                if( ing.contains(ed)) {
+                    i_upper_bound = i_trial_upper_bound;
+                    up_cut_flag = up;
+                    curr_refined_tile = trial_refined_tile;
+                }
+                else {
+                //cout << "should not be contain " << endl;
+                    positive_dir = false;
+                    past = true;
+                    //curr_refined_tile = trial_refined_tile;
+                    continue;
+                }
+
+            }
+            else {
+                //cout << "now turn to check the negative direction" << endl;
+                bool down = not down_cut_flag;
+                bool up = up_cut_flag;
+                if( down == false) { // open cut ">"
+                    i_trial_lower_bound -= step;
+                }
+                //cout << "i_trial_lower_bound = " << i_trial_lower_bound << endl;
+
+                if( be_outside(i, i_trial_lower_bound, refined_tile)) {
+                    if( past) {
+                        past = false;
+                    } 
+                    else {
+                        break;
+                    }
+                }
+
+                Pointset_Powerset<NNC_Polyhedron> trial_refined_tile = refined_tile;
+                cut_tile(i, i_upper_bound, up, i_trial_lower_bound, down, trial_refined_tile);
+
+                ing = Pointset_Powerset<NNC_Polyhedron>(dominating_cvx);
+                ed = Pointset_Powerset<NNC_Polyhedron>(dominated_cvx);
+
+                ing.concatenate_assign(trial_refined_tile);
+                ed.concatenate_assign(trial_refined_tile);
+
+                int j = 0;
+                for( auto &x: dual_cvars) {
+                    if( is_parameter(x)) {
+                        ing.add_constraint(Variable(j) == Variable(dual_cvars.size()+j));
+                        ed.add_constraint(Variable(j) == Variable(dual_cvars.size()+j));
+                    }
+                    j++;
+                }
+
+                if( ing.contains(ed)) {
+                    i_lower_bound = i_trial_lower_bound;
+                    down_cut_flag = down;
+                    curr_refined_tile = trial_refined_tile;
+                }
+                else {
+                    break;
+                }
+
+            }
+
+
+        }
+
+        refined_tile = curr_refined_tile;
+    }
+    good_tile = refined_tile;
+}
+
+bool Model::be_outside(const int i, const double v, const Pointset_Powerset<NNC_Polyhedron> &domain) const
+{
+    auto p = parameters[i];
+    if( v < p.min or v > p.max)
+        return true;
+
+    Pointset_Powerset<NNC_Polyhedron> tmp (domain);
+    tmp.add_constraint(Variable(i) == v);
+    if( tmp.is_empty())
+        return true;
+    else
+        return false;
+}
+
+void Model::cut_tile(const int i, const int i_upper_bound, const bool up, const int i_lower_bound, const bool down, PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &trial_refined_tile) const
+{
+    PPL::Constraint l, u;
+    if( up) {
+        u = (Variable(i)<=i_upper_bound);
+    }
+    else
+        u = (Variable(i)<i_upper_bound);
+
+    if( down) {
+        l = (Variable(i)>=i_lower_bound);
+    }
+    else
+        l = (Variable(i)>i_lower_bound);
+    
+    trial_refined_tile.add_constraint(l);
+    trial_refined_tile.add_constraint(u);
+}
+
+Parameter Model::valuation_index_to_parameter(const Valuations& v, const int index) const
+{
+    if( index < 0)
+        throw string("valuation_index_to_parameter receives negative index parameter ...");
+
+    int i = 0;
+    auto it = v.begin();
+    while( i != index) {
+        it ++;
+        i ++;
+    }
+    for( auto &x: parameters) {
+        if (x.name == it->first)
+            return x;
+    }
+}
+
+void Model::BEEP()
+{
+    cout << "We are inside the new beep" << endl;
+    /////////////////// This part is only used for call check_consistency() //////////////////////////////////
+    Valuations param_vars;
+    for (auto &x : parameters) {
+        param_vars[x.name] = x.min;
+    }
+    Valuations old = dvars;
+    dvars.insert(param_vars.begin(), param_vars.end());
+    check_consistency();
+    dvars = old;
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    cout << "We passed the consistency checking" << endl;
+
+    vector<Valuations> points;
+    vector<Valuations> passed_points;
+    Valuations v;
+    for( auto & x : parameters) {
+        v.insert(pair<string,int>(x.name,x.min));
+    }
+    points.push_back(v);
+
+    //for( auto &x: points){
+    while(points.size() != 0) {
+        auto x = points[0];
+        UNReach.clear();
+        Acyclic.clear();
+        BS.clear();
+        Contained.clear();
+        Space.clear();
+
+        cout << "Point : ";
+        for( auto &y: x) {
+            cout << y.first << "==" << y.second << " ";
+        }
+        if( in_a_tile(x)) {
+            cout << "is in a generated tile." << endl;
+            passed_points.push_back(points[0]);
+            vector<Valuations> next_points = increase_by_one_step(x);
+            points.erase(points.begin());
+
+            for( auto &y: next_points) {
+                if( (not existing_point(y, points)) and (not existing_point(y, passed_points)))
+                    points.push_back(y);
+            }
+            continue;
+        }
+        cout << "is not contained in a generated tile." << endl;
+
+        BEEP(x);
+
+        passed_points.push_back(points[0]);
+        vector<Valuations> next_points = increase_by_one_step(x);
+        points.erase(points.begin());
+
+        for( auto &y: next_points) {
+            if( (not existing_point(y, points)) and (not existing_point(y, passed_points)))
+                points.push_back(y);
+        }
+    }
+
+    cout << endl << endl;
+    cout << "Good tiles : " << endl;
+    int index = 0;
+    for( auto &x : good_tiles) {
+        cout << "== good tile " << index++ << " ==" << endl;
+        cout << x << endl;
+    }
+    index = 0;
+    cout << "Bad tiles : " << endl;
+    for( auto &x : bad_tiles) {
+        cout << "== bad tile " << index++ << " ==" << endl;
+        cout << x << endl;
+    }
+}
+
+vector<Valuations> Model::increase_by_one_step(const Valuations& v) const
+{
+    vector<Valuations> vv;
+    int index = -1;
+    for( auto &x : v) {
+        index ++;
+        Parameter p = valuation_index_to_parameter(v,index);
+        if (x.second == p.max) 
+            continue;
+        Valuations nu_v = v;
+        set_valuation(nu_v, x.first, x.second+1);
+        vv.push_back(nu_v);
+    }
+    return vv;
+}
+
+bool Model::existing_point(const Valuations &v, const vector<Valuations> &vv) const
+{
+    for(auto &x: vv) {
+        auto vt = v.begin();
+        auto xt = x.begin();
+        while( vt != v.end()) {
+            if( vt->first != xt->first)
+                throw string("Discrete variable order in Valuations does not perserve ...");
+            if( vt->second != xt->second)
+                break;
+            xt ++;
+            vt ++;
+        }
+        if( vt == v.end()) {
+            return true;
+        }
+    }
+    return false;
 }
