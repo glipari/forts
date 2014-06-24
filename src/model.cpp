@@ -227,6 +227,10 @@ void Model::SpaceExplorer()
 		//stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
 		//stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
 		next.push_back(*iit);
+
+        if(next.size() + Space.size() + current.size() >= 30000) {
+            throw string("unknown");
+        }
 	    }
 	}
 	Space.splice(Space.end(), current);
@@ -237,11 +241,6 @@ void Model::SpaceExplorer()
 	cout << "-----------------------------" << endl;
 	if ( next.size() == 0)
 	    break;
-    if ( next.size() == 22) {
-        for (auto x : next)
-            cout << ", " << x->get_loc_names();
-    }
-    cout << endl;
 	current.splice(current.begin(), next);
     }
     end = clock();

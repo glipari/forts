@@ -353,7 +353,7 @@ bool Symbolic_State::is_empty() const
 //}
 
 
-vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
+vector<shared_ptr<Symbolic_State> > Symbolic_State::post() 
 {
     //vector< vector<Edge> > v_edges;
     //vector<shared_ptr<Symbolic_State> > v_ss;
@@ -454,3 +454,4 @@ bool Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
             && invariant_cvx.contains(pss->invariant_cvx) && pss->invariant_cvx.contains(invariant_cvx);
 
 }
+

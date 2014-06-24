@@ -119,6 +119,8 @@ public:
     void print_log(const std::string fname= ".log") const;
 
     void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
+
+    Valuations& get_dvars() {return dvars;}
 };
 
 #endif

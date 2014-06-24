@@ -71,7 +71,7 @@ public:
 
     virtual const PPL::NNC_Polyhedron& get_cvx() const;
 
-    std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    virtual std::vector<std::shared_ptr<Symbolic_State> > post() ;
 
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
 
@@ -90,6 +90,7 @@ public:
     Signature get_signature() const;
 
     virtual void update_signature();
+
 };
 
 #endif

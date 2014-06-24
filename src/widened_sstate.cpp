@@ -68,6 +68,8 @@ void Widened_Symbolic_State::widen()
     widened_cvx.add_constraints(css1);
 
     widened_cvx.remove_space_dimensions(vss);
+
+    
 }
 
 const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_cvx() const
@@ -103,3 +105,9 @@ bool Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) 
     return res;
 }
 
+vector<shared_ptr<Symbolic_State> > Widened_Symbolic_State::post() {
+    auto v = Symbolic_State::post();
+    // After post operation, clear the original cvx t osave space 
+    cvx.remove_higher_space_dimensions(0);
+    return v;
+}

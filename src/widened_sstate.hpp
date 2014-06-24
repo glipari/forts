@@ -35,6 +35,7 @@ public :
     virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void print() const;
     virtual void widen();
+    virtual std::vector<std::shared_ptr<Symbolic_State> > post() ;
 };
 
 
