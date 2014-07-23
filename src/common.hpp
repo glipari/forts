@@ -45,6 +45,7 @@ struct Parameter {
     int min;
     int max;
     Parameter(std::string n, int mi, int ma);
+    bool operator < (const Parameter &p) const;
 //    Parameter();
 };
 

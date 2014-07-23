@@ -12,7 +12,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    bool beep = false, visual = false, on_the_fly = false;
+    bool ce = false, beep = false, visual = false, on_the_fly = false;
+    int bound=-1;
     string visual_fname;
     if (argc == 1) {
 	cout << "Usage: " << argv[0] << " [options] <filename> " << endl;
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
     int c = -1;
     int parall = 1;
     string state_type = "";
-    while ((c = getopt(argc, argv, "p:s:r:v:f:")) != -1) {
+    while ((c = getopt(argc, argv, "p:s:r:v:f:b:")) != -1) {
 	if (c == 'p') {
 	    cout << "Parallelism set to :";
 	    parall = atoi(optarg);
@@ -48,10 +49,16 @@ int main(int argc, char *argv[])
 	    }
 	    cout << "State set to :" << state_type << endl;
 	}
+    if ( c == 'b') {
+        bound = atoi(optarg);
+    }
 	if (c == 'r') {
 	    string robustness_type = string(optarg);
 	    if (robustness_type == "beep") {
             beep = true;
+        }
+	    else if (robustness_type == "ce") {
+            ce = true;
         }
         else {
             cout << "Unknown type for robustness analysis : " << robustness_type << endl;
@@ -80,19 +87,26 @@ int main(int argc, char *argv[])
     string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>()); 
 
     build_a_model(str);
+    if ( bound != -1) {
+        MODEL.set_bound(bound);
+    }
     try {
         /** To print out the model? */
         //MODEL.print();
 //        MODEL.set_sstate_type(BOX_WIDENED);
 //        MODEL.set_sstate_type(WIDENED);
         if ( beep) {
-            if( on_the_fly) {
-                MODEL.beep_set_on_the_fly();
-            }
+            //if( on_the_fly) {
+            //    MODEL.beep_set_on_the_fly();
+            //}
             MODEL.BEEP();
             if( visual) 
                 MODEL.print_points(visual_fname);
             //return 0;
+        }
+        else if (ce) {
+            cout << "Before calling CE method" << endl;
+            MODEL.CE();
         }
         else {
             cout << "here : " << endl;

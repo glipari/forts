@@ -53,11 +53,11 @@ public:
     virtual void continuous_step();
     virtual void discrete_step(const Combined_edge &edges);
 
-    PPL::NNC_Polyhedron get_invariant_cvx();
+    virtual PPL::NNC_Polyhedron get_invariant_cvx();
 
     virtual const PPL::NNC_Polyhedron& get_cvx() const;
 
-    std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    virtual std::vector<std::shared_ptr<Symbolic_State> > post() const;
 
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
 

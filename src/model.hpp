@@ -137,13 +137,10 @@ protected:
 
     std::vector<PPL::Pointset_Powerset<PPL::NNC_Polyhedron> > good_tiles;
     std::vector<PPL::NNC_Polyhedron> bad_tiles;
-    //std::vector<PPL::NNC_Polyhedron> good_tiles_heuristic;
     std::vector<Parameter> parameters; 
 
     std::vector<Time_Abstract_State> UNReach, Acyclic, BS;
-    //std::vector<Time_Abstract_State> pre_UNReach_cvx, UNReach_cvx, Acyclic_cvx;
     std::vector<std::pair<Time_Abstract_State, Time_Abstract_State> > Contained;
-    //std::vector<std::pair<Time_Abstract_State, Time_Abstract_State> > Contained_cvx;
 
     bool contained_in_then_store(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
     void build_a_good_tile();
@@ -155,8 +152,6 @@ protected:
     bool in_a_tile(const Valuations &v) const;
     std::pair<PPL::NNC_Polyhedron, PPL::NNC_Polyhedron> unreach_trace_to_cvx(const Trace& tr);
 
-    //void build_a_good_tile_c();
-    //int try_addC_and_check_ending(const std::shared_ptr<Symbolic_State> &ss, PPL::NNC_Polyhedron& reach, std::vector<NNC_Polyhedron>& unreach);
 
     std::shared_ptr<Symbolic_State> beep_init_sstate();
 
@@ -168,14 +163,14 @@ public:
     void add_param(const Parameter &param);
     const std::vector<Parameter>& get_parameters() const;
     void BEEP(const Valuations &pi0);
-    void on_the_fly_BEEP(const Valuations &pi0);
+    //void on_the_fly_BEEP(const Valuations &pi0);
     void BEEP();
-    void BEEP1();
+    //void BEEP1();
     bool is_parameter(const std::string& s) const;
     Parameter get_parameter_by_name(const std::string& s) const;
     void print_points(std::string fname) const;
 
-    void beep_set_on_the_fly();
+    //void beep_set_on_the_fly();
 
     bool backtrack(const std::shared_ptr<Symbolic_State> &ss, std::vector<std::shared_ptr<Symbolic_State> >& dominating, std::vector<std::shared_ptr<Symbolic_State> >& dominated) const;
 
@@ -191,6 +186,22 @@ public:
     Parameter valuation_index_to_parameter(const Valuations& v, const int index) const;
     std::vector<Valuations> increase_by_one_step(const Valuations& x) const;
     bool existing_point(const Valuations &v, const std::vector<Valuations> &vv) const;
+
+
+    void set_bound(int b); 
+    /** Bounded Counter-Example approach for parameter synthesis. */
+    void CE();
+    int bound = 1000000;
+    std::shared_ptr<Symbolic_State> init_param_sstate();
+    PPL::NNC_Polyhedron param_region;
+    std::list<PPL::NNC_Polyhedron> ces;
+    std::list<PPL::NNC_Polyhedron> ending_points;
+    //PPL::Pointset_Powerset<PPL::NNC_Polyhedron> big_ending_point;
+    bool contained_in(const PPL::NNC_Polyhedron &c, const std::list<NNC_Polyhedron> &lcs);
+    int remove_contained_elements(const PPL::NNC_Polyhedron &c, std::list<NNC_Polyhedron> &lcs);
+    //PPL::Pointset_Powerset<NNC_Polyhedron> union_ces;
+    //PPL::Pointset_Powerset<NNC_Polyhedron> diff_ces;
+
 };
 
 #endif

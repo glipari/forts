@@ -28,6 +28,11 @@ bool an_integer(const std::string &s)
 /** Model with parameters. */
 Parameter::Parameter(std::string n, int mi, int ma) : name(n), min(mi), max(ma) {}
 
+bool Parameter::operator < (const Parameter &p) const
+{
+    return name < p.name;
+}
+
 // // int var_2_val (const std::string &var, const DVList &dvl) 
 // {
 //     for (auto it = dvl.begin(); it != dvl.end(); it++)
