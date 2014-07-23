@@ -152,28 +152,18 @@ void Model::print_points(string fname) const
     string graph_command = string("graph") + string(" -T ps -C -X ") + X + string(" -Y ") + Y + string(" ");
 
     int index = 0;
-    // to print good tiles
     for( auto &x : good_tiles) {
         for (auto it = x.begin(); it != x.end(); it++) {
             const PPL::NNC_Polyhedron &cp = it->pointset(); 
-            //cout << "cp : " << cp <<endl;
-            //const PPL::Generator_System &gs = cp.generators();
-            //cout << "gs : " << gs << endl;
             PPL::C_Polyhedron cpp(cp);
             const PPL::Generator_System &gs = cpp.generators();
 
             ofstream ofs;
             string output = fname + string("-good-tile-") + to_string(index++);
             ofs.open(output.c_str());
-            //cout << output << endl;
             vector< vector<double> > points;
             for( auto jt = gs.begin(); jt != gs.end(); jt ++) {
-              //  cout << *jt << endl;
                 if( !jt->is_point()) {
-                    //cout << "Not a point here ..." << endl;
-                //    cout << jt->type() << endl;
-                    //continue;
-                    //throw ("Not a point here ...");
                 }
                 vector<double> point;
                 for( auto dim = jt->space_dimension(); dim -- > 0;) {

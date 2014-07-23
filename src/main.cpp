@@ -99,9 +99,11 @@ int main(int argc, char *argv[])
             //if( on_the_fly) {
             //    MODEL.beep_set_on_the_fly();
             //}
-            MODEL.BEEP();
+            MODEL.efficient_BEEP();
+            //MODEL.BEEP();
             if( visual) 
-                MODEL.print_points(visual_fname);
+                MODEL.efficient_print_points(visual_fname);
+                //MODEL.print_points(visual_fname);
             //return 0;
         }
         else if (ce) {

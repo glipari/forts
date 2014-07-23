@@ -163,14 +163,11 @@ public:
     void add_param(const Parameter &param);
     const std::vector<Parameter>& get_parameters() const;
     void BEEP(const Valuations &pi0);
-    //void on_the_fly_BEEP(const Valuations &pi0);
     void BEEP();
-    //void BEEP1();
     bool is_parameter(const std::string& s) const;
     Parameter get_parameter_by_name(const std::string& s) const;
     void print_points(std::string fname) const;
 
-    //void beep_set_on_the_fly();
 
     bool backtrack(const std::shared_ptr<Symbolic_State> &ss, std::vector<std::shared_ptr<Symbolic_State> >& dominating, std::vector<std::shared_ptr<Symbolic_State> >& dominated) const;
 
@@ -186,6 +183,22 @@ public:
     Parameter valuation_index_to_parameter(const Valuations& v, const int index) const;
     std::vector<Valuations> increase_by_one_step(const Valuations& x) const;
     bool existing_point(const Valuations &v, const std::vector<Valuations> &vv) const;
+
+
+    /** Efficient BEEP method **/
+    void efficient_BEEP();
+    void efficient_BEEP(const Valuations &pi0);
+    bool incompatible(const PPL::Constraint &cs, const Valuations &pi0) const;
+    PPL::Constraint negate_cs(const PPL::Constraint &c1, const Valuations &ref) const;
+    PPL::Constraint negate_cs(const PPL::Constraint &c1) const;
+    void grow_by_steps(PPL::NNC_Polyhedron &good_tile, const std::shared_ptr<Symbolic_State> &dominating, const std::shared_ptr<Symbolic_State> &dominated, const Valuations &pi0, const double step = 1.0) const;
+    void cut_tile(const int i, const int i_trial_upper_bound, const bool up, const int i_lower_bound, const bool down, PPL::NNC_Polyhedron &trial_refined_tile) const;
+    bool be_outside(const int i, const double v, const PPL::NNC_Polyhedron &domain) const;
+    std::vector<PPL::NNC_Polyhedron > efficient_good_tiles;
+    void efficient_print_points(std::string fname) const;
+    bool efficient_in_a_tile(const Valuations &v) const;
+    
+
 
 
     void set_bound(int b); 

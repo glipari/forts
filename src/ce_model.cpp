@@ -11,19 +11,14 @@
 
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
-
-static PPL::Constraint negate_cs(PPL::Constraint c1)
+PPL::Constraint Model::negate_cs(const PPL::Constraint& c1) const
 {
     if (c1.is_equality()) { 
-        //cout << c1 << endl;
-        //throw string("Constraint c1 is not an inequality"); // << c1 << endl;
         Linear_Expression e;
         for (dimension_type i = c1.space_dimension(); i-- > 0; )
             e += c1.coefficient(Variable(i)) * Variable(i);
         e += c1.inhomogeneous_term();
-        // This is incomplete and only for test, as we also need to consider the case such that e>0.
-        // And we need also utilize the "param_region" to decide whether to return "e>0" or "e<0".
-        Constraint c2 =  (e < 0); //cout << "Complement c2: " << c2 << endl;
+        Constraint c2 =  (e < 0); 
         return c2;
     }
     else {
