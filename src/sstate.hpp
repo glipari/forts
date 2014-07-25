@@ -36,6 +36,7 @@ protected:
     std::shared_ptr<Symbolic_State> prior;
     Combined_edge incoming_edge;
 
+    bool valid = true;
 public:
 
     Symbolic_State(std::vector<Location *> &locations, 
@@ -83,6 +84,10 @@ public:
     Combined_edge get_incoming_edge() const;
     const std::vector<Location *>& get_locations() const;
     bool no_outgoings() const;
+
+    virtual void refine_cvx(const PPL::NNC_Polyhedron &poly);
+    bool is_valid() const;
+    void invalidate();
 };
 
 #endif

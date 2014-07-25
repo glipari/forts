@@ -1,0 +1,19 @@
+    x, y : continuous;
+    0<=b<=10, 0<=a<=10: parameters;
+
+automaton A
+
+loc l1 : while x <= b wait{}
+    when x >= a do {x'=0} goto l1;
+    when y>=2 do {} goto l2;
+
+loc l2 : while true wait {}
+
+end
+
+
+init := 
+    loc[A] == l1 &
+    x == 0 & y == 0  &b>=0 & b<=10 & a>=0 & a<=10;
+
+bad := loc[A] == l2;

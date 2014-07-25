@@ -388,3 +388,17 @@ bool Symbolic_State::no_outgoings() const
     return true;
 }
 
+void Symbolic_State::refine_cvx(const PPL::NNC_Polyhedron &poly)
+{
+    cvx.intersection_assign(poly);
+}
+
+bool Symbolic_State::is_valid() const
+{
+    return valid;
+}
+
+void Symbolic_State::invalidate()
+{
+    valid = false;
+}

@@ -257,6 +257,8 @@ bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared
         // auto s2 = ss->get_signature();
         // if (!s1.includes(s2))
         //     continue;
+    if( not (*it)->is_valid())
+        continue;
 	contains_stat.start();
 	bool f = (*it)->contains(ss);
 	contains_stat.stop();

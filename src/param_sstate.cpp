@@ -8,16 +8,6 @@ Param_Symbolic_State::Param_Symbolic_State(const std::vector<std::string> &loc_n
 			       const Valuations &dv,
 			       const PPL::NNC_Polyhedron &pol) : Symbolic_State(loc_names, dv, pol) {} 
 
-//PPL::NNC_Polyhedron Param_Symbolic_State::get_invariant_cvx()
-//{
-//
-//    PPL::NNC_Polyhedron i_cvx(dual_cvars.size());
-//    for (auto p : locations) {
-//        Linear_Constraint lc;
-//        i_cvx.add_constraints(p->invariant_to_Linear_Constraint(dual_cvars, dual_dvars));
-//    }
-//    return i_cvx;
-//}
     
 std::shared_ptr<Symbolic_State> Param_Symbolic_State::clone() const
 {

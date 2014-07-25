@@ -1,0 +1,89 @@
+    p1, p2, p3, c1, c2, c3 : continuous;
+    D1==5, C1==3, C2==4, C3==5, D2==10, D3==15, T3==15, J2==0: discrete;
+    5<=T1<=10, 10<=T2<=15 : parameters;
+
+
+automaton act1
+sync: r1;
+loc waiting1 : while p1<=T1 wait {}
+    when p1>=T1 sync r1 do {p1'=0} goto waiting1;
+end
+
+automaton act2
+sync: r2;
+loc waiting2 : while p2<=T2+J2 wait {}
+    when p2>=T2 sync r2 do {p2'=0} goto waiting2;
+end
+
+automaton act3
+sync: r3;
+loc waiting3 : while p3<=T3 wait {}
+    when p3>=T3 sync r3 do {p3'=0} goto waiting3;
+end
+
+
+automaton sched
+sync : r1, r2, r3;
+
+loc idle : while true wait {}
+    when true sync r1 do {c1'=0} goto x1R;
+    when true sync r2 do {c2'=0} goto x2R;
+    when true sync r3 do {c3'=0} goto x3R;
+
+loc x1R : while c1<=C1&p1<=D1 wait {}
+    when c1>=C1 do {} goto idle;
+    when c1<C1 &p1>=D1 do{} goto error;
+    when true sync r2 do {c2'=0} goto x1R2W;
+    when true sync r3 do {c3'=0} goto x1R3W;
+
+loc x2R : while c2<=C2&p2<=D2 wait {}
+    when c2>=C2 do {} goto idle;
+    when c2<C2&p2>=D2 do {} goto error;
+    when c2<C2 sync r1 do {c1'=0} goto x1R2W;
+    when true sync r3 do {c3'=0} goto x2R3W;
+
+loc x3R : while c3 <= C3&p3<=D3 wait {}
+    when c3>=C3 do {} goto idle;
+    when c3<C3&p3>=D3 do {} goto error;
+    when c3<C3 sync r1 do {c1'=0} goto x1R3W;
+    when c3<C3 sync r2 do {c2'=0} goto x2R3W;
+
+loc x1R2W : while c1<=C1&p1<=D1&p2<=D2 wait{c2'=0}
+    when c1 >= C1 do {} goto x2R;
+    when c1 < C1&p1>=D1 do {} goto error;
+    when p2>=D2 do {} goto error;
+    when true sync r3 do {c3'=0} goto x1R2W3W;
+
+loc x1R3W : while c1<=C1&p1<=D1&p3<=D3 wait{c3'=0}
+    when c1>=C1 do {} goto x3R;
+    when c1<C1&p1>=D1 goto error;
+    when p3>=D3 do {} goto error;
+    when true sync r2 do {c2'=0} goto x1R2W3W;
+
+loc x2R3W : while c2<=C2&p2<=D2&p3<=D3 wait{c3'=0}
+    when c2>=C2 do {} goto x3R;
+    when c2<C2 &p2>=D2 do {} goto error;
+    when p3>=D3 do {} goto error;
+    when true sync r1 do {c1'=0} goto x1R2W3W;
+
+loc x1R2W3W : while c1<=C1&p1<=D1&p2<=D2&p3<=D3 wait{c2'=0,c3'=0}
+    when c1>=C1 do {} goto x2R3W;
+    when c1<C1 &p1>=D1 do {} goto error;
+    when p2>=D2 do {} goto error;
+    when p3>=D3 do {} goto error;
+
+loc error : while true wait{}
+
+end
+
+
+init := loc[act1]==waiting1 &
+        loc[act2]==waiting2 &
+        loc[act3]==waiting3 &
+        loc[sched]==idle &
+        p1>=0 &p1<=T1 & p2 >=0 &p2<=T2 & p3>=0 &p3<=T3& c3==0 &
+        T1>=5 & T1 <= 10 &
+        T2>=10 & T2<= 15;
+
+bad := loc[sched]==error;
+

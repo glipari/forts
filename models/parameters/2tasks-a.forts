@@ -1,0 +1,59 @@
+    p1, p2, c1, c2 : continuous;
+    C1==2, D1==5, D2==10, T2==10 : discrete;
+    5<=T1<=10, 5<=C2<=10: parameters;
+
+automaton act1
+sync: r1;
+loc waiting1 : while p1<=T1 wait {}
+    when p1>=T1 sync r1 do {p1'=0} goto waiting1;
+end
+
+automaton act2
+sync: r2;
+loc waiting2 : while p2<=T2 wait {}
+    when p2>=T2 sync r2 do {p2'=0} goto waiting2;
+end
+
+
+automaton sched
+sync : r1, r2;
+
+loc idle : while true wait {}
+    when true sync r1 do {c1'=0} goto x1R;
+    when true sync r2 do {c2'=0} goto x2R;
+
+loc x1R : while c1<=C1&p1<=T1 wait {}
+    when c1<=C1 sync r2 do {} goto x1R2W;
+    when c1==C1 do {} goto idle;
+    when c1<C1&p1>=T1 do {} goto error;
+
+loc x2R : while c2<=C2&p2<=T2 wait {}
+    when c2<=C2 sync r1 do {} goto x1W2R;
+    when c2==C2 do {} goto idle;
+    when c2<C2&p2>=T2 do {} goto error;
+
+loc x1R2W : while c1<=C1&p1<=T1&p2<=T2 wait{}
+    when c1==C1 do {c2'=0} goto x2R;
+    when c1<C1&p1>=T1 do{} goto error;
+    when p2>=T2 do{} goto error;
+
+loc x1W2R : while c2<=C2&p2<=T2&p1<=T1 wait{}
+    when c2==C2 do {c1'=0} goto x1R;
+    when c2<C2&p2>=T2 do{} goto error;
+    when p1>=T1 do{} goto error;
+
+loc error : while true wait{}
+
+end
+
+
+
+init := loc[act1]==waiting1 &
+        loc[act2]==waiting2 &
+        loc[sched]==idle &
+        p1>=0 & p2 >=0 & p1<=T1 & p2<=T2 & c2==0 & c1==0
+        & T1>=5 & T1<=10 & C2 >= 5 & C2 <= 10
+        ;
+
+bad := loc[sched]==error;
+

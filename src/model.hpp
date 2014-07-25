@@ -204,6 +204,7 @@ public:
     void set_bound(int b); 
     /** Bounded Counter-Example approach for parameter synthesis. */
     void CE();
+    void unconstrain_to_parameters(PPL::NNC_Polyhedron &poly);
     int bound = 1000000;
     std::shared_ptr<Symbolic_State> init_param_sstate();
     PPL::NNC_Polyhedron param_region;
@@ -214,6 +215,7 @@ public:
     int remove_contained_elements(const PPL::NNC_Polyhedron &c, std::list<NNC_Polyhedron> &lcs);
     //PPL::Pointset_Powerset<NNC_Polyhedron> union_ces;
     //PPL::Pointset_Powerset<NNC_Polyhedron> diff_ces;
+    void refine_with_counter_example(const PPL::NNC_Polyhedron& ce, std::list<std::shared_ptr<Symbolic_State> > &lss);
 
 };
 
