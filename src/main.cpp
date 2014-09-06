@@ -114,6 +114,8 @@ int main(int argc, char *argv[])
     }
     else if (ce) {
       MODEL.CE();
+      if( visual) 
+        MODEL.print_points_ce(visual_fname);
     }
     else {
       MODEL.check_consistency();

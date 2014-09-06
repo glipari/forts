@@ -93,7 +93,7 @@ void Model::map_to_parameters(PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &poly,
 }
 
 
-void Model::map_to_parameters(PPL::NNC_Polyhedron &poly)
+void Model::map_to_parameters(PPL::NNC_Polyhedron &poly) const
 {
     PPL::Variables_Set vars;
     int pos = 0;
