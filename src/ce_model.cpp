@@ -57,7 +57,7 @@ void Model::CE()
       vector<shared_ptr<Symbolic_State> > nsstates = Post(*it);
       
       for( auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
-        //(*iit)->mark_prior(*it);
+        (*iit)->mark_prior(*it);
         if( (*iit)->is_empty())
           continue;
         /**
@@ -109,23 +109,20 @@ void Model::CE()
 
     if( not complete) {
         for ( auto & x : next) {
-            if ( not x->is_valid())
-                continue;
-            auto y = x->get_prior();
-            if ( not y->is_valid())
-                continue;
-            PPL::NNC_Polyhedron poly_x = x->get_cvx();
-            PPL::NNC_Polyhedron poly_y = y->get_cvx();
-            map_to_parameters(poly_x);
-            map_to_parameters(poly_y);
-            //PPL::Constraint cs_x (PPL::Variable(0)<PPL::Variable(0)); // = *(poly_x.constraints().begin());
-            PPL::Constraint cs_x = *(poly_x.constraints().begin());
-            cs_x = negate_cs(cs_x);
-            PPL::NNC_Polyhedron tmp3(parameters.size());
-            tmp3.add_constraint(cs_x);
-            ending_points.push_back(tmp3);
+          auto p = x->get_prior();
+          while( p->get_loc_names() != x->get_loc_names()) {
+            p = p->get_prior();
+            if( p == nullptr)
+              throw string("Failed to track from a amature path ... ");
+          }
+          NNC_Polyhedron sup = p->get_cvx();
+          NNC_Polyhedron inf = x->get_cvx();
+          map_to_parameters(sup);
+          map_to_parameters(inf);
+          list<NNC_Polyhedron> res = get_incl_constraints(inf, sup);
+          ending_points.splice(ending_points.begin(), res);
+
         }
-//        }
     }
 
     cout << "Counter examples : " << endl;
@@ -309,56 +306,6 @@ void Model::print_points_ce(string fname) const
     string graph_command = string("graph") + string(" -T ps -C -X ") + X + string(" -Y ") + Y + string(" ");
 
     int index = 0;
-    //for( auto &x : good_tiles) {
-    //    for (auto it = x.begin(); it != x.end(); it++) {
-    //        const PPL::NNC_Polyhedron &cp = it->pointset(); 
-    //        PPL::C_Polyhedron cpp(cp);
-    //        const PPL::Generator_System &gs = cpp.generators();
-
-    //        ofstream ofs;
-    //        string output = fname + string("-good-tile-") + to_string(index++);
-    //        ofs.open(output.c_str());
-    //        vector< vector<double> > points;
-    //        for( auto jt = gs.begin(); jt != gs.end(); jt ++) {
-    //            if( !jt->is_point()) {
-    //            }
-    //            vector<double> point;
-    //            for( auto dim = jt->space_dimension(); dim -- > 0;) {
-    //                stringstream ss1 (stringstream::in | stringstream::out);
-    //                stringstream ss2 (stringstream::in | stringstream::out);
-
-    //                ss1 << jt->coefficient(PPL::Variable(dim));
-    //                ss2 << jt->divisor();
-    //                double coe, div;
-    //                ss1 >> coe; ss2 >> div;
-    //                point.push_back(coe/div);
-    //                //cout << coe/div << endl << endl;
-    //            }
-    //            points.push_back(point);
-    //        }
-    //        sort(points.begin(), points.end(), points_com);
-    //        for( auto &x: points) {
-    //            //for( int i = 0; i < x.size(); i++) {
-    //            for( int i = x.size()-1; i >= 0; i--) {
-    //                //if( i != 0) ofs << " ";
-    //                if( i != x.size()-1) ofs << " ";
-    //                ofs << x[i];
-    //            }
-    //            
-    //            ofs << endl;
-    //        }
-    //        // to draw a region, we need to output the first point in the end also
-    //        auto xt = points.begin();
-    //        for( int i = xt->size()-1; i >= 0; i--) {
-    //            if( i != xt->size()-1) ofs << " ";
-    //            ofs << (*xt)[i];
-    //        }
-    //        ofs << endl;
-
-    //        graph_command += string(" -m 2 -q 1 ")  + output + string(" ");
-
-    //    }
-    //}
     
     // To output the parameter domain
     //ofstream ofs;
@@ -379,78 +326,13 @@ void Model::print_points_ce(string fname) const
       print_cvx(y, output);
       graph_command += string(" -m 1 -q 1 ")  + output + string(" ");
     }
-//      NNC_Polyhedron y(x);
-//      map_to_parameters(y);
-//      /**
-//       * This is actually "cheating" by manually changing NNC_Polyhedron to C_Polyhedron... 
-//       **/ 
-//      PPL::C_Polyhedron cpp(y);
-//      const PPL::Generator_System &gs = cpp.generators();
-//
-//      ofstream ofs;
-//      string output = fname + string("-bad-tile-") + to_string(index++);
-//      ofs.open(output.c_str());
-//
-//      vector< vector<double> > points;
-//      for( auto jt = gs.begin(); jt != gs.end(); jt ++) {
-//        vector<double> point;
-//        for( auto dim = jt->space_dimension(); dim -- > 0;) {
-//          stringstream ss1 (stringstream::in | stringstream::out);
-//          stringstream ss2 (stringstream::in | stringstream::out);
-//          
-//          ss1 << jt->coefficient(PPL::Variable(dim));
-//          ss2 << jt->divisor();
-//          double coe, div;
-//          ss1 >> coe; ss2 >> div;
-//          point.push_back(coe/div);
-//          reverse(point.begin(), point.end());
-//        }
-//        points.push_back(point);
-//      }
-//
-//      vector<vector<double> > ps(points);
-//      points.clear();
-//      points.push_back(ps.front());
-//      ps.erase(ps.begin());
-//      
-//      while( ps.size() != 0) {
-//        
-//        vector<double> p1(points.back());
-//        
-//        auto it = ps.begin();
-//        while (it != ps.end()) {
-//          vector<double> p2(*it);
-//          vector<vector<double> > whole(points);
-//          whole.pop_back();
-//          for(auto xt = ps.begin(); xt!= ps.end(); xt++) {
-//            if( xt == it)
-//              continue;
-//            whole.push_back(*xt);
-//          }
-//          
-//          if( a_feasible_line(p1, p2, whole)) {
-//            points.push_back(p2);
-//            ps.erase(it);
-//            break;
-//          }
-//          else it ++;
-//            
-//          if( it == ps.end())
-//            throw("sorting exception");
-//        }
-//      }
-//
-//      points.push_back(points[0]);
-//      for( auto &x: points) {
-//        for( int i = 0; i < x.size(); i++) {
-//          if( i != 0) ofs << " ";
-//          ofs << x[i];
-//        }
-//        ofs << endl;
-//      }
-      
-     // graph_command += string(" -m 1 -q 1 ")  + output + string(" ");
-    //}
+
+    for( auto &x : ending_points) {
+      string output = fname + string("-bad-tile-") + to_string(index++);
+      //NNC_Polyhedron y(x);
+      print_cvx(x, output);
+      graph_command += string(" -m 1 -q 1 ")  + output + string(" ");
+    }
 
     string graph_output = fname + string(".ps");
     graph_command += string(" -L \"\" > ") + graph_output;
@@ -541,3 +423,30 @@ void Model::print_cvx(const PPL::NNC_Polyhedron &cvx, const std::string &fname) 
         ofs << endl;
       }
 }
+    
+std::list<PPL::NNC_Polyhedron> Model::get_incl_constraints(const PPL::NNC_Polyhedron& inf, const PPL::NNC_Polyhedron& sup) const
+{
+  int s = inf.space_dimension();
+  int ss = sup.space_dimension();
+  if (s != ss)
+    throw string("Different space dimensions in get_incl_constraints");
+  list<NNC_Polyhedron> res;
+  for ( int i = 0; i < s; i++) {
+    NNC_Polyhedron small(inf);
+    small.concatenate_assign(sup);
+    small.add_constraint(Variable(i)>Variable(i+s));
+    small.remove_higher_space_dimensions(s);
+    res.push_back(small);
+  }
+
+  for ( int i = 0; i < s; i++) {
+    NNC_Polyhedron small(inf);
+    small.concatenate_assign(sup);
+    small.add_constraint(Variable(i)<Variable(i+s));
+    small.remove_higher_space_dimensions(s);
+    res.push_back(small);
+  }
+
+  return res;
+}
+
