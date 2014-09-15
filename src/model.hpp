@@ -146,7 +146,7 @@ protected:
     void build_a_good_tile();
     void build_a_bad_tile();
     PPL::NNC_Polyhedron trace_to_cvx(const Trace& tr);
-    void map_to_parameters(PPL::NNC_Polyhedron &poly);
+    void map_to_parameters(PPL::NNC_Polyhedron &poly) const;
     void map_to_parameters(PPL::NNC_Polyhedron &poly, const VariableList& cvars);
     void map_to_parameters(PPL::Pointset_Powerset<PPL::NNC_Polyhedron> &poly, const VariableList& cvars);
     bool in_a_tile(const Valuations &v) const;
@@ -205,17 +205,24 @@ public:
     /** Bounded Counter-Example approach for parameter synthesis. */
     void CE();
     void unconstrain_to_parameters(PPL::NNC_Polyhedron &poly);
-    int bound = 1000000;
+    int bound = 0;
     std::shared_ptr<Symbolic_State> init_param_sstate();
     PPL::NNC_Polyhedron param_region;
+    PPL::NNC_Polyhedron param_domain;
+    int get_cvar_index(const std::string& s) const;
+    void print_cvx(const PPL::NNC_Polyhedron &cvx, const std::string &fname) const;
+    std::list<PPL::NNC_Polyhedron> get_incl_constraints(const PPL::NNC_Polyhedron& inf, const PPL::NNC_Polyhedron& sup) const;
+    PPL::Pointset_Powerset<PPL::NNC_Polyhedron> union_ces;
     std::list<PPL::NNC_Polyhedron> ces;
     std::list<PPL::NNC_Polyhedron> ending_points;
     //PPL::Pointset_Powerset<PPL::NNC_Polyhedron> big_ending_point;
-    bool contained_in(const PPL::NNC_Polyhedron &c, const std::list<NNC_Polyhedron> &lcs);
-    int remove_contained_elements(const PPL::NNC_Polyhedron &c, std::list<NNC_Polyhedron> &lcs);
+    bool contained_in(const PPL::NNC_Polyhedron &c, const std::list<PPL::NNC_Polyhedron> &lcs);
+    int remove_contained_elements(const PPL::NNC_Polyhedron &c, std::list<PPL::NNC_Polyhedron> &lcs);
     //PPL::Pointset_Powerset<NNC_Polyhedron> union_ces;
     //PPL::Pointset_Powerset<NNC_Polyhedron> diff_ces;
     void refine_with_counter_example(const PPL::NNC_Polyhedron& ce, std::list<std::shared_ptr<Symbolic_State> > &lss);
+    void refine_with_counter_examples(const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& uc, std::list<std::shared_ptr<Symbolic_State> > &lss);
+    void print_points_ce(std::string fname) const;
 
 };
 

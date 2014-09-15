@@ -108,39 +108,49 @@ void Model::CE()
   }
 
     if( not complete) {
+      cout << "no complete : " << next.size() << endl;
+      int i = 0;
         for ( auto & x : next) {
           auto p = x->get_prior();
-          while( p->get_loc_names() != x->get_loc_names()) {
+          auto tp = p;
+          bool found = false;
+          while( p != nullptr) {
+            if( p->get_loc_names() == x->get_loc_names()) {
+              tp = p;
+              found = true;
+            }
             p = p->get_prior();
-            if( p == nullptr)
-              throw string("Failed to track from a amature path ... ");
           }
-          NNC_Polyhedron sup = p->get_cvx();
-          NNC_Polyhedron inf = x->get_cvx();
-          map_to_parameters(sup);
-          map_to_parameters(inf);
+
+          //if( not found)
+            //throw string("Failed to track from a amature path ... ");
+          const NNC_Polyhedron &sup = x->get_cvx();
+          const NNC_Polyhedron &inf = x->get_cvx();
+          //map_to_parameters(sup);
+          //map_to_parameters(inf);
           list<NNC_Polyhedron> res = get_incl_constraints(inf, sup);
+          cout << "To force inclusion : " << i++ << ", " << res.size() << endl;
           ending_points.splice(ending_points.begin(), res);
 
         }
     }
 
-    cout << "Counter examples : " << endl;
-    for ( auto & x: ces) {
-        cout << x << endl;
-    }
-    cout << "Counter examples (map to parameters): " << endl;
-    for ( auto & x: ces) {
-        NNC_Polyhedron y(x);
-        map_to_parameters(y);
-        cout << y << endl;
-    }
-    cout << "Ending points : " << endl;
-    for ( auto & x: ending_points) {
-        cout << x << endl;
-    }
+    cout << "Counter examples : " << ces.size() << endl;
+    //for ( auto & x: ces) {
+    //    cout << x << endl;
+    //}
+    //cout << "Counter examples (map to parameters): " << endl;
+    //for ( auto & x: ces) {
+    //    NNC_Polyhedron y(x);
+    //    map_to_parameters(y);
+    //    cout << y << endl;
+    //}
+    cout << "Ending points : " << ending_points.size() << endl;
+    //for ( auto & x: ending_points) {
+    //    cout << x << endl;
+    //}
 
-    cout << "size of next : " << next.size() << endl;
+    //cout << "size of next : " << next.size() << endl;
 }
 
 shared_ptr<Symbolic_State> Model::init_param_sstate()
@@ -308,30 +318,39 @@ void Model::print_points_ce(string fname) const
     int index = 0;
     
     // To output the parameter domain
-    //ofstream ofs;
-    string output = fname + string("-param-domain");
-    //ofs.open(output.c_str());
-    graph_command += string("-m2 -q 1 ") + output +string(" ");
-    NNC_Polyhedron d_cvx(param_domain);
+    string output = fname + string("param_domain");
+    graph_command += string("-m7 -q 1 ") + output +string(" ");
+    NNC_Polyhedron d_cvx(param_region);
     map_to_parameters(d_cvx);
-
     print_cvx(d_cvx, output);
 
     // to print bad parameters
+
+    for( auto &x : ending_points) {
+      string output = fname + string("-unclear-tile-") + to_string(index++);
+      //NNC_Polyhedron y(x);
+      print_cvx(x, output);
+      graph_command += string(" -m 10 -q 1 ")  + output + string(" ");
+    }
+    //NNC_Polyhedron y(cvars.size());
+    //output = fname + string("-good-tile-");
+    //for( auto &x : ending_points) {
+    //  y.intersection_assign(x);
+    //  if(y.is_empty())
+    //    throw string("Empty good space ...");
+    //}
+    //graph_command += string(" -m 2 -q 1 ")  + output + string(" ");
+    //map_to_parameters(y);
+    //if( ending_points.size() !=0 )
+    //  print_cvx(y, output);
+
     index = 0;
     for( auto &x : ces) {
       string output = fname + string("-bad-tile-") + to_string(index++);
       NNC_Polyhedron y(x);
       map_to_parameters(y);
       print_cvx(y, output);
-      graph_command += string(" -m 1 -q 1 ")  + output + string(" ");
-    }
-
-    for( auto &x : ending_points) {
-      string output = fname + string("-bad-tile-") + to_string(index++);
-      //NNC_Polyhedron y(x);
-      print_cvx(x, output);
-      graph_command += string(" -m 1 -q 1 ")  + output + string(" ");
+      graph_command += string(" -m 6 -q 1 ")  + output + string(" ");
     }
 
     string graph_output = fname + string(".ps");
@@ -354,7 +373,7 @@ int Model::get_cvar_index(const string& s) const {
 }
 
 void Model::print_cvx(const PPL::NNC_Polyhedron &cvx, const std::string &fname) const {
-      cout << fname << " : " << cvx << endl;
+      //cout << fname << " : " << cvx << endl;
       /**
        * This is actually "cheating" by manually changing NNC_Polyhedron to C_Polyhedron... 
        **/ 
@@ -426,27 +445,47 @@ void Model::print_cvx(const PPL::NNC_Polyhedron &cvx, const std::string &fname) 
     
 std::list<PPL::NNC_Polyhedron> Model::get_incl_constraints(const PPL::NNC_Polyhedron& inf, const PPL::NNC_Polyhedron& sup) const
 {
+  cout << "enter get incl constraints " << endl;
   int s = inf.space_dimension();
   int ss = sup.space_dimension();
   if (s != ss)
     throw string("Different space dimensions in get_incl_constraints");
   list<NNC_Polyhedron> res;
-  for ( int i = 0; i < s; i++) {
-    NNC_Polyhedron small(inf);
-    small.concatenate_assign(sup);
-    small.add_constraint(Variable(i)>Variable(i+s));
-    small.remove_higher_space_dimensions(s);
-    res.push_back(small);
-  }
 
-  for ( int i = 0; i < s; i++) {
-    NNC_Polyhedron small(inf);
-    small.concatenate_assign(sup);
-    small.add_constraint(Variable(i)<Variable(i+s));
-    small.remove_higher_space_dimensions(s);
-    res.push_back(small);
-  }
+  int index = -1;
+  NNC_Polyhedron inf1(inf);
+  NNC_Polyhedron inf2(inf);
+  //inf1.concatenate_assign(sup);
+  //inf2.concatenate_assign(sup);
+  //for (auto x : cvars) {
+  //  cout << "cvar : " << x << endl;
+  //  index ++;
+  //  if (is_parameter(x)) {
+  //    inf1.add_constraint(Variable(index)==Variable(index+s));
+  //    inf2.add_constraint(Variable(index)==Variable(index+s));
+  //    continue;
+  //  }
+
+  //  inf1.add_constraint(Variable(index)==Variable(index+s));
+  //  inf2.add_constraint(Variable(index)==Variable(index+s));
+
+  //}
+
+  //inf1.remove_higher_space_dimensions(s);
+  //cout << "inf1 : " << inf1 << endl;
+  //inf2.remove_higher_space_dimensions(s);
+  //cout << "inf2 : " << inf2 << endl;
+
+  //inf1.intersection_assign(inf2);
+  //cout << "inf1 and inf2 : " << inf1 << endl;
+
+  map_to_parameters(inf1);
+  if( inf1.is_empty())
+    throw string("Empty region returned in get_incl_constraints method.");
+
+  res.push_back(inf1);
 
   return res;
+
 }
 
