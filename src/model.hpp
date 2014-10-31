@@ -199,6 +199,7 @@ public:
     bool efficient_in_a_tile(const Valuations &v) const;
     
 
+    /************** The BUG (bad/unknown/good) algorithm for parameter synthesis ********/
 
 
     void set_bound(int b); 

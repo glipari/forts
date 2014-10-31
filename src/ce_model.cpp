@@ -96,7 +96,8 @@ void Model::CE()
     cout << "Step : " << step++ << endl;
     cout << "Space : " << Space.size() << ", ";
     cout << "current : " << current.size() << ", ";
-    cout << "next : " << next.size() << endl;
+    cout << "next : " << next.size() << ", ";
+    cout << "ces : " << ces.size() << endl;
     current.splice(Space.begin(), current);
     if( next.size() == 0) {
         complete = true;
@@ -107,50 +108,28 @@ void Model::CE()
     current.splice(current.begin(), next);
   }
 
-    if( not complete) {
-      cout << "no complete : " << next.size() << endl;
-      int i = 0;
-        for ( auto & x : next) {
-          auto p = x->get_prior();
-          auto tp = p;
-          bool found = false;
-          while( p != nullptr) {
-            if( p->get_loc_names() == x->get_loc_names()) {
-              tp = p;
-              found = true;
-            }
-            p = p->get_prior();
-          }
+    //if( not complete) {
+    //  cout << "no complete : " << next.size() << endl;
+    //  int i = 0;
+    //    for ( auto & x : next) {
+    //    }
+    //}
 
-          //if( not found)
-            //throw string("Failed to track from a amature path ... ");
-          const NNC_Polyhedron &sup = x->get_cvx();
-          const NNC_Polyhedron &inf = x->get_cvx();
-          //map_to_parameters(sup);
-          //map_to_parameters(inf);
-          list<NNC_Polyhedron> res = get_incl_constraints(inf, sup);
-          cout << "To force inclusion : " << i++ << ", " << res.size() << endl;
-          ending_points.splice(ending_points.begin(), res);
-
-        }
+    //cout << "Counter examples : " << ces.size() << endl;
+    //cout << "Ending points : " << ending_points.size() << endl;
+    cout << "counter examples " << endl;
+    for ( auto x : ces) {
+     NNC_Polyhedron cvx(x);
+     map_to_parameters(cvx);
+     cout << cvx << endl;
     }
-
-    cout << "Counter examples : " << ces.size() << endl;
-    //for ( auto & x: ces) {
-    //    cout << x << endl;
-    //}
-    //cout << "Counter examples (map to parameters): " << endl;
-    //for ( auto & x: ces) {
-    //    NNC_Polyhedron y(x);
-    //    map_to_parameters(y);
-    //    cout << y << endl;
-    //}
-    cout << "Ending points : " << ending_points.size() << endl;
-    //for ( auto & x: ending_points) {
-    //    cout << x << endl;
-    //}
-
-    //cout << "size of next : " << next.size() << endl;
+    if ( complete) return;
+    cout << "unclear space " << endl;
+    for ( auto x : next) {
+     NNC_Polyhedron cvx(x->get_cvx());
+     map_to_parameters(cvx);
+     cout << cvx << endl;
+    }
 }
 
 shared_ptr<Symbolic_State> Model::init_param_sstate()

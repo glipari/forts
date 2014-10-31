@@ -88,6 +88,7 @@ public:
     virtual void refine_cvx(const PPL::NNC_Polyhedron &poly);
     bool is_valid() const;
     void invalidate();
+    const Valuations& get_dvars() const {return dvars;}
 };
 
 #endif

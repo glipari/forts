@@ -59,6 +59,14 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
 bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
 {
     if (not (signature == pss->signature)) return false;
+    auto it = dvars.begin();
+    auto jt = pss->get_dvars().begin();
+    while ( it != dvars.end()) {
+      if( it->second != jt->second)
+        return false;
+      it ++;
+      jt ++;
+    }
     return cvx.contains(pss->cvx);
 }
 
