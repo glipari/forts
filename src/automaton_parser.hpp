@@ -38,6 +38,14 @@ public:
     std::vector<Assignment> rates;
     std::vector<Edge> outgoings;
 
+    /**
+     * The linear constraint over variables' rates
+     **/
+    constraint_node flow;
+    bool flow_flag = false;
+    constraint_builder flow_builder;
+    void the_flow(tipa::parser_context &pc);
+
     assignment_builder rate_builder;
     constraint_builder invariant_builder;
     edge_builder outgoing_builder;

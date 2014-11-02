@@ -15,6 +15,7 @@ class Location {
     bool bad = false;
     std::string name; 
     constraint_node invariant;
+    constraint_node flow;
     std::vector<Assignment> rates;
     std::vector<Edge> outgoings;
 public:
@@ -22,6 +23,11 @@ public:
     Location(bool b, const std::string &n, 
 	     const constraint_node &inv,
 	     const std::vector<Assignment> &rt, 
+	     const std::vector<Edge> &ed); 
+
+    Location(bool b, const std::string &n, 
+	     const constraint_node &inv,
+	     const constraint_node &f,
 	     const std::vector<Edge> &ed); 
 
     // used to set the index of the automaton that this location
@@ -36,6 +42,9 @@ public:
     std::vector<Edge> get_edges() const { return outgoings; }
     // the set of assignments for the rates
     std::vector<Assignment> get_rates() const { return rates; }
+    constraint_node get_flow() const { return flow; }
+    bool flow_is_using () const { return flow_flag;}
+    bool flow_flag = false;
     // the location invariant
     constraint_node get_invariant() const { return invariant; }
 

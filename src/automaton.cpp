@@ -89,6 +89,20 @@ Location::Location(bool b, const std::string &n,
 {
 }
 
+Location::Location(bool b, const std::string &n, 
+		   const constraint_node &inv,
+		   const constraint_node &f,
+		   const vector<Edge> &ed) :
+    aut(nullptr),
+    bad(b),
+    name(n),
+    invariant(inv),
+    flow(f),
+    flow_flag(true),
+    outgoings(ed)
+{
+}
+
 /*void Location::set_automata_index(int a)
 {
     a_index = a;
