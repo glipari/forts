@@ -143,13 +143,13 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     if (sstate_type == WIDENED)
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
-    else if (sstate_type == BOX_WIDENED)
-        init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
-    else if (sstate_type == DBM)
-        init = make_shared<DBM_Symbolic_State>(loc_names, dvars, cvx);
-    else if (sstate_type == OCT) {
-        init = make_shared<OCT_Symbolic_State>(loc_names, dvars, cvx);
-    }
+    //else if (sstate_type == BOX_WIDENED)
+    //    init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
+    //else if (sstate_type == DBM)
+    //    init = make_shared<DBM_Symbolic_State>(loc_names, dvars, cvx);
+    //else if (sstate_type == OCT) {
+    //    init = make_shared<OCT_Symbolic_State>(loc_names, dvars, cvx);
+    //}
     else
         init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
@@ -311,9 +311,9 @@ void Model::print() const
     if ( parameters.size() != 0) {
         for (auto it = parameters.begin(); it != parameters.end(); it++)
         {
-	        if (it != parameters.begin())
-	            cout << ", ";
-	        cout << it->min << "<=" << it->name << "<=" << it->max;
+                if (it != parameters.begin())
+                    cout << ", ";
+                cout << it->min << "<=" << it->name << "<=" << it->max;
         }
         cout << ": parameters;" << endl;
     }
@@ -360,7 +360,7 @@ void Model::set_init(const constraint &ini)
 
 void Model::add_cvar(const std::string &cv)
 {
-    cvars.insert(cv);
+    cvars.insert(cvars.end(), cv);
 }
 
 void Model::add_dvar(const std::string &dv, int value)

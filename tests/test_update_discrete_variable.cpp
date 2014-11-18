@@ -22,9 +22,9 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
       VariableList cvars;
       Valuations dvars;
 
-      cvars.insert("A");
-      cvars.insert("B");
-      cvars.insert("C");
+      cvars.insert(cvars.end(), "A");
+      cvars.insert(cvars.end(), "B");
+      cvars.insert(cvars.end(), "C");
       //cvars.insert("D");
 
       dvars.insert(make_pair("r1",10));
@@ -52,7 +52,7 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
           continue;
         for ( auto & x : assignments) {
           if ( x.has_variable(v)) {
-            updated.insert(v);
+            updated.insert(updated.end(), v);
             break;
           }
         }
@@ -60,7 +60,7 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
       /** Remove the lower space dimensions from ass_cvx. */
       PPL::Variables_Set updated_ppl;
       for( auto & x : updated)
-        updated_ppl.insert(get_ppl_variable(cvars,x));
+        updated_ppl.insert( get_ppl_variable(cvars,x));
       cvx.unconstrain(updated_ppl);
       //for ( unsigned i = 0; i < cvars.size(); i++)
       //  lower_dims.insert(PPL::Variable(i));

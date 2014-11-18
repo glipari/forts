@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
     /**
      * p: to run the software in parallelism, which never works ... 
      **/
-    if (c == 'p') {
-      cout << "Parallelism set to :";
-      parall = atoi(optarg);
-      cout << parall << endl;
-    }
+    //if (c == 'p') {
+    //  cout << "Parallelism set to :";
+    //  parall = atoi(optarg);
+    //  cout << parall << endl;
+    //}
     /** there is a series of state types */
     if (c == 's') {
       state_type = string(optarg);
@@ -66,34 +66,34 @@ int main(int argc, char *argv[])
       log_fname = string(optarg);
     }
     /** to set up the bound on steps */
-    if ( c == 'b') {
-        bound = atoi(optarg);
-    }
+    //if ( c == 'b') {
+    //    bound = atoi(optarg);
+    //}
     /** the robustness analysis for the automaton model with parameters */
-    if (c == 'r') {
-      string robustness_type = string(optarg);
-      if (robustness_type == "beep") {
-        beep = true;
-      }
-      else if (robustness_type == "ce") {
-        ce = true;
-      }
-      else {
-        cout << "Unknown type for robustness analysis : " << robustness_type << endl;
-        cout << "Possible values are : beep" << endl;
-        return 0;
-      }
-    }
+    //if (c == 'r') {
+    //  string robustness_type = string(optarg);
+    //  if (robustness_type == "beep") {
+    //    beep = true;
+    //  }
+    //  else if (robustness_type == "ce") {
+    //    ce = true;
+    //  }
+    //  else {
+    //    cout << "Unknown type for robustness analysis : " << robustness_type << endl;
+    //    cout << "Possible values are : beep" << endl;
+    //    return 0;
+    //  }
+    //}
     /** to graphically visulise the result */
-    if (c == 'v') {
-      visual = true;
-      visual_fname = string(optarg);
-    }
-    /** is the flag "on-the-fly" meaningful now? */	
-    if (c == 'f') {
-        on_the_fly = true;
-	    //visual_fname = string(optarg);
-    }
+    //if (c == 'v') {
+    //  visual = true;
+    //  visual_fname = string(optarg);
+    //}
+    ///** is the flag "on-the-fly" meaningful now? */	
+    //if (c == 'f') {
+    //    on_the_fly = true;
+    //        //visual_fname = string(optarg);
+    //}
   }
 
   /** argv[1] in the input file name. */
@@ -106,28 +106,28 @@ int main(int argc, char *argv[])
   string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>()); 
   build_a_model(str);
     
-  if ( bound != -1) {
-    MODEL.set_bound(bound);
-  }
+  //if ( bound != -1) {
+  //  MODEL.set_bound(bound);
+  //}
 
   try {
-    if ( beep) {
-      MODEL.efficient_BEEP();
-      if( visual) 
-        MODEL.efficient_print_points(visual_fname);
-    }
-    else if (ce) {
-      MODEL.CE();
-      if( visual) 
-        MODEL.print_points_ce(visual_fname);
-    }
-    else {
+    //if ( beep) {
+    //  MODEL.efficient_BEEP();
+    //  if( visual) 
+    //    MODEL.efficient_print_points(visual_fname);
+    //}
+    //else if (ce) {
+    //  MODEL.CE();
+    //  if( visual) 
+    //    MODEL.print_points_ce(visual_fname);
+    //}
+    //else {
       MODEL.check_consistency();
       MODEL.SpaceExplorer();
       if ( not (log_fname == ""))
         MODEL.print_log(log_fname);
-    }
-    MODEL.print_log();
+    //}
+    //MODEL.print_log();
   } catch(const string &s) {
     cout << s << endl;
     return 1;

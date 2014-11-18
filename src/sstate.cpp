@@ -210,7 +210,7 @@ void Symbolic_State::discrete_step(const Combined_edge &edges)
         continue;
       for ( auto & x : assignments) {
         if ( x.has_variable(c)) {
-          ass_cvars.insert(c);
+          ass_cvars.insert(ass_cvars.end(), c);
           break;
         }
       }

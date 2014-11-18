@@ -25,8 +25,8 @@ TEST_CASE("Test transform the flow specification in a location",
         NNC_Polyhedron cvx (css);
         VariableList cvl1;
         Valuations dvl1;
-        cvl1.insert("A");
-        cvl1.insert("B");
+        cvl1.insert(cvl1.end(), "A");
+        cvl1.insert(cvl1.end(), "B");
         dvl1.insert(make_pair("x",1));
         VariableList lvars = cvl1;
         NNC_Polyhedron cvx_(cvl1.size());
@@ -63,8 +63,8 @@ TEST_CASE("The new flow specification in a location",
         NNC_Polyhedron cvx (css);
         VariableList cvl1;
         Valuations dvl1;
-        cvl1.insert("A");
-        cvl1.insert("B");
+        cvl1.insert(cvl1.end(), "A");
+        cvl1.insert(cvl1.end(), "B");
         dvl1.insert(make_pair("x",1));
         VariableList lvars = cvl1;
         NNC_Polyhedron cvx_(cvl1.size());

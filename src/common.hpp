@@ -20,6 +20,15 @@ bool contains(const std::set<X> &c, const X &x)
     return c.find(x) != c.end();
 }
 
+template<class X> 
+bool contains(const std::vector<X> &c, const X &x)
+{
+  for ( auto & y : c) {
+    if( y == x)
+      return true;
+  }
+  return false;
+}
 /**
  * Unfortunately, the name contains is also used as 
  * a member function in the class Symbolic_State.
@@ -30,6 +39,15 @@ bool contains_in_a_set(const std::set<X> &c, const X &x)
     return c.find(x) != c.end();
 }
 
+template<class X> 
+bool contains_in_a_set(const std::vector<X> &c, const X &x)
+{
+  for ( auto & y : c) {
+    if( y == x)
+      return true;
+  }
+  return false;
+}
 template<class X, class Y>
 bool contains(const std::map<X, Y> &c, const X &x)
 {
@@ -38,7 +56,8 @@ bool contains(const std::map<X, Y> &c, const X &x)
 
 // list of variables, sorted by name
 // actually a set. 
-typedef std::set<std::string> VariableList; 
+//typedef std::set<std::string> VariableList; 
+typedef std::vector<std::string> VariableList; 
 
 // Current valuations of the variables
 typedef std::map<std::string, int> Valuations; 

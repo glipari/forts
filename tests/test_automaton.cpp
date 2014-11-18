@@ -35,9 +35,9 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
         NNC_Polyhedron cvx (css);
         VariableList cvl1;
         Valuations dvl1;
-        cvl1.insert("A");
-        cvl1.insert("B");
-        cvl1.insert("C");
+        cvl1.insert(cvl1.end(), "A");
+        cvl1.insert(cvl1.end(), "B");
+        cvl1.insert(cvl1.end(), "C");
         dvl1.insert(make_pair("x",1));
         cout << cvx << endl;
         Linear_Constraint lc = e.guard_to_Linear_Constraint(cvl1, dvl1); 
@@ -83,9 +83,9 @@ TEST_CASE("Test parsing a location", "[location][parser]")
         NNC_Polyhedron cvx (css);
         VariableList cvl1;
         Valuations dvl1;
-        cvl1.insert("A");
-        cvl1.insert("B");
-        cvl1.insert("C");
+        cvl1.insert(cvl1.end(), "A");
+        cvl1.insert(cvl1.end(), "B");
+        cvl1.insert(cvl1.end(), "C");
         dvl1.insert(make_pair("x",1));
         cout << cvx << endl;
         Linear_Constraint lc = it.to_Linear_Constraint(cvl1, dvl1); 
