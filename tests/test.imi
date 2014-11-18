@@ -46,7 +46,7 @@ loc x3R : while c3<=C3 & d3<=D3 wait {}
     when c3<=C3-1 & d3<=D3-1 sync r2 do { c2'=0, d2'=0 } goto x2R3W;
     when c3<=C3-1 & d3<=D3-1 sync frozen do {} goto f3R;
 
-loc f3R : while c3<=C3 & d3<=D3 wait {c3'=0}
+loc f3R : while c3<=C3 & d3<=D3 wait {c3==0}
     when c3<=C3-1 & d3==D3 do {} goto error;
     when c3<=C3-1 & d3<=D3-1 sync r1 do { c1'=0, d1'=0 } goto f1R3W;
     when c3<=C3-1 & d3<=D3-1 sync r2 do { c2'=0, d2'=0 } goto f2R3W;
@@ -59,20 +59,20 @@ loc x2R : while c2<=C2 & d2<=D2 wait {}
     when c2<=C2-1 & d2<=D2-1 sync r3 do { c3'=0, d3'=0 } goto x2R3W;
     when c2<=C2-1 & d2<=D2-1 sync frozen do {} goto f2R;
 
-loc f2R : while c2<=C2 & d2<=D2 wait {c2'=0}
+loc f2R : while c2<=C2 & d2<=D2 wait {c2==0}
     when c2<=C2-1 & d2==D2 do {} goto error;
     when c2<=C2-1 & d2<=D2-1 sync r1 do { c1'=0, d1'=0 } goto f1R2W;
     when c2<=C2-1 & d2<=D2-1 sync r3 do { c3'=0, d3'=0 } goto f2R3W;
     when c2<=C2 & d2<=D2 sync go do {} goto x2R;
 
-loc x2R3W : while c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c3'=0}
+loc x2R3W : while c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c3==0}
     when c2 == C2  do {} goto x3R;
     when c2<=C2-1 & d2==D2 do {} goto error;
     when d3==D3 do {} goto error;
     when c2<=C2-1 & d2<=D2-1 & c3<=C3-1 & d3<=D3-1 sync r1 do { c1'=0, d1'=0 } goto x1R2W3W;
     when c2<=C2-1 & d2<=D2-1 & c3<=C3-1 & d3<=D3-1 sync frozen do {} goto f2R3W;
 
-loc f2R3W : while c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c2'=0, c3'=0}
+loc f2R3W : while c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c2==0& c3==0}
     when c2<=C2-1 & d2==D2 do {} goto error;
     when d3==D3 do {} goto error;
     when c2<=C2-1 & d2<=D2-1 & c3<=C3-1 & d3<=D3-1 sync r1 do { c1'=0, d1'=0 } goto f1R2W3W;
@@ -85,46 +85,46 @@ loc x1R : while c1<=C1 & d1<=D1 wait {}
     when c1<=C1-1 & d1<=D1-1 sync r3 do { c3'=0, d3'=0 } goto x1R3W;
     when c1<=C1-1 & d1<=D1-1 sync frozen do {} goto f1R;
 
-loc f1R : while c1<=C1 & d1<=D1 wait {c1'=0}
+loc f1R : while c1<=C1 & d1<=D1 wait {c1==0}
     when c1<=C1-1 & d1==D1 do {} goto error;
     when c1<=C1-1 & d1<=D1-1 sync r2 do { c2'=0, d2'=0 } goto f1R2W;
     when c1<=C1-1 & d1<=D1-1 sync r3 do { c3'=0, d3'=0 } goto f1R3W;
     when c1<=C1 & d1<=D1 sync go do {} goto x1R;
 
-loc x1R3W : while c1<=C1 & d1<=D1 & c3<=C3 & d3<=D3 wait {c3'=0}
+loc x1R3W : while c1<=C1 & d1<=D1 & c3<=C3 & d3<=D3 wait {c3==0}
     when c1 == C1  do {} goto x3R;
     when c1<=C1-1 & d1==D1 do {} goto error;
     when d3==D3 do {} goto error;
     when c1<=C1-1 & d1<=D1-1 & c3<=C3-1 & d3<=D3-1 sync r2 do { c2'=0, d2'=0 } goto x1R2W3W;
     when c1<=C1-1 & d1<=D1-1 & c3<=C3-1 & d3<=D3-1 sync frozen do {} goto f1R3W;
 
-loc f1R3W : while c1<=C1 & d1<=D1 & c3<=C3 & d3<=D3 wait {c1'=0,c3'=0}
+loc f1R3W : while c1<=C1 & d1<=D1 & c3<=C3 & d3<=D3 wait {c1==0&c3==0}
     when c1<=C1-1 & d1==D1 do {} goto error;
     when d3==D3 do {} goto error;
     when c1<=C1-1 & d1<=D1-1 & c3<=C3-1 & d3<=D3-1 sync r2 do { c2'=0, d2'=0 } goto f1R2W3W;
     when c1<=C1 & d1<=D1 & c3<=C3 & d3<=D3 sync go do {} goto x1R3W;
 
-loc x1R2W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 wait {c2'=0}
+loc x1R2W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 wait {c2==0}
     when c1 == C1  do {} goto x2R;
     when c1<=C1-1 & d1==D1 do {} goto error;
     when d2==D2 do {} goto error;
     when c1<=C1-1 & d1<=D1-1 & c2<=C2-1 & d2<=D2-1 sync r3 do { c3'=0, d3'=0 } goto x1R2W3W;
     when c1<=C1-1 & d1<=D1-1 & c2<=C2-1 & d2<=D2-1 sync frozen do {} goto f1R2W;
 
-loc f1R2W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 wait {c1'=0,c2'=0}
+loc f1R2W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 wait {c1==0&c2==0}
     when c1<=C1-1 & d1==D1 do {} goto error;
     when d2==D2 do {} goto error;
     when c1<=C1-1 & d1<=D1-1 & c2<=C2-1 & d2<=D2-1 sync r3 do { c3'=0, d3'=0 } goto f1R2W3W;
     when c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 sync go do {} goto x1R2W;
 
-loc x1R2W3W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c2'=0,c3'=0}
+loc x1R2W3W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c2==0&c3==0}
     when c1 == C1  do {} goto x2R3W;
     when c1<=C1-1 & d1==D1 do {} goto error;
     when d2==D2 do {} goto error;
     when d3==D3 do {} goto error;
     when c1<=C1-1 & d1<=D1-1 & c2<=C2-1 & d2<=D2-1 & c3<=C3-1 & d3<=D3-1 sync frozen do {} goto f1R2W3W;
 
-loc f1R2W3W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c1'=0,c2'=0,c3'=0}
+loc f1R2W3W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 & c3<=C3 & d3<=D3 wait {c1==0&c2==0&c3==0}
     when c1<=C1-1 & d1==D1 do {} goto error;
     when d2==D2 do {} goto error;
     when d3==D3 do {} goto error;
@@ -137,11 +137,11 @@ end
 automaton server
 
 sync: r1, r2, r3, empty, go, frozen;
-loc idle: while true wait{x'=0,y'=0}
+loc idle: while true wait{x==0&y==0}
     when true sync r1 do { x'=0, y'=0 } goto active;
     when true sync r2 do { x'=0, y'=0 } goto active;
     when true sync r3 do { x'=0, y'=0 } goto active;
-loc active: while y-x <= P-Q wait {x'=0}
+loc active: while y-x <= P-Q wait {x==0}
     when true sync r1 do { } goto active;
     when true sync r2 do { } goto active;
     when true sync r3 do { } goto active;
@@ -154,12 +154,12 @@ loc executing: while x <= Q wait {}
     when 5*x >= 3*y sync empty do {  } goto empty;
     when 5*x <= 3*y-1 sync empty  do { x'=0,y'=0 } goto idle;
     when x <= Q-1 sync frozen do { } goto active;
-loc recharging: while y <= P wait {x'=0}
+loc recharging: while y <= P wait {x==0}
     when true sync r1 do { } goto recharging;
     when true sync r2 do { } goto recharging;
     when true sync r3 do { } goto recharging;
     when y == P do {x'=0,y'=0} goto active;
-loc empty: while 5*x >= 3*y wait {x'=0}
+loc empty: while 5*x >= 3*y wait {x==0}
     when true sync r1 do { } goto active;
     when true sync r2 do { } goto active;
     when true sync r3 do { } goto active;

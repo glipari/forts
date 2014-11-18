@@ -39,7 +39,7 @@ loc x1R : while c1<=C1 & d1<=D1 wait {}
     when true sync r2 do { c2'=0, d2'=0 } goto x1R2W;
 
 
-loc x1R2W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 wait {c2'=0}
+loc x1R2W : while c1<=C1 & d1<=D1 & c2<=C2 & d2<=D2 wait {c2>=0&c2<=0}
     when c1 == C1  do {} goto x2R;
     when c1<=C1-1 & d1==D1 do {} goto error;
     when d2==D2 do {} goto error;

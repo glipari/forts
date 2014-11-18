@@ -2,7 +2,7 @@
 
 automaton Simple2
 
-loc LOC_A: while true wait {x'=1, y'=-1}
+loc LOC_A: while true wait {x==1& y==-1}
     when x == 2 goto LOC_B;
 
 loc LOC_B: while x+z<= 10 wait{}
