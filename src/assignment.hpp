@@ -25,6 +25,8 @@ public:
     int eval(const Valuations &cvl) const;
 
     void print() const;
+
+    bool has_variable(const std::string &v) const;
 };
 
 

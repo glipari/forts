@@ -1,6 +1,17 @@
 #+TITLE: todo list for effort
 #+author: Giuseppe Lipari and Youcheng Sun
 
+*DONE Change the "rates" (representing fixed rate for each variable) 
+      in a location to "flow", which is a linear constraint over
+      variables' rates.
+
+*DONE For an assignment on the edge, we restrict its right side to
+      be an equation excluding continuous variables; this could
+      improve the efficiency.
+
+*TODO To implement a switch for two different syntaxes (with or without 
+      continuous variables in the right hand) of variable updates over an edge.
+
 *DONE An continuous variable can update by itself
       in the update field of an edge. 
       For example, x = x + 1. 

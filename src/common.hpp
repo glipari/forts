@@ -20,6 +20,16 @@ bool contains(const std::set<X> &c, const X &x)
     return c.find(x) != c.end();
 }
 
+/**
+ * Unfortunately, the name contains is also used as 
+ * a member function in the class Symbolic_State.
+ **/
+template<class X> 
+bool contains_in_a_set(const std::set<X> &c, const X &x)
+{
+    return c.find(x) != c.end();
+}
+
 template<class X, class Y>
 bool contains(const std::map<X, Y> &c, const X &x)
 {

@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
   int c = -1;
   int parall = 1;
   string state_type = "";
-  while ((c = getopt(argc, argv, "p:s:r:v:f:b:")) != -1) {	
+  string log_fname = "";
+  while ((c = getopt(argc, argv, "p:s:r:v:f:b:l:")) != -1) {	
     /**
      * p: to run the software in parallelism, which never works ... 
      **/
@@ -60,6 +61,9 @@ int main(int argc, char *argv[])
         return 0;
       }
       cout << "State set to :" << state_type << endl;
+    }
+    if (c == 'l') {
+      log_fname = string(optarg);
     }
     /** to set up the bound on steps */
     if ( c == 'b') {
@@ -120,6 +124,8 @@ int main(int argc, char *argv[])
     else {
       MODEL.check_consistency();
       MODEL.SpaceExplorer();
+      if ( not (log_fname == ""))
+        MODEL.print_log(log_fname);
     }
     MODEL.print_log();
   } catch(const string &s) {

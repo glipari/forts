@@ -52,6 +52,12 @@ Linear_Constraint Location::invariant_to_Linear_Constraint(const VariableList &c
     return invariant.to_Linear_Constraint(cvl, dvl);
 }
 
+Linear_Constraint Location::flow_to_Linear_Constraint(const VariableList &cvl, 
+							   const Valuations &dvl) const
+{
+    return flow.to_Linear_Constraint(cvl, dvl);
+}
+
 void Location::print() const
 {
     std::cout << "loc " << name << ": while ";

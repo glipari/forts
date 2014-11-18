@@ -65,6 +65,7 @@ public:
     void abstract_rates(const VariableList &cvl, const Valuations &dvl, std::vector<int> &v_rates) const;
     // returns the polyhedron that represent the invariant
     Linear_Constraint invariant_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
+    Linear_Constraint flow_to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
 };
 
 /** The class for an automaton  */

@@ -56,21 +56,24 @@ TEST_CASE("Test parsing an edge", "[edge][parser]")
 TEST_CASE("Test parsing a location", "[location][parser]")
 {
     SECTION("First simple test on location") {
-	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10 do {B'=0} goto loc2; \n when B>=10 do {A'=0} goto loc1;";
+	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A==0& B==1} \n when B==10 do {B'=0} goto loc2; \n when B>=10 do {A'=0} goto loc1;";
         //cout << "xxxxx" << endl;
 	Location l = build_a_location(input);
         //l.print();
 
         REQUIRE(l.get_name() == "loc0");
-        Assignment a = l.get_rates().at(0);
+        //Assignment a = l.get_rates().at(0);
         //cout << a.x << endl;
-        Assignment b = l.get_rates().at(1);
+        //Assignment b = l.get_rates().at(1);
         //cout << b.x << endl;
-	REQUIRE(a.get_var() == "A");
-	REQUIRE(b.get_var() == "B");
-	Valuations cvl;
-	REQUIRE(a.eval(cvl) == 0);
-	REQUIRE(b.eval(cvl) == 1);
+        constraint_node flow = l.get_flow();
+	REQUIRE(flow.has_variable("A"));
+	REQUIRE(flow.has_variable("B"));
+	//REQUIRE(a.get_var() == "A");
+	//REQUIRE(b.get_var() == "B");
+	//Valuations cvl;
+	//REQUIRE(a.eval(cvl) == 0);
+	//REQUIRE(b.eval(cvl) == 1);
 
         auto it = l.get_invariant();
         Variable A(0), B(1), C(2);
@@ -126,7 +129,7 @@ TEST_CASE("Test parsing a location", "[location][parser]")
 TEST_CASE("Test printing a location", "[location][printer]")
 {
     SECTION("First simple test on printing a location") {
-	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc1;";
+	string input = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A== 0& B==1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc1;";
 	Location l = build_a_location(input);
         l.print();
         cout << " -------------------- " << endl;
@@ -139,13 +142,13 @@ TEST_CASE("Test printing a location", "[location][printer]")
 TEST_CASE("Test printing an automaton", "[automaton][printer]")
 {
     SECTION("To print the location inside an automaton first.") {
-	string input1 = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc3;\n"; 
+	string input1 = "loc loc0 : while A>=10*B & C <=x*3+2 wait {A== 0& B==1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc3;\n"; 
         Location loc1 = build_a_location(input1);
         loc1.print();
     }
 
     SECTION("First simple test on printing an automaton") {
-	string input1 = "automaton A \n sync : a1, a2; \n loc loc0 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc3;  \n loc loc1 : while A>=10*B & C <=x*3+2 wait {A' = 0, B'=1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc5;\n when B>=100*C do {A'=0, B'=2} goto loc4;  end";
+	string input1 = "automaton A \n sync : a1, a2; \n loc loc0 : while A>=10*B & C <=x*3+2 wait {A== 0& A==0&B==1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc1;\n when B>=100*C do {A'=0, B'=2} goto loc3;  \n loc loc1 : while A>=10*B & C <=x*3+2 wait {A== 0& B==1} \n when B==10+A do {B'=0, B'=100} goto loc2; \n when B>=100*C do {A'=0, B'=2} goto loc5;\n when B>=100*C do {A'=0, B'=2} goto loc4;  end";
         automaton aton1 = build_an_automaton(input1);
         aton1.print();
     }

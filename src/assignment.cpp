@@ -25,3 +25,7 @@ void Assignment::print() const
     expr->print();
 }
 
+bool Assignment::has_variable(const std::string &v) const
+{
+  return x == v;
+}

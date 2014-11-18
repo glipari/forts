@@ -58,7 +58,9 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
 
 bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
 {
-    if (not (signature == pss->signature)) return false;
+    //if (not (signature == pss->signature)) return false;
+    if ( not (get_loc_names() == pss->get_loc_names()))
+      return false;
     auto it = dvars.begin();
     auto jt = pss->get_dvars().begin();
     while ( it != dvars.end()) {
@@ -111,97 +113,140 @@ bool Symbolic_State::is_bad() const
 
 void Symbolic_State::continuous_step()
 {
-    //cout << "enter a continuous step ... " << endl;
-    VariableList cvars = MODEL.get_cvars();
-    PPL::NNC_Polyhedron r_cvx(cvars.size());
-    //PPL::NNC_Polyhedron i_cvx(cvars.size());
-    
-    VariableList lvars = cvars;
-    for (auto p: locations) {
-	Linear_Constraint lc;
-	//i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
-	r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars, lvars));
+  //cout << "beginning of a continuous step. " << endl;
+  VariableList cvars = MODEL.get_cvars();
+  PPL::NNC_Polyhedron r_cvx(cvars.size());
+  
+  VariableList lvars = cvars;
+  
+  for (auto p: locations) {
+    Linear_Constraint lc;
+    //r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars));
+    r_cvx.add_constraints(p->flow_to_Linear_Constraint(cvars, dvars));
+    auto flow = p->get_flow();
+    auto it = lvars.begin();
+    while ( it != lvars.end()) {
+      if(flow.has_variable(*it)) {
+        it = lvars.erase(it);
+      }
+      else it ++;
     }
+  }
 
-    for (auto &v : lvars) {
-	PPL::Variable var = get_ppl_variable(cvars, v);
-	Linear_Expr le;
-    //if( MODEL.is_parameter(v))
-	//    le += 0;
-    //else
-	    le += 1;
-	AT_Constraint atc = (var == le);
-	r_cvx.add_constraint(atc);
-    }
-    cvx.time_elapse_assign(r_cvx);
-    //cvx.intersection_assign(i_cvx);
-    cvx.intersection_assign(invariant_cvx);
-    // invariant_cvx is only used in discrete and continuous steps 
-    invariant_cvx.remove_higher_space_dimensions(0);
-    //cout << "leave a continuous step ... " << endl;
+  for (auto &v : lvars) {
+    PPL::Variable var = get_ppl_variable(cvars, v);
+    Linear_Expr le;
+    le += 1;
+    AT_Constraint atc = (var == le);
+    r_cvx.add_constraint(atc);
+  }
+    
+  cvx.time_elapse_assign(r_cvx);
+  cvx.intersection_assign(invariant_cvx);
+  invariant_cvx.remove_higher_space_dimensions(0);
+  //print();
+  //cout << "end of a continuous step. " << endl;
 }
 
 
+/** The discrete step for a symbolic state. */
 void Symbolic_State::discrete_step(const Combined_edge &edges)
 {
-    //cout << "enter a discrete step ... " << endl;
-    VariableList cvars = MODEL.get_cvars();
+  //cout << "beginning of a discrete step. " << endl;
+  //print();
+  /** Always keep a copy of continuous variables. */
+  VariableList cvars = MODEL.get_cvars();
 
-    PPL::NNC_Polyhedron guard_cvx(cvars.size());
-    /** 
-     * The cvx obtained through updates in an
-     * edge can have dimension higher than cvars.size().
-     * */
-    PPL::NNC_Polyhedron ass_cvx(cvars.size()*2);
+  /** The guard on an edge. */
+  PPL::NNC_Polyhedron guard_cvx(cvars.size());
 
-    Variables_Set vs;
+  /**
+   * The assignment on an edge.
+   * The cvx obtained through updates in an
+   * edge can have dimension higher than cvars.size().
+   **/
+  //PPL::NNC_Polyhedron ass_cvx(cvars.size()*2);
+
+  /**
+   * According to the new syntax of assignment in an edge,
+   * there is no need to increase the dimensions of 
+   * the polyhedron for assignments.
+   **/
+  PPL::NNC_Polyhedron ass_cvx(cvars.size());
+  
+  /** A set of PPL variables that are involved with the assignment statement in an edge. */
+  //Variables_Set vs;
     
-    // locations before discrete transition
-    auto l = locations;
+  /** The "locations" is a vector of Location pointers. */
+  auto l = locations;
 
-    for (auto &e : edges.get_edges()) {
-	// find location source location with that name
-	bool found = false;
-	for (auto &p : locations) { 
-	    if (p == &e.get_src_location()) {
-		found = true;
-		p = &e.get_dst_location();
-	    }
+  VariableList ass_cvars;
+  for (auto &e : edges.get_edges()) {
+    /** Find location source location with that name */
+    bool found = false;
+    for (auto &p : locations) { 
+      if (p == &e.get_src_location()) {
+        found = true;
+        p = &e.get_dst_location();
+        break;
+      }
     }
-	if (!found) throw string("ERROR!!! Cannot find src location ") +
-			e.get_src_location().get_name();
-	// ss.loc_names[e.get_automaton_index()] = e.get_dest();
-	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
-	Variables_Set vs2 = e.get_assignment_vars(cvars);
-	vs.insert(vs2.begin(), vs2.end());
-	// for (auto &a : e.assignments)
-	//     vs.insert(get_variable(a.get_var(), cvars));
-	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
+    
+    if (!found) 
+      throw string("ERROR!!! Cannot find src location ") +
+        e.get_src_location().get_name();
+    // ss.loc_names[e.get_automaton_index()] = e.get_dest();
+	
+    guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
+	
+    //Variables_Set vs2 = e.get_assignment_vars(cvars);
+    //vs.insert(vs2.begin(), vs2.end());
+    // for (auto &a : e.assignments)
+    //     vs.insert(get_variable(a.get_var(), cvars));
+    ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
+    auto assignments = e.get_assignments();
+    for ( auto & c : cvars) {
+      if ( contains_in_a_set<std::string>(ass_cvars, c))
+        continue;
+      for ( auto & x : assignments) {
+        if ( x.has_variable(c)) {
+          ass_cvars.insert(c);
+          break;
+        }
+      }
     }
-    cvx.intersection_assign(guard_cvx);
-
-    ass_cvx.add_constraints(cvx.constraints());
+  }
+  
+  cvx.intersection_assign(guard_cvx);
+  
+  //ass_cvx.add_constraints(cvx.constraints());
     //cvx.add_space_dimensions_and_embed(cvars.size());
     //ass_cvx.intersection_assign(cvx);
     //cvx.remove_higher_space_dimensions(cvars.size());
-    /** 
-     * Before intersecting ass_cvx and cvx, we must remove 
-     * the lower cvars.size() dimensions.
-     * */
-    PPL::Variables_Set lower_dims;
-    for ( unsigned i = 0; i < cvars.size(); i++)
-      lower_dims.insert(PPL::Variable(i));
-    ass_cvx.remove_space_dimensions(lower_dims);
-
-    cvx.unconstrain(vs);
-    cvx.intersection_assign(ass_cvx);
+  /** 
+    * Before intersecting ass_cvx and cvx, we must remove 
+    * the lower cvars.size() dimensions.
+  * */
+  //PPL::Variables_Set lower_dims;
+  //for ( unsigned i = 0; i < cvars.size(); i++)
+    //lower_dims.insert(PPL::Variable(i));
+  //ass_cvx.remove_space_dimensions(lower_dims);
+  
+  //cvx.unconstrain(vs);
+  Variables_Set ass_vs;
+  for ( auto & x : ass_cvars)
+    ass_vs.insert(get_ppl_variable(cvars, x));
+  cvx.unconstrain(ass_vs);
+  cvx.intersection_assign(ass_cvx);
     // To build the invariant_cvx, which is latter used and destroyed in continuous_step()
-    invariant_cvx = get_invariant_cvx();
-    cvx.intersection_assign(invariant_cvx);
-
-    incoming_edge = edges;
-    incoming_edge.set_locations(l);
+  invariant_cvx = get_invariant_cvx();
+  cvx.intersection_assign(invariant_cvx);
+  
+  incoming_edge = edges;
+  incoming_edge.set_locations(l);
     //cout << "leave a discrete step ... " << endl;
+  //print();
+  //cout << "end of a discrete step. " << endl;
 }
 
 

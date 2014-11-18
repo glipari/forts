@@ -71,6 +71,10 @@ public:
 	return guard;
     }
 
+    std::vector<Assignment> get_assignments() const {
+	return assignments;
+    }
+
 };
 
 

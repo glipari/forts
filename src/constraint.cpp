@@ -26,8 +26,7 @@ void constraint_node::append_atomic_constraint(std::shared_ptr<atomic_constraint
     ats.push_back(at);
 }
 
-Linear_Constraint constraint_node::to_Linear_Constraint(const VariableList &cvl, 
-							const Valuations &dvl) const
+Linear_Constraint constraint_node::to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const
 {
     Linear_Constraint c;
     for ( auto it = ats.begin(); it != ats.end(); it ++)
@@ -45,3 +44,14 @@ void constraint_node::print() const
 }
 
 
+bool atomic_constraint_node::has_variable( const std::string &cv) const {
+  return (left->has_variable(cv) or right->has_variable(cv));
+}
+
+bool constraint_node::has_variable( const std::string &cv) const {
+  for ( auto & x : ats) {
+    if (x->has_variable(cv))
+      return true;
+  }
+  return false;
+}
