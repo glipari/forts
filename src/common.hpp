@@ -29,6 +29,17 @@ bool contains(const std::vector<X> &c, const X &x)
   }
   return false;
 }
+
+template<class X> 
+int get_index(const std::vector<X> &c, const X &x)
+{
+  for (int i = 0; i < c.size(); i++) {
+    if( c.at(i) == x)
+      return i;
+  }
+  throw std::string("No such an element...");
+}
+
 /**
  * Unfortunately, the name contains is also used as 
  * a member function in the class Symbolic_State.
@@ -58,6 +69,7 @@ bool contains(const std::map<X, Y> &c, const X &x)
 // actually a set. 
 //typedef std::set<std::string> VariableList; 
 typedef std::vector<std::string> VariableList; 
+
 
 // Current valuations of the variables
 typedef std::map<std::string, int> Valuations; 

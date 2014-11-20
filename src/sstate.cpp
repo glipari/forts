@@ -347,6 +347,24 @@ bool Symbolic_State::is_empty() const
 //    }
 //}
 
+/** To perform only discrete steps from current state. */
+vector<shared_ptr<Symbolic_State> > Symbolic_State::discrete_steps() const
+{
+    vector<shared_ptr<Symbolic_State> > sstates;
+    //auto it = signature_to_combined_edges.find(signature);
+    vector<Combined_edge> eg = EDGE_FACTORY.get_edges(signature, locations);
+    for (auto e : eg) {
+        auto nss = clone();
+        nss->discrete_step(e);
+        //nss->continuous_step();
+        /** Do not forget to update the signature for the next sstate. */
+        nss->update_signature();
+        sstates.push_back(nss);
+    }
+
+    return sstates;
+}
+
 
 vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
 {
@@ -454,4 +472,12 @@ bool Symbolic_State::is_valid() const
 void Symbolic_State::invalidate()
 {
     valid = false;
+}
+
+void Symbolic_State::clear ()
+{
+}
+
+void Symbolic_State::do_something ()
+{
 }

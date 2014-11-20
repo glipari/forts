@@ -1,41 +1,42 @@
 #include <memory>
 #include <iostream>
-#include "widened_sstate.hpp"
+#include "widened_sstate_c.hpp"
 #include "model.hpp"
 
 using namespace std;
 using namespace PPL::IO_Operators;
 
-Widened_Symbolic_State::Widened_Symbolic_State(std::vector<Location *> &locations, 
+Widened_Symbolic_State_C::Widened_Symbolic_State_C(std::vector<Location *> &locations, 
 		   const Valuations &dvars) : Symbolic_State(locations, dvars)
 {
     //widen();
 }
 
-Widened_Symbolic_State::Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
+Widened_Symbolic_State_C::Widened_Symbolic_State_C(const std::vector<std::string> &loc_names, 
 		   const Valuations &dvars, const PPL::NNC_Polyhedron &pol) 
             : Symbolic_State(loc_names, dvars, pol)
 {
     //widen();
 }
 
-std::shared_ptr<Symbolic_State> Widened_Symbolic_State::clone() const
+std::shared_ptr<Symbolic_State> Widened_Symbolic_State_C::clone() const
 {
-    return make_shared<Widened_Symbolic_State> (*this);
+    return make_shared<Widened_Symbolic_State_C> (*this);
 }
 
-void Widened_Symbolic_State::continuous_step()
+void Widened_Symbolic_State_C::continuous_step()
 {
     Symbolic_State::continuous_step();
     //widen();
 }
 
-void Widened_Symbolic_State::do_something()
+void Widened_Symbolic_State_C::do_something()
 {
     widen();
 }
 
-//void Widened_Symbolic_State::widen()
+
+//void Widened_Symbolic_State_C::widen()
 //{
 //    widened_cvx = cvx;
 //    VariableList cvars = MODEL.get_cvars();
@@ -57,7 +58,7 @@ void Widened_Symbolic_State::do_something()
 //
 //    widened_cvx.remove_higher_space_dimensions(dim);
 //}
-void Widened_Symbolic_State::widen()
+void Widened_Symbolic_State_C::widen()
 {
     widened_cvx = cvx;
     VariableList cvars = MODEL.get_cvars();
@@ -73,26 +74,38 @@ void Widened_Symbolic_State::widen()
     widened_cvx.add_constraints(css1);
 
     widened_cvx.remove_space_dimensions(vss);
+
+    NNC_Polyhedron tmp2;
+    //PPL::Variables_Set vss2;
+    for ( int i = 1; i <= dim/2; i++) {
+      PPL::Variable v = get_ppl_variable(cvars, "p"+to_string(i));
+      tmp2 = widened_cvx;
+      tmp2.add_constraint(v>=get_valuation(dvars, "T"+to_string(i)));
+      if ( not tmp2.is_empty())
+        //vss2.insert(v);
+        widened_cvx.unconstrain(v);
+    }
+    //widened_cvx.unconstrain(vss2);
 }
 
-const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_cvx() const
+const PPL::NNC_Polyhedron& Widened_Symbolic_State_C::get_cvx() const
 {
     //return widened_cvx;
     return cvx;
 }
 
-//const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_featured_cvx() const
+//const PPL::NNC_Polyhedron& Widened_Symbolic_State_C::get_featured_cvx() const
 //{
 //    return widened_cvx;
 //}
 
-bool Widened_Symbolic_State::contains(const std::shared_ptr<Symbolic_State> &pss) const
+bool Widened_Symbolic_State_C::contains(const std::shared_ptr<Symbolic_State> &pss) const
 {
     if (not signature.includes(pss->get_signature())) return false;
     return widened_cvx.contains(pss->get_cvx());
 }
 
-void Widened_Symbolic_State::print() const 
+void Widened_Symbolic_State_C::print() const 
 {
     Symbolic_State::print();
     cout << "Tasks Signature : " << signature.get_active_tasks() << endl;
@@ -100,7 +113,7 @@ void Widened_Symbolic_State::print() const
     cout << widened_cvx << endl ;
 }
 
-bool Widened_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
+bool Widened_Symbolic_State_C::equals(const std::shared_ptr<Symbolic_State> &pss) const
 {
     bool res = Symbolic_State::equals(pss);
     if (res) {

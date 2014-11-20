@@ -59,6 +59,7 @@ public:
     virtual const PPL::NNC_Polyhedron& get_cvx() const;
 
     virtual std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    virtual std::vector<std::shared_ptr<Symbolic_State> > discrete_steps() const;
 
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
 
@@ -67,6 +68,7 @@ public:
     virtual int total_memory_in_bytes() const;
 
     virtual void print() const;
+    virtual void clear();
 
     bool operator == (const Symbolic_State &ss) const;
 
@@ -89,6 +91,7 @@ public:
     bool is_valid() const;
     void invalidate();
     const Valuations& get_dvars() const {return dvars;}
+    virtual void do_something();
 };
 
 #endif

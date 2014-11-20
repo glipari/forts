@@ -1,5 +1,5 @@
-#ifndef _WIDENED_SSTATE_HPP_
-#define _WIDENED_SSTATE_HPP_
+#ifndef _WIDENED_SSTATE_C_HPP_
+#define _WIDENED_SSTATE_C_HPP_
 
 #include "sstate.hpp"
 #include "signature.hpp"
@@ -16,16 +16,16 @@
 //    
 //};
 
-class Widened_Symbolic_State : public Symbolic_State {
+class Widened_Symbolic_State_C : public Symbolic_State {
 protected:
     PPL::NNC_Polyhedron widened_cvx;
     virtual std::shared_ptr<Symbolic_State> clone() const;
 
 public :
-    Widened_Symbolic_State(std::vector<Location *> &locations, 
+    Widened_Symbolic_State_C(std::vector<Location *> &locations, 
 		   const Valuations &dvars);
 
-    Widened_Symbolic_State(const std::vector<std::string> &loc_names, 
+    Widened_Symbolic_State_C(const std::vector<std::string> &loc_names, 
 		   const Valuations &dvars,
 		   const PPL::NNC_Polyhedron &pol);
 

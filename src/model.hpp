@@ -36,7 +36,7 @@ struct model_stats {
 ////    Parameter();
 //};
 
-enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, BOX_WIDENED, DBM, OCT}; 
+enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, WIDENED_A, WIDENED_B, WIDENED_C, DEC, BOX_WIDENED, DBM, OCT}; 
 
 class Model {
 protected:
@@ -63,8 +63,10 @@ protected:
 
     static Model *the_instance; 
 
+bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss, const std::list<std::shared_ptr<Symbolic_State> >::iterator & curr);
     bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
     int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
+    int invalidate_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
 
 
 public:
@@ -98,6 +100,7 @@ public:
     // performs a step in the exploration of the state space
     //std::vector<Symbolic_State> Post(const Symbolic_State& ss);
     std::vector<std::shared_ptr<Symbolic_State> > Post(const std::shared_ptr<Symbolic_State>& pss);
+    std::vector<std::shared_ptr<Symbolic_State> > discrete_steps(const std::shared_ptr<Symbolic_State>& pss);
 
     // TBM 
     // PPL::NNC_Polyhedron get_invariant_cvx(Symbolic_State &ss);
@@ -130,6 +133,13 @@ public:
     void print_log(const std::string fname= ".log") const;
 
     void set_sstate_type(enum SYMBOLIC_STATE_TYPE t);
+
+
+    /** This part is designed for efficient schedulability test of G-FP algorithm on sporadic tasks. */
+    void TbT();
+
+
+
 
     /********************************* Model with parameters ***************************/
 protected:
