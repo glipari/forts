@@ -12,6 +12,7 @@
 #include "widened_sstate_a.hpp"
 #include "widened_sstate_b.hpp"
 #include "widened_sstate_c.hpp"
+#include "widened_sstate_d.hpp"
 #include "box_widened_sstate.hpp"
 #include "dbm_sstate.hpp"
 #include "oct_sstate.hpp"
@@ -162,6 +163,9 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     }
     else if (sstate_type == WIDENED_C) {
         init = make_shared<Widened_Symbolic_State_C>(loc_names, dvars, cvx);
+    }
+    else if (sstate_type == WIDENED_D) {
+        init = make_shared<Widened_Symbolic_State_D>(loc_names, dvars, cvx);
     }
     //else if( sstate_type == DEC) {
     //  cvars.insert(cvars.end(), "DI");

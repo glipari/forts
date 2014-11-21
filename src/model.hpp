@@ -36,7 +36,7 @@ struct model_stats {
 ////    Parameter();
 //};
 
-enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, WIDENED_A, WIDENED_B, WIDENED_C, DEC, BOX_WIDENED, DBM, OCT}; 
+enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, WIDENED_A, WIDENED_B, WIDENED_C, WIDENED_D, DEC, BOX_WIDENED, DBM, OCT}; 
 
 class Model {
 protected:

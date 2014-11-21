@@ -22,6 +22,8 @@ public:
     // Only used for real-time scheduling model 
     const unsigned& get_active_tasks() const;
     bool includes(const Signature &sig) const;
+    unsigned get_lowest_count() const ;
+    unsigned get_highest_count() const ;
     
 };
 

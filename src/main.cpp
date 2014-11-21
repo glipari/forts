@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
         MODEL.set_sstate_type(WIDENED_B);
       else if (state_type == "widened_c") 
         MODEL.set_sstate_type(WIDENED_C);
+      else if (state_type == "widened_d") 
+        MODEL.set_sstate_type(WIDENED_D);
       else if (state_type == "dec") 
         MODEL.set_sstate_type(DEC);
       else if (state_type == "dbm") 

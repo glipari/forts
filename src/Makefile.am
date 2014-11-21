@@ -5,11 +5,15 @@ libefforts_la_SOURCES = common.cpp model.cpp constraint_parser.cpp \
 	ppl_adapt.cpp expression.cpp assignment_parser.cpp automaton.cpp \
 	expression_parser.cpp constraint.cpp automaton_parser.cpp model_parser.cpp \
 	sstate.cpp unique_index.cpp combined_edge.cpp edge.cpp assignment.cpp \
-	widened_sstate.cpp statistics.cpp box_widened_sstate.cpp dbm_sstate.cpp \
-    oct_sstate.cpp edge_factory.cpp signature.cpp \
-    p_model.cpp time_abstract_state.cpp dual_sstate.cpp \
-    param_sstate.cpp ce_model.cpp \
-    bug_model.cpp efficient_p_model.cpp
+	widened_sstate.cpp statistics.cpp \
+	edge_factory.cpp signature.cpp \
+	p_model.cpp \
+	widened_sstate_a.cpp widened_sstate_b.cpp widened_sstate_dec.cpp \
+	box_widened_sstate.cpp widened_sstate_c.cpp widened_sstate_d.cpp
+    ##oct_sstate.cpp box_widened_sstate.cpp dbm_sstate.cpp \
+    ##time_abstract_state.cpp dual_sstate.cpp \
+    ##param_sstate.cpp ce_model.cpp \
+    ##bug_model.cpp efficient_p_model.cpp
 
 libefforts_la_LIBADD = -lppl -lgmp $(TIPA_LIBS)
 
