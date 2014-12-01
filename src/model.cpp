@@ -8,10 +8,6 @@
 
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
-#include "widened_sstate_dec.hpp"
-#include "widened_sstate_a.hpp"
-#include "widened_sstate_b.hpp"
-#include "widened_sstate_c.hpp"
 #include "widened_sstate_d.hpp"
 #include "box_widened_sstate.hpp"
 #include "dbm_sstate.hpp"
@@ -155,40 +151,9 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     if (sstate_type == WIDENED)
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
-    else if (sstate_type == WIDENED_A) {
-        init = make_shared<Widened_Symbolic_State_A>(loc_names, dvars, cvx);
-    }
-    else if (sstate_type == WIDENED_B) {
-        init = make_shared<Widened_Symbolic_State_B>(loc_names, dvars, cvx);
-    }
-    else if (sstate_type == WIDENED_C) {
-        init = make_shared<Widened_Symbolic_State_C>(loc_names, dvars, cvx);
-    }
     else if (sstate_type == WIDENED_D) {
         init = make_shared<Widened_Symbolic_State_D>(loc_names, dvars, cvx);
     }
-    //else if( sstate_type == DEC) {
-    //  cvars.insert(cvars.end(), "DI");
-    //  /** To compute the decidability interval length "dec_t". */
-    //  int dec_t = 0;
-    //  int cpus = get_valuation(dvars, "CPUS");
-    //  for ( int i = 1; i <= cpus; i++) {
-    //    dec_t += get_valuation(dvars, "C" + to_string(i));
-    //  }
-    //  for ( int i = cpus + 1; i <= cvars.size()/2; i++) {
-    //    dec_t += get_valuation(dvars, "D" + to_string(i));
-    //  }
-    //  dvars.insert(pair<string, int>("DEC_T", dec_t));
-    //  cout << "cvars.size() is " << cvars.size() << endl;
-    //  PPL::NNC_Polyhedron cvx_dec(cvx);
-    //  for ( auto & x : cvars)
-    //    cout << x << endl;
-    //  cvx_dec.add_space_dimensions_and_embed(1);
-    //  cvx_dec.add_constraint(PPL::Variable(cvars.size()-1)==0);
-    //  cout << cvx_dec << endl;
-    //  init = make_shared<Widened_Symbolic_State_DEC>(loc_names, dvars, cvx_dec);
-    //  init->print();
-    //}
     else if (sstate_type == BOX_WIDENED)
         init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
     //else if (sstate_type == DBM)
@@ -202,10 +167,6 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     //init->print();
     init->continuous_step();
     init->do_something();
-    if (sstate_type == WIDENED_A) {
-        auto mypss = dynamic_pointer_cast<Widened_Symbolic_State_A>(init);
-        mypss->widen_a();
-    }
     cout << "cvx after continuous step : ";
     init->print();
     return init;
@@ -232,10 +193,7 @@ void Model::SpaceExplorer()
           
           post_stat.start();
           vector<shared_ptr<Symbolic_State> > nsstates;
-          if (sstate_type == WIDENED_A or sstate_type == WIDENED_B) 
-            nsstates = discrete_steps(*it); 
-          else
-            nsstates = Post(*it); 
+          nsstates = Post(*it); 
 	  post_stat.stop();
 	  stats.total_states += nsstates.size();
 
@@ -269,8 +227,6 @@ void Model::SpaceExplorer()
               stats.eliminated++;
               continue;
             }
-            if ( sstate_type == WIDENED_A or sstate_type == WIDENED_B)
-              (*iit)->continuous_step();
             (*iit)->do_something();
             stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, next);
             //stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
