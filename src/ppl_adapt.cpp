@@ -13,6 +13,7 @@ PPL::Variable get_ppl_variable(const VariableList &cvl, const string &var) {
     throw s;
 }
 
+#ifdef FORTS_PPL_PATCH
 using namespace PPL;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
@@ -112,3 +113,4 @@ void time_elapse_assign(PPL::Octagonal_Shape<int64_t> & oct, std::vector<int> &r
 
     oct.strong_closure_assign();
 }
+#endif
