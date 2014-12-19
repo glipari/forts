@@ -39,6 +39,17 @@ Signature::Signature(const string &s) {
         active_tasks = active_tasks | 1 << atoi(x.c_str());
 }
 
+bool Signature::is_active(const int id) const 
+{
+  //for ( int i = 1; i <= 10; i++) {
+  unsigned ats = active_tasks;
+  ats = ats & (1 << id);
+  if ( ats != 0)
+    return true;
+  else
+    return false;
+}
+
 unsigned Signature::get_lowest_count() const 
 {
   for ( int i = 1; i <= 10; i++) {

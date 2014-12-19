@@ -36,8 +36,6 @@ public :
     virtual void print() const;
     virtual void widen();
     virtual void do_something();
-    virtual bool is_proceeding(const Combined_edge &edges) const;
-    virtual std::vector<std::shared_ptr<Symbolic_State> > post() const;
 };
 
 
