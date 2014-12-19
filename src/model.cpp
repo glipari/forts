@@ -8,10 +8,6 @@
 
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
-#include "widened_sstate_dec.hpp"
-#include "widened_sstate_a.hpp"
-#include "widened_sstate_b.hpp"
-#include "widened_sstate_c.hpp"
 #include "widened_sstate_d.hpp"
 #include "box_widened_sstate.hpp"
 #include "dbm_sstate.hpp"
@@ -171,8 +167,13 @@ shared_ptr<Symbolic_State> Model::init_sstate()
     //init->print();
     init->continuous_step();
     init->do_something();
+<<<<<<< HEAD
     //cout << "cvx after continuous step : ";
     //init->print();
+=======
+    cout << "cvx after continuous step : ";
+    init->print();
+>>>>>>> 0801aa0766e5ba072365a5a43eb009a27af95b7c
     return init;
 }
 
