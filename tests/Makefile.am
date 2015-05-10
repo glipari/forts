@@ -16,6 +16,7 @@ test_SOURCES = test_main.cpp test_sstate.cpp test_simple_model.cpp test_expr_tre
 	test_ppl_coefficient.cpp test_constraint_tree.cpp test_constraint_to_ppl.cpp test_automaton.cpp \
 	test_model.cpp test_SpaceExplorer.cpp test_Combined_edge.cpp \
         test_generated_symbolic_state_space.cpp  test_signature.cpp \
-	test_update_discrete_variable.cpp 
+	test_update_discrete_variable.cpp  \
+	test_widened2.cpp
 
 #LIBS = -ltinyparser
