@@ -36,10 +36,11 @@ struct model_stats {
 ////    Parameter();
 //};
 
-enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, WIDENED_D, BOX_WIDENED, DBM, OCT}; 
+enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, WIDENED_MERGE, WIDENED2, WIDENED3, WIDENED_D, BOX_WIDENED, DBM, OCT}; 
 
 class Model {
 protected:
+  bool merge;
     enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
     // continuous vars for this model
     VariableList cvars;
@@ -65,6 +66,7 @@ protected:
 
 bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss, const std::list<std::shared_ptr<Symbolic_State> >::iterator & curr);
     bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
+    bool merged_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std::shared_ptr<Symbolic_State> > &lss);
     int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
     int invalidate_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
 

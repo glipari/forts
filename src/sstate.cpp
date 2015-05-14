@@ -481,3 +481,8 @@ void Symbolic_State::clear ()
 void Symbolic_State::do_something ()
 {
 }
+
+bool Symbolic_State::merge(const std::shared_ptr<Symbolic_State> &pss) 
+{
+  return false;
+}

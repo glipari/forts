@@ -8,7 +8,10 @@
 
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
-#include "widened_sstate_d.hpp"
+#include "widened_merge_sstate.hpp"
+//#include "widened2_sstate.hpp"
+//#include "widened3_sstate.hpp"
+//#include "widened_sstate_d.hpp"
 #include "box_widened_sstate.hpp"
 #include "dbm_sstate.hpp"
 #include "oct_sstate.hpp"
@@ -22,6 +25,7 @@ Model *Model::the_instance = nullptr;
 
 Model::Model()
 {
+  merge = false;
 }
 
 // PPL::NNC_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
@@ -151,9 +155,17 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     if (sstate_type == WIDENED)
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
-    else if (sstate_type == WIDENED_D) {
-        init = make_shared<Widened_Symbolic_State_D>(loc_names, dvars, cvx);
+    else if (sstate_type == WIDENED_MERGE) {
+      merge = true;
+      init = make_shared<Widened_Merge_Symbolic_State>(loc_names, dvars, cvx);
     }
+    //else if (sstate_type == WIDENED2)
+    //    init = make_shared<Widened2_Symbolic_State>(loc_names, dvars, cvx);
+    //else if (sstate_type == WIDENED3)
+    //    init = make_shared<Widened3_Symbolic_State>(loc_names, dvars, cvx);
+    //else if (sstate_type == WIDENED_D) {
+    //    init = make_shared<Widened_Symbolic_State_D>(loc_names, dvars, cvx);
+    //}
     else if (sstate_type == BOX_WIDENED)
         init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
     //else if (sstate_type == DBM)
@@ -221,6 +233,11 @@ void Model::SpaceExplorer()
               stats.eliminated++;
               continue;
             }
+            if (merge)
+              if ( merged_in(*iit, next)) {
+                stats.eliminated++;
+                continue;
+              }
             (*iit)->do_something();
             stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, next);
             //stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
@@ -238,6 +255,14 @@ void Model::SpaceExplorer()
 	if ( next.size() == 0)
 	    break;
 	current.splice(current.begin(), next);
+	//if ( not merge) current.splice(current.begin(), next);
+        //else {
+        //  for ( auto & nx : next) {
+        //    if ( not contained_in(nx, Space))
+        //      current.push_back(nx);
+        //  }
+        //  next.clear();
+        //}
     }
     end = clock();
     time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
@@ -281,15 +306,21 @@ bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared
     }
     return false;
 }
+
+bool Model::merged_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
+{
+    for ( auto it = lss.begin(); it != lss.end(); it++) {
+	//contains_stat.start();
+	bool f = (*it)->merge(ss);
+	//contains_stat.stop();
+	if (f) return true;
+    }
+    return false;
+}
+
 bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
 {
     for ( auto it = lss.begin(); it != lss.end(); it++) {
-        // auto s1 = (*it)->get_signature();
-        // auto s2 = ss->get_signature();
-        // if (!s1.includes(s2))
-        //     continue;
-    //if( not (*it)->is_valid())
-        //continue;
 	contains_stat.start();
 	bool f = (*it)->contains(ss);
 	contains_stat.stop();

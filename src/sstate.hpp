@@ -92,6 +92,7 @@ public:
     void invalidate();
     const Valuations& get_dvars() const {return dvars;}
     virtual void do_something();
+    virtual bool merge(const std::shared_ptr<Symbolic_State> &pss);
 };
 
 #endif
