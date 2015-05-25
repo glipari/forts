@@ -26,6 +26,7 @@ public :
     virtual void widen();
     virtual void do_something();
     virtual bool merge(const std::shared_ptr<Symbolic_State> &pss); 
+    bool divide(const PPL::NNC_Polyhedron& co, const PPL::NNC_Polyhedron& w1, const PPL::NNC_Polyhedron& w2) const;
 };
 
 

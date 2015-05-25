@@ -192,7 +192,7 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 void Model::SpaceExplorer()
 {
     clock_t begin, end;
-    double time_spent;
+    clock_t time_spent;
     begin = clock();
     shared_ptr<Symbolic_State> init = init_sstate();
     list<shared_ptr<Symbolic_State> > next;
@@ -265,7 +265,8 @@ void Model::SpaceExplorer()
         //}
     }
     end = clock();
-    time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+    //time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+    time_spent = (end-begin) / CLOCKS_PER_SEC;
     cout << "Total time (in seconds) : " << time_spent << endl;
     cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) << endl;
 

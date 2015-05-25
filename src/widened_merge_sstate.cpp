@@ -84,9 +84,19 @@ bool Widened_Merge_Symbolic_State::merge(const std::shared_ptr<Symbolic_State> &
   //cout << "merge ... " ;
   auto myptr = dynamic_pointer_cast<Widened_Merge_Symbolic_State>(pss); 
   myptr->merge_flag ++;
-  NNC_Polyhedron w1 = cvx, w2 = myptr->cvx;
-  w1.poly_hull_assign(w2);
+  NNC_Polyhedron w1 = cvx;
+  w1.poly_hull_assign(myptr->cvx);
 
+  if ( not divide(w1, cvx, myptr->cvx)) return false;
+  if ( not divide(w1, myptr->cvx, cvx)) return false;
+
+  cvx = w1;
+  widen();
+  return true;
+}
+
+bool Widened_Merge_Symbolic_State::divide(const NNC_Polyhedron& co, const NNC_Polyhedron& w1, const NNC_Polyhedron& w2) const 
+{
   auto & css = w2.constraints();
   for ( auto it = css.begin(); it != css.end(); it++)
   {
@@ -97,28 +107,22 @@ bool Widened_Merge_Symbolic_State::merge(const std::shared_ptr<Symbolic_State> &
     Constraint c;
     if ( it->is_inequality()) {
       c = it->is_strict_inequality() ? (e<=0) : (e<0);
-      NNC_Polyhedron com = w1;
+      NNC_Polyhedron com = co;
       com.add_constraint(c);
-      //if ( not cvx.contains(com)) {cout << " done1! " << endl; return false;}
-      if ( not cvx.contains(com)) {return false;}
+      if ( not w1.contains(com)) {return false;}
     }
     else {
       c = (e < 0);
-      NNC_Polyhedron com = w1;
+      NNC_Polyhedron com (co);
       com.add_constraint(c);
-      //if ( not cvx.contains(com)) {cout << " done2! " << endl; return false;}
-      if ( not cvx.contains(com)) {return false;}
+      if ( not w1.contains(com)) {return false;}
 
       c = (e > 0);
-      com = w1;
-      com.add_constraint(c);
-      //if ( not cvx.contains(com)) {cout << " done3! " << endl; return false;}
-      if ( not cvx.contains(com)) {return false;}
+      NNC_Polyhedron com2 (co);
+      com2.add_constraint(c);
+      if ( not w1.contains(com2)) {return false;}
     }
   }
-  cvx = w1;
-  widen();
-  //cout << " done4!" << endl;
   return true;
 }
 
