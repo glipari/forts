@@ -246,6 +246,8 @@ void Model::SpaceExplorer()
           }
         }
 
+        for ( auto & xit : current) xit->clear();
+
 	Space.splice(Space.end(), current);
 	cout << "-----------------------------" << endl;
 	cout << "Step : " << ++step << endl;

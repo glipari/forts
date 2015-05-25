@@ -143,3 +143,7 @@ bool Widened_Merge_Symbolic_State::equals(const std::shared_ptr<Symbolic_State> 
     return res;
 }
 
+void Widened_Merge_Symbolic_State::clear()  
+{
+  cvx.remove_higher_space_dimensions(0);
+}
