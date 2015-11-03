@@ -1,15 +1,8 @@
 
 FOrmal Real-Time Scheduler (FORTS)
-FORTS is a model checker on Linear Hybrid Automata that I write in C++. The basic
-parts of FORTS compose a parser to read LHA models in script inputs and an engine
-to perform reachability analysis for the safety property. It is specialized for 
-Real-Time Scheduling problems.
+FORTS is a model checker on Linear Hybrid Automata that I write in C++. The basic parts of FORTS compose a parser to read LHA models in script inputs and an engine to perform reachability analysis for the safety property. It is specialized for Real-Time Scheduling problems.
 
 References:
-  - "A Weak Simulation Relation for Real-Time Schedulability Analysis of Global
-  Fixed Priority Scheduling Using Linear Hybrid Automata" (2014) 
-  by Youcheng Sun and Giuseppe Lipari
+  - "A Weak Simulation Relation for Real-Time Schedulability Analysis of Global Fixed Priority Scheduling Using Linear Hybrid Automata" (2014) by Youcheng Sun and Giuseppe Lipari
 
-  - "Component-Based Analysis of Hierarchical Scheduling Using Linear Hybrid 
-  Automata" (2014) by Youcheng Sun, Giuseppe Lipari, Romain Soulat, Laurent Fribourg and
-  Nicolas Markey
+  - "Component-Based Analysis of Hierarchical Scheduling Using Linear Hybrid Automata" (2014) by Youcheng Sun, Giuseppe Lipari, Romain Soulat, Laurent Fribourg and Nicolas Markey
