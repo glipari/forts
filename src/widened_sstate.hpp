@@ -4,18 +4,11 @@
 #include "sstate.hpp"
 #include "signature.hpp"
 
-//class Tasks_Signature : public Signature{
-//protected:
-//    unsigned active_tasks;
-//public:
-//    //Signature () {}
-//    Tasks_Signature (const std::string &s);
-//    const unsigned& get_active_tasks() const;
-//    bool operator == (const Tasks_Signature &sig) const;
-//    bool includes(const Tasks_Signature &sig) const;
-//    
-//};
-
+/**
+ * Widened_Symbolic_State is for the slack time pre-order
+ * relation for efficient multiprocessor G-FP schedulability
+ * analysis.
+ */
 class Widened_Symbolic_State : public Symbolic_State {
 protected:
     PPL::NNC_Polyhedron widened_cvx;

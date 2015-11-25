@@ -8,10 +8,8 @@
 
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
+#include "widened_sstate_ex.hpp"
 #include "widened_merge_sstate.hpp"
-//#include "widened2_sstate.hpp"
-//#include "widened3_sstate.hpp"
-//#include "widened_sstate_d.hpp"
 #include "box_widened_sstate.hpp"
 #include "dbm_sstate.hpp"
 #include "oct_sstate.hpp"
@@ -155,17 +153,12 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     if (sstate_type == WIDENED)
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
+    if (sstate_type == WIDENED_EX)
+        init = make_shared<Widened_Symbolic_State_ex>(loc_names, dvars, cvx);
     else if (sstate_type == WIDENED_MERGE) {
       merge = true;
       init = make_shared<Widened_Merge_Symbolic_State>(loc_names, dvars, cvx);
     }
-    //else if (sstate_type == WIDENED2)
-    //    init = make_shared<Widened2_Symbolic_State>(loc_names, dvars, cvx);
-    //else if (sstate_type == WIDENED3)
-    //    init = make_shared<Widened3_Symbolic_State>(loc_names, dvars, cvx);
-    //else if (sstate_type == WIDENED_D) {
-    //    init = make_shared<Widened_Symbolic_State_D>(loc_names, dvars, cvx);
-    //}
     else if (sstate_type == BOX_WIDENED)
         init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
     //else if (sstate_type == DBM)

@@ -1,31 +1,24 @@
-#ifndef _WIDENED_SSTATE_D_HPP_
-#define _WIDENED_SSTATE_D_HPP_
+#ifndef _WIDENED_SSTATE_EX_HPP_
+#define _WIDENED_SSTATE_EX_HPP_
 
 #include "sstate.hpp"
 #include "signature.hpp"
 
-//class Tasks_Signature : public Signature{
-//protected:
-//    unsigned active_tasks;
-//public:
-//    //Signature () {}
-//    Tasks_Signature (const std::string &s);
-//    const unsigned& get_active_tasks() const;
-//    bool operator == (const Tasks_Signature &sig) const;
-//    bool includes(const Tasks_Signature &sig) const;
-//    
-//};
 
-class Widened_Symbolic_State_D : public Symbolic_State {
+/**
+ * Widened_Symbolic_State_ex is for the extended slack time pre-order
+ * relation for efficient multiprocessor G-FP schedulability analysis.
+ */
+class Widened_Symbolic_State_ex : public Symbolic_State {
 protected:
     PPL::NNC_Polyhedron widened_cvx;
     virtual std::shared_ptr<Symbolic_State> clone() const;
 
 public :
-    Widened_Symbolic_State_D(std::vector<Location *> &locations, 
+    Widened_Symbolic_State_ex(std::vector<Location *> &locations, 
 		   const Valuations &dvars);
 
-    Widened_Symbolic_State_D(const std::vector<std::string> &loc_names, 
+    Widened_Symbolic_State_ex(const std::vector<std::string> &loc_names, 
 		   const Valuations &dvars,
 		   const PPL::NNC_Polyhedron &pol);
 

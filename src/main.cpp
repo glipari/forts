@@ -49,12 +49,10 @@ int main(int argc, char *argv[])
         MODEL.set_sstate_type(BOX_WIDENED);
       else if (state_type == "widened") 
         MODEL.set_sstate_type(WIDENED);
+      else if (state_type == "widened_ex") 
+        MODEL.set_sstate_type(WIDENED_EX);
       else if (state_type == "widened_merge") 
         MODEL.set_sstate_type(WIDENED_MERGE);
-      else if (state_type == "widened3") 
-        MODEL.set_sstate_type(WIDENED3);
-      else if (state_type == "widened_d") 
-        MODEL.set_sstate_type(WIDENED_D);
       else if (state_type == "dbm") 
 	MODEL.set_sstate_type(DBM);
       else if (state_type == "oct") 
