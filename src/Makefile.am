@@ -8,7 +8,7 @@ libefforts_la_SOURCES = common.cpp model.cpp constraint_parser.cpp \
 	widened_sstate.cpp statistics.cpp \
 	edge_factory.cpp signature.cpp \
 	p_model.cpp \
-	box_widened_sstate.cpp widened_sstate_d.cpp \
+	box_widened_sstate.cpp \
 	widened_merge_sstate.cpp widened_sstate_ex.cpp
     ##oct_sstate.cpp box_widened_sstate.cpp dbm_sstate.cpp \
     ##time_abstract_state.cpp dual_sstate.cpp \
