@@ -135,7 +135,7 @@ TEST_CASE("Simple widened model", "[model][Space]")
 
 
     PPL::NNC_Polyhedron xx(2);
-    xx.add_constraint( PPL::Variable(0) <= 0);
+    //xx.add_constraint( PPL::Variable(0) <= 0);
     REQUIRE(xx.contains(x));
     REQUIRE(x.contains(xx));
 

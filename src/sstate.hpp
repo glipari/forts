@@ -10,30 +10,12 @@
 #include <ppl_adapt.hpp>
 
 #include "signature.hpp"
+#include "combined_edge.hpp"
 
 namespace PPL = Parma_Polyhedra_Library;
 
 class Location;
-class Combined_edge;
-//
-//class Signature {
-//protected:
-//    std::string str;
-//    //unsigned active_tasks;
-//public:
-//    Signature () {}
-//    Signature (const std::string &s);
-//    const std::string& get_str() const;
-//    //const unsigned& get_active_tasks() const;
-//    bool operator == (const Signature &sig) const;
-//    bool operator < (const Signature &sig) const;
-//    //bool includes(const Signature &sig) const;
-//    
-//};
-
-/** Reset the cached combined edges. */
-//void cache_reset();
-
+//class Combined_edge;
 
 class Symbolic_State {
 protected:
@@ -50,6 +32,11 @@ protected:
     
     virtual std::shared_ptr<Symbolic_State> clone() const;
 
+    // keep a track of ancester of current state : prior ===incoming_edge===>
+    std::shared_ptr<Symbolic_State> prior;
+    Combined_edge incoming_edge;
+
+    bool valid = true;
 public:
 
     Symbolic_State(std::vector<Location *> &locations, 
@@ -65,13 +52,14 @@ public:
     virtual bool is_bad() const ; 
 
     virtual void continuous_step();
-    virtual void discrete_step(Combined_edge &edges);
+    virtual void discrete_step(const Combined_edge &edges);
 
-    PPL::NNC_Polyhedron get_invariant_cvx();
+    virtual PPL::NNC_Polyhedron get_invariant_cvx();
 
     virtual const PPL::NNC_Polyhedron& get_cvx() const;
 
-    std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    virtual std::vector<std::shared_ptr<Symbolic_State> > post() const;
+    virtual std::vector<std::shared_ptr<Symbolic_State> > discrete_steps() const;
 
     virtual bool contains(const std::shared_ptr<Symbolic_State> &pss) const;
 
@@ -80,6 +68,7 @@ public:
     virtual int total_memory_in_bytes() const;
 
     virtual void print() const;
+    virtual void clear();
 
     bool operator == (const Symbolic_State &ss) const;
 
@@ -90,6 +79,20 @@ public:
     Signature get_signature() const;
 
     virtual void update_signature();
+
+
+    void mark_prior(std::shared_ptr<Symbolic_State> p);
+    std::shared_ptr<Symbolic_State> get_prior() const;
+    Combined_edge get_incoming_edge() const;
+    const std::vector<Location *>& get_locations() const;
+    bool no_outgoings() const;
+
+    virtual void refine_cvx(const PPL::NNC_Polyhedron &poly);
+    bool is_valid() const;
+    void invalidate();
+    const Valuations& get_dvars() const {return dvars;}
+    virtual void do_something();
+    virtual bool merge(const std::shared_ptr<Symbolic_State> &pss);
 };
 
 #endif

@@ -52,6 +52,12 @@ Linear_Constraint Location::invariant_to_Linear_Constraint(const VariableList &c
     return invariant.to_Linear_Constraint(cvl, dvl);
 }
 
+Linear_Constraint Location::flow_to_Linear_Constraint(const VariableList &cvl, 
+							   const Valuations &dvl) const
+{
+    return flow.to_Linear_Constraint(cvl, dvl);
+}
+
 void Location::print() const
 {
     std::cout << "loc " << name << ": while ";
@@ -85,6 +91,20 @@ Location::Location(bool b, const std::string &n,
     name(n),
     invariant(inv),
     rates(rt),
+    outgoings(ed)
+{
+}
+
+Location::Location(bool b, const std::string &n, 
+		   const constraint_node &inv,
+		   const constraint_node &f,
+		   const vector<Edge> &ed) :
+    aut(nullptr),
+    bad(b),
+    name(n),
+    invariant(inv),
+    flow(f),
+    flow_flag(true),
     outgoings(ed)
 {
 }

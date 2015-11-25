@@ -22,9 +22,9 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
       VariableList cvars;
       Valuations dvars;
 
-      cvars.insert("A");
-      cvars.insert("B");
-      cvars.insert("C");
+      cvars.insert(cvars.end(), "A");
+      cvars.insert(cvars.end(), "B");
+      cvars.insert(cvars.end(), "C");
       //cvars.insert("D");
 
       dvars.insert(make_pair("r1",10));
@@ -41,15 +41,30 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
       //css.insert(D==2);
 
       C_Polyhedron cvx(css);
-      cvx.unconstrain(vs);
+      //cvx.unconstrain(vs);
 
-      C_Polyhedron ass_cvx(cvars.size()*2);
+      C_Polyhedron ass_cvx(cvars.size());
       ass_cvx.add_constraints(e1.ass_to_Linear_Constraint(cvars,dvars));
+      auto assignments = e1.get_assignments();
+      VariableList updated;
+      for ( auto & v : cvars) {
+        if ( contains<string>(updated, v))
+          continue;
+        for ( auto & x : assignments) {
+          if ( x.has_variable(v)) {
+            updated.insert(updated.end(), v);
+            break;
+          }
+        }
+      }
       /** Remove the lower space dimensions from ass_cvx. */
-      PPL::Variables_Set lower_dims;
-      for ( unsigned i = 0; i < cvars.size(); i++)
-        lower_dims.insert(PPL::Variable(i));
-      ass_cvx.remove_space_dimensions(lower_dims);
+      PPL::Variables_Set updated_ppl;
+      for( auto & x : updated)
+        updated_ppl.insert( get_ppl_variable(cvars,x));
+      cvx.unconstrain(updated_ppl);
+      //for ( unsigned i = 0; i < cvars.size(); i++)
+      //  lower_dims.insert(PPL::Variable(i));
+      //ass_cvx.remove_space_dimensions(lower_dims);
 
       cvx.intersection_assign(ass_cvx);
 
@@ -71,67 +86,84 @@ TEST_CASE("Test the update of a discrete variable in the edge", "[][]")
 
     }
 
-    SECTION("A continuous variable is updated by itself.") {
-      string s1 = "when true do {A'=A+1, r1'=r1+r2, B'=B+r2} goto x1R;";
+    /** For efficiency reason, the continuous variable is not allowed to be in the right hand of an assignment. */
+    //SECTION("A continuous variable is updated by itself.") {
+    //  string s1 = "when true do {A'=A+1, r1'=r1+r2, B'=B+r2} goto x1R;";
 
-      Edge e1 = build_an_edge(s1);
+    //  Edge e1 = build_an_edge(s1);
 
-      VariableList cvars;
-      Valuations dvars;
+    //  VariableList cvars;
+    //  Valuations dvars;
 
-      cvars.insert("A");
-      cvars.insert("B");
-      cvars.insert("C");
+    //  cvars.insert("A");
+    //  cvars.insert("B");
+    //  cvars.insert("C");
 
-      dvars.insert(make_pair("r1",10));
-      dvars.insert(make_pair("r2",200));
+    //  dvars.insert(make_pair("r1",10));
+    //  dvars.insert(make_pair("r2",200));
 
-      PPL::Variables_Set vs = e1.get_assignment_vars(cvars);
+    //  //PPL::Variables_Set vs = e1.get_assignment_vars(cvars);
 
-      PPL::Variable A(0), B(1), C(2), D(3);
-      PPL::Constraint_System css;
-      css.insert(A==2);
-      css.insert(B>=30);
-      css.insert(B<=70);
+    //  PPL::Variable A(0), B(1), C(2), D(3);
+    //  PPL::Constraint_System css;
+    //  css.insert(A==2);
+    //  css.insert(B>=30);
+    //  css.insert(B<=70);
 
-      C_Polyhedron cvx(cvars.size());
-      cvx.add_constraints(css);
+    //  C_Polyhedron cvx(cvars.size());
+    //  cvx.add_constraints(css);
 
-      C_Polyhedron ass_cvx(cvars.size()*2);
-      ass_cvx.add_constraints(e1.ass_to_Linear_Constraint(cvars,dvars));
-      
-      ass_cvx.add_constraints(cvx.constraints());
-      //cout << "-1 : " << ass_cvx << endl;
-      //cvx.add_space_dimensions_and_embed(cvars.size());
-      //ass_cvx.intersection_assign(cvx);
-      //cout << "-2 : " << ass_cvx << endl;
+    //  C_Polyhedron ass_cvx(cvars.size());
+    //  ass_cvx.add_constraints(e1.ass_to_Linear_Constraint(cvars,dvars));
+    //  
+    //  //ass_cvx.add_constraints(cvx.constraints());
+    //  auto assignments = e1.get_assignments();
+    //  VariableList updated;
+    //  for ( auto & v : cvars) {
+    //    if ( contains<string>(updated, v))
+    //      continue;
+    //    for ( auto & x : assignments) {
+    //      if ( x.has_variable(v)) {
+    //        updated.insert(v);
+    //        break;
+    //      }
+    //    }
+    //  }
+    //  //cout << "-1 : " << ass_cvx << endl;
+    //  //cvx.add_space_dimensions_and_embed(cvars.size());
+    //  //ass_cvx.intersection_assign(cvx);
+    //  //cout << "-2 : " << ass_cvx << endl;
 
-      /** Remove the lower space dimensions from ass_cvx. */
-      PPL::Variables_Set lower_dims;
-      for ( unsigned i = 0; i < cvars.size(); i++)
-        lower_dims.insert(PPL::Variable(i));
-      ass_cvx.remove_space_dimensions(lower_dims);
+    //  /** Remove the lower space dimensions from ass_cvx. */
+    //  //PPL::Variables_Set lower_dims;
+    //  //for ( unsigned i = 0; i < cvars.size(); i++)
+    //  //  lower_dims.insert(PPL::Variable(i));
+    //  //ass_cvx.remove_space_dimensions(lower_dims);
+    //  PPL::Variables_Set updated_ppl;
+    //  for( auto & x : updated)
+    //    updated_ppl.insert(get_ppl_variable(cvars,x));
+    //  cvx.unconstrain(updated_ppl);
 
-      //cvx.remove_higher_space_dimensions(cvars.size());
-      cvx.unconstrain(vs);
-      cvx.intersection_assign(ass_cvx);
+    //  //cvx.remove_higher_space_dimensions(cvars.size());
+    //  cvx.unconstrain(updated_ppl);
+    //  cvx.intersection_assign(ass_cvx);
 
-      Constraint_System css_;
-      css_.insert(A==3);
-      css_.insert(B>=230);
-      css_.insert(B<=270);
-      //css_.insert(B+10==C);
+    //  Constraint_System css_;
+    //  css_.insert(A==3);
+    //  css_.insert(B>=230);
+    //  css_.insert(B<=270);
+    //  //css_.insert(B+10==C);
 
-      C_Polyhedron cvx_(cvars.size());
-      cvx_.add_constraints(css_);
+    //  C_Polyhedron cvx_(cvars.size());
+    //  cvx_.add_constraints(css_);
 
-      //cout << "-2 : " << cvx << endl;
+    //  //cout << "-2 : " << cvx << endl;
 
-      REQUIRE(cvx.contains(cvx_));
-      REQUIRE(cvx_.contains(cvx));
-      REQUIRE(dvars["r1"]==210);
+    //  REQUIRE(cvx.contains(cvx_));
+    //  REQUIRE(cvx_.contains(cvx));
+    //  REQUIRE(dvars["r1"]==210);
 
 
-    }
+    //}
 
 }

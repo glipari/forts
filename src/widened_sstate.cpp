@@ -27,6 +27,11 @@ std::shared_ptr<Symbolic_State> Widened_Symbolic_State::clone() const
 void Widened_Symbolic_State::continuous_step()
 {
     Symbolic_State::continuous_step();
+    //widen();
+}
+
+void Widened_Symbolic_State::do_something()
+{
     widen();
 }
 
@@ -72,7 +77,8 @@ void Widened_Symbolic_State::widen()
 
 const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_cvx() const
 {
-    return widened_cvx;
+    //return widened_cvx;
+    return cvx;
 }
 
 //const PPL::NNC_Polyhedron& Widened_Symbolic_State::get_featured_cvx() const

@@ -20,6 +20,7 @@ public :
 
     virtual int eval(const Valuations &dvl) const = 0; 
     virtual bool has_variable(const VariableList &cvl) const = 0; 
+    virtual bool has_variable(const std::string &cv) const = 0; 
     virtual bool check_linearity(const VariableList &cvl) const = 0; 
     virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const = 0;
     virtual void print() const = 0;
@@ -45,6 +46,7 @@ public:
 	left(l), right(r) {}
 
     virtual bool has_variable(const VariableList &cvl) const;
+    virtual bool has_variable(const std::string &cv) const;
     // void set_left(std::shared_ptr<expr_tree_node> l);
     // void set_right(std::shared_ptr<expr_tree_node> r);
 };
@@ -61,6 +63,7 @@ public:
 
     virtual int eval(const Valuations &dvl) const ;
     virtual bool has_variable(const VariableList &cvl) const ;
+    virtual bool has_variable(const std::string &cv) const ;
     virtual bool check_linearity(const VariableList &cvl) const ;
     virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const;
     virtual void print() const;
@@ -76,6 +79,7 @@ public:
 
     virtual int eval(const Valuations &dvl) const;
     virtual bool has_variable(const VariableList &cvl) const;
+    virtual bool has_variable(const std::string &cv) const;
     virtual bool check_linearity(const VariableList &cvl) const;
     virtual Linear_Expr to_Linear_Expr(const VariableList &cvl, const Valuations &dvl) const;
     virtual void print() const;

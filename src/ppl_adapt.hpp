@@ -22,6 +22,9 @@ PPL::Variable get_ppl_variable(const VariableList &cvl, const std::string &var);
 
 
 #ifdef FORTS_PPL_PATCH
+void time_elapse_assign(PPL::BD_Shape<int64_t> & bds, std::vector<int> &rates); 
+void time_elapse_assign(PPL::Octagonal_Shape<int64_t> & bds, std::vector<int> &rates); 
+
 using namespace Parma_Polyhedra_Library::IO_Operators;
 using namespace PPL;
 

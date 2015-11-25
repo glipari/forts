@@ -95,7 +95,10 @@ Location location_builder::get_location()
     //edge e = build_an_edge(input);
     //loc.outgoings.push_back(e);
     cout << "location_bulder:: Location " << name << " is ready!" << endl;
-    return Location(bad, name, invariant, rates, outgoings);
+    if( not flow_flag)
+      return Location(bad, name, invariant, rates, outgoings);
+    else 
+      return Location(bad, name, invariant, flow, outgoings);
 }
 
 void location_builder::a_rate(parser_context &pc)
@@ -112,6 +115,14 @@ void location_builder::an_outgoing(parser_context &pc)
 void location_builder::the_invariant(parser_context &pc)
 {
     invariant = invariant_builder.get_tree();
+}
+
+void location_builder::the_flow(parser_context &pc)
+{
+  cout << "Inside the_flow " << endl;
+  flow_flag = true;
+  cout << flow_flag << endl;
+  flow = flow_builder.get_tree();
 }
 
 void location_builder::the_name(parser_context &pc)
@@ -142,7 +153,8 @@ rule prepare_outgoing_rule(location_builder &loc_builder)
 
 rule prepare_location_rule(location_builder & loc_builder)
 {
-    rule r_loc, r_while, r_constraint, r_ass, r_wait, r_l, r_name, r_outgoing, r_emptyset;
+  cout << "inside prepare_location_rule" << endl;
+    rule r_loc, r_while, r_constraint, r_ass, r_wait, r_l, r_name, r_outgoing, r_emptyset, r_rate, r_flow;
 
     r_outgoing = prepare_outgoing_rule(loc_builder);
     r_l        = keyword("loc");
@@ -152,14 +164,20 @@ rule prepare_location_rule(location_builder & loc_builder)
     r_name     = rule(tk_ident);
     r_loc      = r_l >> r_name >> rule(':') 
 		     >> r_while >> r_constraint 
-		     >> r_wait >> (r_emptyset | (rule('{') >> r_ass >> *(rule(',') >> r_ass) >> rule('}'))) 
+		     //>> r_wait >> (r_emptyset | (rule('{') >> r_ass >> *(rule(',') >> r_ass) >> rule('}'))) 
+		     //>> r_wait >> (r_emptyset | (rule('{') >> ((r_ass >> *(rule(',') >> r_ass) ) | r_flow) >> rule('}'))) 
+		     >> (r_wait >> (r_emptyset | (rule('{') >> (r_flow) >> rule('}'))) )  
+                     //(r_wait >> (r_emptyset | (rule('{') >> (r_rate) >> rule('}'))) )
 		     >> *r_outgoing;
 
     r_ass      = prepare_rate_rule(loc_builder);
     r_constraint = prepare_constraint_rule(loc_builder.invariant_builder);
+    r_flow = prepare_constraint_rule(loc_builder.flow_builder);
+    r_rate = r_ass >> *(rule(',') >> r_ass);
 
     using namespace placeholders;
     r_constraint [bind(&location_builder::the_invariant, &loc_builder, _1)];
+    r_flow [bind(&location_builder::the_flow, &loc_builder, _1)];
     r_name [bind(&location_builder::the_name, &loc_builder, _1)];
     return r_loc;
 }

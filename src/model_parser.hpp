@@ -26,6 +26,10 @@ public:
     void an_automaton(tipa::parser_context &pc);
     //Model get_model();
 
+    /** Model with parameters. */
+    std::vector<Parameter> parameters;
+    void collect_parameters(tipa::parser_context &pc);
+
 };
 
 rule prepare_model_rule(model_builder &m_builder);

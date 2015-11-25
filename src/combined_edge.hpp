@@ -13,12 +13,19 @@ class Combined_edge {
     // The sync label set where the non empty sync_label is from
     std::vector<std::string> sync_set;
 
+    std::vector<Location *> locations;
+
 public:
+    Combined_edge();
+
     Combined_edge(const Edge &e, const std::string &sync, 
 		  const std::vector<std::string> &labels);
 
     Combined_edge(const std::vector<std::string> &labels);
     
+    Combined_edge(const std::vector<Edge> &es, const std::string &sync, 
+		  const std::vector<std::string> &labels);
+
     std::vector<Combined_edge> combine(const Edge &e, 
 				       const std::vector<std::string> e_syncs);
 
@@ -26,7 +33,10 @@ public:
 
     bool operator == (const Combined_edge &ce) const;
 
-    std::vector<Edge> & get_edges() { return edges; }
+    const std::vector<Edge> & get_edges() const { return edges; }
+
+    void set_locations(const std::vector<Location *>& locs);
+    const std::vector<Location *>& get_locations() const;
 };
 
 

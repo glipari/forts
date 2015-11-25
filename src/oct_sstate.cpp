@@ -60,10 +60,13 @@ bool OCT_Symbolic_State::contains(const std::shared_ptr<Symbolic_State> &pss) co
     return oct_cvx.contains(myptr->oct_cvx);
 }
 
-void OCT_Symbolic_State::discrete_step(Combined_edge &edges)
+void OCT_Symbolic_State::discrete_step(const Combined_edge &edges)
 {
+    cout << "enter discrete step" << endl;
     //cout << "inside oct discrete step\n";
     VariableList cvars = MODEL.get_cvars();
+    for ( auto &x : cvars)
+        cout << x << " " << endl;
 
     PPL::Octagonal_Shape<int> guard_oct_cvx(cvars.size());
     /** 
@@ -119,10 +122,12 @@ void OCT_Symbolic_State::discrete_step(Combined_edge &edges)
     //PPL::Octagonal_Shape<int> invariant_oct_cvx = get_invariant_oct();
     invariant_oct_cvx = get_invariant_oct();
     oct_cvx.intersection_assign(invariant_oct_cvx);
+    cout << "leave discrete step" << endl;
 }
 
 void OCT_Symbolic_State::continuous_step()
 {
+    cout << "enter continuous step" << endl;
     VariableList cvars = MODEL.get_cvars();
     //PPL::Octagonal_Shape<int> i_cvx(cvars.size());
 #ifndef FORTS_PPL_PATCH
@@ -159,6 +164,7 @@ void OCT_Symbolic_State::continuous_step()
     //oct_cvx.intersection_assign(i_cvx);
     oct_cvx.intersection_assign(invariant_oct_cvx);
     invariant_oct_cvx.remove_higher_space_dimensions(0);
+    cout << "leave continuous step" << endl;
 }
 
 void OCT_Symbolic_State::print() const

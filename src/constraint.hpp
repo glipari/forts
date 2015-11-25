@@ -17,6 +17,7 @@ public :
     virtual bool eval(const Valuations &dvl) const = 0;
     virtual void print() const = 0;
     virtual AT_Constraint to_AT_Constraint(const VariableList &cvl, const Valuations &dvl) const = 0;
+    bool has_variable( const std::string &cv) const;
   
     void set_left(std::shared_ptr<const expr_tree_node> &l);
     void set_right(std::shared_ptr<const expr_tree_node> &r);
@@ -58,6 +59,7 @@ public:
     void append_atomic_constraint(std::shared_ptr<atomic_constraint_node> at);
     Linear_Constraint to_Linear_Constraint(const VariableList &cvl, const Valuations &dvl) const;
     void print() const;
+  bool has_variable( const std::string &cv) const;
 };
 
 

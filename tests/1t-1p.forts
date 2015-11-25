@@ -1,14 +1,14 @@
 
-    p1, c1 :continuous;
+    c1, p1 :continuous;
     T1 == 8, C1 == 2, D1 == 8: discrete; 
 
 automaton sched
 
-loc idle : while true wait { c1'=0}
+loc idle : while true wait { }
     when p1-T1>=0  do {p1'=0, c1'=C1} goto x1R;
 
 
-loc x1R : while c1>=0 & p1-D1<=0 wait { c1'=-1}
+loc x1R : while c1>=0 & p1-D1<=0 wait { c1==-1}
     when c1 == 0  do {} goto idle;
     when c1>=1 & p1-D1==0 do {} goto error;
 

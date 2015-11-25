@@ -41,33 +41,40 @@ Linear_Constraint Edge::guard_to_Linear_Constraint(const VariableList &cvl,
 Linear_Constraint Edge::ass_to_Linear_Constraint(const VariableList &cvl, 
 						 Valuations &dvl) const
 {
-    Linear_Constraint lc;
-
-	//string x = it->name;
-	for ( auto iit = assignments.begin(); iit != assignments.end(); iit++) {
-        /** If iit->get_var() is a discrete variable, update it here. */
-        if (contains<string, int>(dvl, iit->get_var())) {
-            int new_val = iit->eval(dvl);
-            set_valuation(dvl, iit->get_var(), new_val);
-            continue;
-        }
-        for ( auto const &x : cvl) {//it = cvl.begin(); it != cvl.end(); it++) {
-	        if ( x == iit->get_var()) {
-		        PPL::Variable v = get_ppl_variable(cvl, x);
-                        /** 
-                         * We increase the dimension of v here in
-                         * case the assignment is in form of "v=v+1"
-                         **/
-                        PPL::Variable vv(v.id() + cvl.size());
-		        Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
-		        AT_Constraint atc = (vv==le);
-		        lc.insert(atc);
-		        break;
-	        }
-	    }
-
+  Linear_Constraint lc;
+  for ( auto iit = assignments.begin(); iit != assignments.end(); iit++) {
+    /** If iit->get_var() is a discrete variable, update it here. */
+    if (contains<string, int>(dvl, iit->get_var())) {
+      int new_val = iit->eval(dvl);
+      set_valuation(dvl, iit->get_var(), new_val);
+      continue;
     }
-    return lc;
+    
+    for ( auto const &x : cvl) {//it = cvl.begin(); it != cvl.end(); it++) {
+      if ( x == iit->get_var()) {
+        PPL::Variable v = get_ppl_variable(cvl, x);
+        /** 
+         * We increase the dimension of v here in
+         * case the assignment is in form of "v=v+1"
+         **/
+        //PPL::Variable vv(v.id() + cvl.size());
+        //Linear_Expr le = iit->to_Linear_Expr(cvl, dvl);
+        //AT_Constraint atc = (vv==le);
+        //lc.insert(atc);
+
+        /**
+         * We decided to change (symplify) the syntax of assignment in an edge
+         * by forbiding the appearance of continuous variables in
+         * the right side of assignment operator "'=".
+         **/
+        int new_val = iit->eval(dvl);
+        AT_Constraint atc = (v==new_val);
+        lc.insert(atc);
+        break;
+      }
+    }
+  }
+  return lc;
 }
 
 void Edge::print() const

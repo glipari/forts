@@ -7,6 +7,11 @@ bool expr_op_node::has_variable(const VariableList &cvl) const
     return left->has_variable(cvl) || right->has_variable(cvl);
 }
 
+bool expr_op_node::has_variable(const std::string &cv) const
+{
+    return left->has_variable(cv) || right->has_variable(cv);
+}
+
 expr_var_node::expr_var_node(const std::string &n) : name(n) 
 {}
 
@@ -18,6 +23,11 @@ int expr_var_node::eval(const Valuations &dvl) const
 bool expr_var_node::has_variable(const VariableList &cvl) const 
 {
     return contains(cvl, name);
+}
+
+bool expr_var_node::has_variable(const string &cv) const 
+{
+    return (cv == name);
 }
 
 bool expr_var_node::check_linearity(const VariableList &cvl) const 
@@ -52,6 +62,11 @@ int expr_leaf_node::eval(const Valuations &dvl) const
 }
 
 bool expr_leaf_node::has_variable(const VariableList &cvl) const
+{
+    return false;
+}
+
+bool expr_leaf_node::has_variable(const string &cv) const
 {
     return false;
 }

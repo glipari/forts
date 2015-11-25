@@ -9,63 +9,6 @@
 using namespace std;
 using namespace Parma_Polyhedra_Library::IO_Operators;
 
-//std::map<Signature, std::vector<Combined_edge> > signature_to_combined_edges;
-//
-//void cache_reset()
-//{
-//    signature_to_combined_edges.clear();
-//}
-
-//const std::string& Signature::get_str() const
-//{
-//    return str;
-//}
-
-//const unsigned& Signature::get_active_tasks() const
-//{
-//    return active_tasks;
-//}
-
-//Signature::Signature(const string &s) {
-//    str = s;
-    //active_tasks = 0;
-
-    //// To parse the list of active tasks
-    //vector<string> acts;
-    ////vector<int> acts_i;
-    //string act = "";
-    //for ( auto it = s.begin(); it != s.end(); it ++) {
-    //    if ( *it <= '9' && *it >= '0') {
-    //        //cout << "Got one active task " << *it << endl;
-    //        act.push_back(*it);
-    //    }
-    //    else if ( act != "") {
-    //        acts.push_back(act);
-    //        act = "";
-    //    }
-    //}
-    //if ( act != "")
-    //    acts.push_back(act);
-
-    //for (auto &x : acts)
-    //    active_tasks = active_tasks | 1 << atoi(x.c_str());
-//}
-
-//bool Signature::includes(const Signature& sig) const
-//{
-//    return active_tasks == (active_tasks | sig.active_tasks);
-//}
-
-//bool Signature::operator == (const Signature& sig) const
-//{
-//    return str == sig.str;
-//}
-//
-//bool Signature::operator < (const Signature& sig) const
-//{
-//    return str < sig.str;
-//}
-
 string Symbolic_State::get_loc_names() const
 {
     string str = "";
@@ -113,23 +56,19 @@ Symbolic_State::Symbolic_State(const std::vector<std::string> &loc_names,
     update_signature();
 }
 
-//bool Symbolic_State::contains(const Symbolic_State &ss) const
-//{
-//    //for ( int i = 0; i < loc_names.size(); i++)
-//    //if ( loc_names[i] != ss.loc_names[i])
-//    //return false;
-//    for (unsigned i = 0; i<locations.size(); i++) 
-//	if (locations[i]->get_name() != ss.locations[i]->get_name()) 
-//	    return false;
-//    return cvx.contains(ss.cvx);
-//}
-
 bool Symbolic_State::contains(const shared_ptr<Symbolic_State> &pss) const
 {
-    if (not (signature == pss->signature)) return false;
-    // for (unsigned i = 0; i<locations.size(); i++) 
-    // 	if (locations[i]->get_name() != pss->locations[i]->get_name()) 
-    // 	    return false;
+    //if (not (signature == pss->signature)) return false;
+    if ( not (get_loc_names() == pss->get_loc_names()))
+      return false;
+    auto it = dvars.begin();
+    auto jt = pss->get_dvars().begin();
+    while ( it != dvars.end()) {
+      if( it->second != jt->second)
+        return false;
+      it ++;
+      jt ++;
+    }
     return cvx.contains(pss->cvx);
 }
 
@@ -174,84 +113,140 @@ bool Symbolic_State::is_bad() const
 
 void Symbolic_State::continuous_step()
 {
-    VariableList cvars = MODEL.get_cvars();
-    PPL::NNC_Polyhedron r_cvx(cvars.size());
-    //PPL::NNC_Polyhedron i_cvx(cvars.size());
-    
-    VariableList lvars = cvars;
-    for (auto p: locations) {
-	Linear_Constraint lc;
-	//i_cvx.add_constraints(p->invariant_to_Linear_Constraint(cvars, dvars));
-	r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars, lvars));
+  //cout << "beginning of a continuous step. " << endl;
+  VariableList cvars = MODEL.get_cvars();
+  PPL::NNC_Polyhedron r_cvx(cvars.size());
+  
+  VariableList lvars = cvars;
+  
+  for (auto p: locations) {
+    Linear_Constraint lc;
+    //r_cvx.add_constraints(p->rates_to_Linear_Constraint(cvars, dvars));
+    r_cvx.add_constraints(p->flow_to_Linear_Constraint(cvars, dvars));
+    auto flow = p->get_flow();
+    auto it = lvars.begin();
+    while ( it != lvars.end()) {
+      if(flow.has_variable(*it)) {
+        it = lvars.erase(it);
+      }
+      else it ++;
     }
+  }
 
-    for (auto &v : lvars) {
-	PPL::Variable var = get_ppl_variable(cvars, v);
-	Linear_Expr le;
-	le += 1;
-	AT_Constraint atc = (var == le);
-	r_cvx.add_constraint(atc);
-    }
-    cvx.time_elapse_assign(r_cvx);
-    //cvx.intersection_assign(i_cvx);
-    cvx.intersection_assign(invariant_cvx);
-    // invariant_cvx is only used in discrete and continuous steps 
-    invariant_cvx.remove_higher_space_dimensions(0);
+  for (auto &v : lvars) {
+    PPL::Variable var = get_ppl_variable(cvars, v);
+    Linear_Expr le;
+    le += 1;
+    AT_Constraint atc = (var == le);
+    r_cvx.add_constraint(atc);
+  }
+    
+  cvx.time_elapse_assign(r_cvx);
+  cvx.intersection_assign(invariant_cvx);
+  invariant_cvx.remove_higher_space_dimensions(0);
+  //print();
+  //cout << "end of a continuous step. " << endl;
 }
 
 
-void Symbolic_State::discrete_step(Combined_edge &edges)
+/** The discrete step for a symbolic state. */
+void Symbolic_State::discrete_step(const Combined_edge &edges)
 {
-    VariableList cvars = MODEL.get_cvars();
+  //cout << "beginning of a discrete step. " << endl;
+  //print();
+  /** Always keep a copy of continuous variables. */
+  VariableList cvars = MODEL.get_cvars();
 
-    PPL::NNC_Polyhedron guard_cvx(cvars.size());
-    /** 
-     * The cvx obtained through updates in an
-     * edge can have dimension higher than cvars.size().
-     * */
-    PPL::NNC_Polyhedron ass_cvx(cvars.size()*2);
+  /** The guard on an edge. */
+  PPL::NNC_Polyhedron guard_cvx(cvars.size());
 
-    Variables_Set vs;
+  /**
+   * The assignment on an edge.
+   * The cvx obtained through updates in an
+   * edge can have dimension higher than cvars.size().
+   **/
+  //PPL::NNC_Polyhedron ass_cvx(cvars.size()*2);
 
-    for (auto &e : edges.get_edges()) {
-	// find location source location with that name
-	bool found = false;
-	for (auto &p : locations) { 
-	    if (p == &e.get_src_location()) {
-		found = true;
-		p = &e.get_dst_location();
-	    }
+  /**
+   * According to the new syntax of assignment in an edge,
+   * there is no need to increase the dimensions of 
+   * the polyhedron for assignments.
+   **/
+  PPL::NNC_Polyhedron ass_cvx(cvars.size());
+  
+  /** A set of PPL variables that are involved with the assignment statement in an edge. */
+  //Variables_Set vs;
+    
+  /** The "locations" is a vector of Location pointers. */
+  auto l = locations;
+
+  VariableList ass_cvars;
+  for (auto &e : edges.get_edges()) {
+    /** Find location source location with that name */
+    bool found = false;
+    for (auto &p : locations) { 
+      if (p == &e.get_src_location()) {
+        found = true;
+        p = &e.get_dst_location();
+        break;
+      }
     }
-	if (!found) throw string("ERROR!!! Cannot find src location ") +
-			e.get_src_location().get_name();
-	// ss.loc_names[e.get_automaton_index()] = e.get_dest();
-	guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
-	Variables_Set vs2 = e.get_assignment_vars(cvars);
-	vs.insert(vs2.begin(), vs2.end());
-	// for (auto &a : e.assignments)
-	//     vs.insert(get_variable(a.get_var(), cvars));
-	ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
+    
+    if (!found) 
+      throw string("ERROR!!! Cannot find src location ") +
+        e.get_src_location().get_name();
+    // ss.loc_names[e.get_automaton_index()] = e.get_dest();
+	
+    guard_cvx.add_constraints(e.guard_to_Linear_Constraint(cvars, dvars));
+	
+    //Variables_Set vs2 = e.get_assignment_vars(cvars);
+    //vs.insert(vs2.begin(), vs2.end());
+    // for (auto &a : e.assignments)
+    //     vs.insert(get_variable(a.get_var(), cvars));
+    ass_cvx.add_constraints(e.ass_to_Linear_Constraint(cvars, dvars));
+    auto assignments = e.get_assignments();
+    for ( auto & c : cvars) {
+      if ( contains_in_a_set<std::string>(ass_cvars, c))
+        continue;
+      for ( auto & x : assignments) {
+        if ( x.has_variable(c)) {
+          ass_cvars.insert(ass_cvars.end(), c);
+          break;
+        }
+      }
     }
-    cvx.intersection_assign(guard_cvx);
-
-    ass_cvx.add_constraints(cvx.constraints());
+  }
+  
+  cvx.intersection_assign(guard_cvx);
+  
+  //ass_cvx.add_constraints(cvx.constraints());
     //cvx.add_space_dimensions_and_embed(cvars.size());
     //ass_cvx.intersection_assign(cvx);
     //cvx.remove_higher_space_dimensions(cvars.size());
-    /** 
-     * Before intersecting ass_cvx and cvx, we must remove 
-     * the lower cvars.size() dimensions.
-     * */
-    PPL::Variables_Set lower_dims;
-    for ( unsigned i = 0; i < cvars.size(); i++)
-      lower_dims.insert(PPL::Variable(i));
-    ass_cvx.remove_space_dimensions(lower_dims);
-
-    cvx.unconstrain(vs);
-    cvx.intersection_assign(ass_cvx);
+  /** 
+    * Before intersecting ass_cvx and cvx, we must remove 
+    * the lower cvars.size() dimensions.
+  * */
+  //PPL::Variables_Set lower_dims;
+  //for ( unsigned i = 0; i < cvars.size(); i++)
+    //lower_dims.insert(PPL::Variable(i));
+  //ass_cvx.remove_space_dimensions(lower_dims);
+  
+  //cvx.unconstrain(vs);
+  Variables_Set ass_vs;
+  for ( auto & x : ass_cvars)
+    ass_vs.insert(get_ppl_variable(cvars, x));
+  cvx.unconstrain(ass_vs);
+  cvx.intersection_assign(ass_cvx);
     // To build the invariant_cvx, which is latter used and destroyed in continuous_step()
-    invariant_cvx = get_invariant_cvx();
-    cvx.intersection_assign(invariant_cvx);
+  invariant_cvx = get_invariant_cvx();
+  cvx.intersection_assign(invariant_cvx);
+  
+  incoming_edge = edges;
+  incoming_edge.set_locations(l);
+    //cout << "leave a discrete step ... " << endl;
+  //print();
+  //cout << "end of a discrete step. " << endl;
 }
 
 
@@ -352,14 +347,27 @@ bool Symbolic_State::is_empty() const
 //    }
 //}
 
+/** To perform only discrete steps from current state. */
+vector<shared_ptr<Symbolic_State> > Symbolic_State::discrete_steps() const
+{
+    vector<shared_ptr<Symbolic_State> > sstates;
+    //auto it = signature_to_combined_edges.find(signature);
+    vector<Combined_edge> eg = EDGE_FACTORY.get_edges(signature, locations);
+    for (auto e : eg) {
+        auto nss = clone();
+        nss->discrete_step(e);
+        //nss->continuous_step();
+        /** Do not forget to update the signature for the next sstate. */
+        nss->update_signature();
+        sstates.push_back(nss);
+    }
+
+    return sstates;
+}
+
 
 vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
 {
-    //vector< vector<Edge> > v_edges;
-    //vector<shared_ptr<Symbolic_State> > v_ss;
-    //vector<shared_ptr<Symbolic_State> > &sstates = v_ss;
-    //vector<string> synch_labels; 
-
     vector<shared_ptr<Symbolic_State> > sstates;
     //auto it = signature_to_combined_edges.find(signature);
     vector<Combined_edge> eg = EDGE_FACTORY.get_edges(signature, locations);
@@ -372,39 +380,6 @@ vector<shared_ptr<Symbolic_State> > Symbolic_State::post() const
         sstates.push_back(nss);
     }
 
-    //if ( it != signature_to_combined_edges.end()) {
-    //    vector<Combined_edge> &edge_groups = it->second;
-    //    for (auto e : edge_groups) {
-    //    auto nss = clone(); //make_shared<Symbolic_State>(*this);
-    //    nss->discrete_step(e);
-    //    nss->continuous_step();
-    //    /** Do not forget to update the signature for the next sstate. */
-    //    nss->update_signature();
-    //    sstates.push_back(nss);
-    //    }
-    //    
-    //}
-    //else {
-    //    vector<Combined_edge> edge_groups;
-    //    bool first = true;
-    //    for (auto p : locations) {
-    //        vector<string> new_labels = p->get_automaton().get_labels(); 
-    //        combine(edge_groups, *p, new_labels, first);
-	//        first = false;
-    //    }
-
-    //    signature_to_combined_edges.insert(pair<Signature, vector<Combined_edge> >(signature, edge_groups));
-
-    //    for (auto e : edge_groups) {
-	//    auto nss = clone(); //make_shared<Symbolic_State>(*this);
-	//    nss->discrete_step(e);
-	//    nss->continuous_step();
-    //    /** Do not forget to update the signature for the next sstate. */
-    //    nss->update_signature();
-	//    sstates.push_back(nss);
-    //    }
-    //}
-    
     return sstates;
 }
 
@@ -453,4 +428,61 @@ bool Symbolic_State::equals(const std::shared_ptr<Symbolic_State> &pss) const
     return cvx.contains(pss->cvx) && pss->cvx.contains(cvx) 
             && invariant_cvx.contains(pss->invariant_cvx) && pss->invariant_cvx.contains(invariant_cvx);
 
+}
+
+void Symbolic_State::mark_prior(shared_ptr<Symbolic_State> p)
+{
+    prior = p;
+}
+
+shared_ptr<Symbolic_State> Symbolic_State::get_prior() const
+{
+    return prior;
+}
+
+Combined_edge Symbolic_State::get_incoming_edge() const
+{
+    return incoming_edge;
+}
+
+const vector<Location *> & Symbolic_State::get_locations() const
+{
+    return locations;
+}
+    
+bool Symbolic_State::no_outgoings() const
+{
+    for (auto &x : locations) {
+        if (x->get_edges().size() != 0)
+            return false;
+    }
+    return true;
+}
+
+void Symbolic_State::refine_cvx(const PPL::NNC_Polyhedron &poly)
+{
+    cvx.intersection_assign(poly);
+}
+
+bool Symbolic_State::is_valid() const
+{
+    return valid;
+}
+
+void Symbolic_State::invalidate()
+{
+    valid = false;
+}
+
+void Symbolic_State::clear ()
+{
+}
+
+void Symbolic_State::do_something ()
+{
+}
+
+bool Symbolic_State::merge(const std::shared_ptr<Symbolic_State> &pss) 
+{
+  return false;
 }

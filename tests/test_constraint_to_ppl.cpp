@@ -15,9 +15,9 @@ TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.",
   dvl1st.insert(make_pair("a",4));
   dvl1st.insert(make_pair("b",2));
   dvl1st.insert(make_pair("c",3));
-  cvl1st.insert("x");
-  cvl1st.insert("y");
-  cvl1st.insert("z");
+  cvl1st.insert(cvl1st.end(), "x");
+  cvl1st.insert(cvl1st.end(), "y");
+  cvl1st.insert(cvl1st.end(), "z");
   Linear_Constraint lc1st = at_tree1st.to_Linear_Constraint(cvl1st, dvl1st);
 
   cout << "lc1st: " << lc1st << endl;
@@ -39,8 +39,8 @@ TEST_CASE("Test the conversion from constraint to PPL::Constraint_System.",
   VariableList cvl2nd;
   Valuations dvl2nd;
   dvl2nd.insert(make_pair("dline1",10));
-  cvl2nd.insert("x");
-  cvl2nd.insert("wcet1");
+  cvl2nd.insert(cvl2nd.end(), "wcet1");
+  cvl2nd.insert(cvl2nd.end(), "x");
   Linear_Constraint lc2nd = at_tree2nd.to_Linear_Constraint(cvl2nd, dvl2nd);
 
   cout << "lc2nd: " << lc2nd << endl;

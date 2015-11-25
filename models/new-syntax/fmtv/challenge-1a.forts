@@ -1,0 +1,33 @@
+  
+  p1, c1, c2, p3, c3, p4, c4, latency: continuous;
+  
+  P1 == 400000, BCET1 == 280000, WCET1 == 280000,
+  BCL2 == 170000, WCL2 == 190000,
+  P3 == 133333, BCET3 == 80000, WCET3 == 80000,
+  n == 1,
+  buffer34 == 1,
+  P4 == 400000, C4a == 10000, C4b == 100000,
+  glitch1 == 0, glitch3 == 5, glitch4 == 1 
+  : discrete;
+
+  
+automaton Task1 
+sync : sig12;
+
+loc waiting : while p1 <= P1 + glitch1 wait {}
+  when p1 >= P1 + glitch1  do {p1'=0, c1'=0} goto executing;
+
+loc executing : while c1 <= WCET1 wait {}
+  when c1 >= BCET1 sync sig12 do {} goto waiting; 
+  when c1 >= BCET1 sync sig12 do {latency'=0} goto stopping; 
+
+loc stopping : while true wait {}
+
+end
+
+
+init := 
+  loc[Task1] == waiting &
+  latency >= 0 &
+  p1 >= 0 &  p1 <= P1 + glitch1 & 
+  p3 >= 0 & p4 >= 0 & c1 == 0 & c2 == 0 & c3 == 0 & c4 == 0;

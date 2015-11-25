@@ -113,4 +113,5 @@ void time_elapse_assign(PPL::Octagonal_Shape<int64_t> & oct, std::vector<int> &r
 
     oct.strong_closure_assign();
 }
+
 #endif

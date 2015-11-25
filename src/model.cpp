@@ -8,6 +8,8 @@
 
 #include "combined_edge.hpp"
 #include "widened_sstate.hpp"
+#include "widened_sstate_ex.hpp"
+#include "widened_merge_sstate.hpp"
 #include "box_widened_sstate.hpp"
 #include "dbm_sstate.hpp"
 #include "oct_sstate.hpp"
@@ -21,6 +23,7 @@ Model *Model::the_instance = nullptr;
 
 Model::Model()
 {
+  merge = false;
 }
 
 // PPL::NNC_Polyhedron Model::get_invariant_cvx(Symbolic_State &ss)
@@ -115,29 +118,16 @@ void Model::discrete_step(shared_ptr<Symbolic_State> &pss, Combined_edge &edges)
 
 vector<shared_ptr<Symbolic_State> > Model::Post(const shared_ptr<Symbolic_State>& pss)
 {
-    // vector< vector<Edge> > v_edges;
-    // vector<Symbolic_State> v_ss;
-    // vector<Symbolic_State> &sstates = v_ss;
-    // vector<string> synch_labels; 
-
-    // int a_index;
-    // vector<Combined_edge> edge_groups;
-    // for (auto loc_it = ss.loc_names.begin(); loc_it != ss.loc_names.end(); ++loc_it, ++a_index) {
-    //     a_index = loc_it - ss.loc_names.begin();
-    // 	Location &l = automata[a_index].get_location_by_name(*loc_it);
-    //     vector<string> new_labels = automata[a_index].get_labels();
-    //     combine(edge_groups, l, new_labels, loc_it==ss.loc_names.begin());
-    //     //combine(l, new_labels, edge_groups, synch_labels, loc_it==ss.loc_names.begin());
-    // }
-    // for ( auto it = edge_groups.begin(); it != edge_groups.end(); it++) {
-    // 	Symbolic_State nss = ss;
-    // 	discrete_step(nss, *it);
-    // 	continuous_step(nss);
-    // 	sstates.push_back(nss);
-    // }
 
     return pss->post();
 }
+
+vector<shared_ptr<Symbolic_State> > Model::discrete_steps(const shared_ptr<Symbolic_State>& pss)
+{
+
+    return pss->discrete_steps();
+}
+
 
 shared_ptr<Symbolic_State> Model::init_sstate()
 {
@@ -147,13 +137,13 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     string ln="";
     for (auto it = automata.begin(); it != automata.end(); it++) {
-	cout << "loc name " << it->get_init_location() << endl;
+	//cout << "loc name " << it->get_init_location() << endl;
 	//init.loc_names.push_back(it->get_init_location());
 	loc_names.push_back(it->get_init_location());
 	locs.push_back(&(it->get_location_by_name(it->get_init_location())));
 	ln += it->get_init_location();
     }
-    cout << "init name " << ln << endl; 
+    //cout << "init name " << ln << endl; 
     cvx = NNC_Polyhedron(init_constraint.to_Linear_Constraint(cvars, dvars));
     //Symbolic_State init(loc_names, dvars, cvx);
 
@@ -163,18 +153,27 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 
     if (sstate_type == WIDENED)
         init = make_shared<Widened_Symbolic_State>(loc_names, dvars, cvx);
+    if (sstate_type == WIDENED_EX)
+        init = make_shared<Widened_Symbolic_State_ex>(loc_names, dvars, cvx);
+    else if (sstate_type == WIDENED_MERGE) {
+      merge = true;
+      init = make_shared<Widened_Merge_Symbolic_State>(loc_names, dvars, cvx);
+    }
     else if (sstate_type == BOX_WIDENED)
         init = make_shared<Box_Widened_Symbolic_State>(loc_names, dvars, cvx);
-    else if (sstate_type == DBM)
-        init = make_shared<DBM_Symbolic_State>(loc_names, dvars, cvx);
-    else if (sstate_type == OCT) {
-        init = make_shared<OCT_Symbolic_State>(loc_names, dvars, cvx);
-    }
+    //else if (sstate_type == DBM)
+    //    init = make_shared<DBM_Symbolic_State>(loc_names, dvars, cvx);
+    //else if (sstate_type == OCT) {
+    //    init = make_shared<OCT_Symbolic_State>(loc_names, dvars, cvx);
+    //}
     else
         init = make_shared<Symbolic_State>(loc_names, dvars, cvx);
 
-    init->print();
+    //init->print();
     init->continuous_step();
+    init->do_something();
+    //cout << "cvx after continuous step : ";
+    //init->print();
     cout << "cvx after continuous step : ";
     init->print();
     return init;
@@ -186,7 +185,7 @@ shared_ptr<Symbolic_State> Model::init_sstate()
 void Model::SpaceExplorer()
 {
     clock_t begin, end;
-    double time_spent;
+    clock_t time_spent;
     begin = clock();
     shared_ptr<Symbolic_State> init = init_sstate();
     list<shared_ptr<Symbolic_State> > next;
@@ -198,37 +197,50 @@ void Model::SpaceExplorer()
 
     while(true) {
 	for ( auto it = current.begin(); it != current.end(); it++) {
-	    post_stat.start();
-	    vector<shared_ptr<Symbolic_State> > nsstates = Post(*it); 
-	    post_stat.stop();
-	    stats.total_states += nsstates.size();
+          
+          post_stat.start();
+          vector<shared_ptr<Symbolic_State> > nsstates;
+          nsstates = Post(*it); 
+	  post_stat.stop();
+	  stats.total_states += nsstates.size();
 
-	    for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
-		if ( (*iit)->is_empty()) {
-		    stats.eliminated++;
-		    continue;
-		}
-		if ( (*iit)->is_bad()) {
-		    throw ("A bad location is reached ... ");
-                }
-		if ( contained_in(*iit, current)) {
-		    stats.eliminated++;
-		    continue;
-		}
-		if ( contained_in(*iit, next)) {
-		    stats.eliminated++;
-		    continue;
-		}
-		if ( contained_in(*iit, Space)) {
-		    stats.eliminated++;
-		    continue;
-		}
-		stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, next);
-		//stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
-		//stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
-		next.push_back(*iit);
-	    }
-	}
+          for (auto iit = nsstates.begin(); iit != nsstates.end(); iit++) {
+            
+            //(*iit)->mark_prior(*it);
+            if ( (*iit)->is_empty()) {
+              stats.eliminated++;
+              continue;
+            }
+            if ( (*iit)->is_bad()) {
+              throw ("A bad location is reached ... ");
+            }
+            if ( contained_in(*iit, current) ) {
+              stats.eliminated++;
+              continue;
+            }
+            if ( contained_in(*iit, next)) {
+              stats.eliminated++;
+              continue;
+            }
+            if ( contained_in(*iit, Space)) {
+              stats.eliminated++;
+              continue;
+            }
+            if (merge)
+              if ( merged_in(*iit, next)) {
+                stats.eliminated++;
+                continue;
+              }
+            (*iit)->do_something();
+            stats.past_elim_from_next += remove_included_sstates_in_a_list(*iit, next);
+            //stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
+            ////stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
+            next.push_back(*iit);
+          }
+        }
+
+        for ( auto & xit : current) xit->clear();
+
 	Space.splice(Space.end(), current);
 	cout << "-----------------------------" << endl;
 	cout << "Step : " << ++step << endl;
@@ -237,15 +249,19 @@ void Model::SpaceExplorer()
 	cout << "-----------------------------" << endl;
 	if ( next.size() == 0)
 	    break;
-    if ( next.size() == 22) {
-        for (auto x : next)
-            cout << ", " << x->get_loc_names();
-    }
-    cout << endl;
 	current.splice(current.begin(), next);
+	//if ( not merge) current.splice(current.begin(), next);
+        //else {
+        //  for ( auto & nx : next) {
+        //    if ( not contained_in(nx, Space))
+        //      current.push_back(nx);
+        //  }
+        //  next.clear();
+        //}
     }
     end = clock();
-    time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+    //time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+    time_spent = (end-begin) / CLOCKS_PER_SEC;
     cout << "Total time (in seconds) : " << time_spent << endl;
     cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) << endl;
 
@@ -274,13 +290,33 @@ void model_stats::print()
 }
 
 
+bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss, const list<shared_ptr<Symbolic_State> >::iterator & curr)
+{
+    for ( auto it = lss.begin(); it != lss.end(); it++) {
+      if ( it == curr)
+        continue;
+      contains_stat.start();
+      bool f = (*it)->contains(ss);
+      contains_stat.stop();
+      if (f) return true;
+    }
+    return false;
+}
+
+bool Model::merged_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
+{
+    for ( auto it = lss.begin(); it != lss.end(); it++) {
+	//contains_stat.start();
+	bool f = (*it)->merge(ss);
+	//contains_stat.stop();
+	if (f) return true;
+    }
+    return false;
+}
+
 bool Model::contained_in(const shared_ptr<Symbolic_State> &ss, const list<shared_ptr<Symbolic_State> > &lss)
 {
     for ( auto it = lss.begin(); it != lss.end(); it++) {
-        // auto s1 = (*it)->get_signature();
-        // auto s2 = ss->get_signature();
-        // if (!s1.includes(s2))
-        //     continue;
 	contains_stat.start();
 	bool f = (*it)->contains(ss);
 	contains_stat.stop();
@@ -312,6 +348,44 @@ int Model::remove_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &s
     return count;
 }
 
+//int Model::remove_invalid_sstates_in_a_list(list<shared_ptr<Symbolic_State> > &lss)
+//{
+//    int count = 0;
+//    auto it = lss.begin();
+//    while (it != lss.end()){
+//	if (not (*it)->is_valid()) {
+//	    it = lss.erase(it);
+//	    count++;
+//	}
+//	else it++;
+//    }
+//    return count;
+//}
+
+int Model::invalidate_included_sstates_in_a_list(const shared_ptr<Symbolic_State> &ss, list<shared_ptr<Symbolic_State> > &lss)
+{
+    int count = 0;
+    auto it = lss.begin();
+    while (it != lss.end()){
+        // auto s1 = (*it)->get_signature();
+        // auto s2 = ss->get_signature();
+        // if (!s2.includes(s1)) {
+        //     it ++;
+        //     continue;
+        // }
+	contains_stat.start();
+	bool f = ss->contains(*it); 
+	contains_stat.stop();
+	if (f) {
+	    //it = lss.erase(it);
+	    //count++;
+            (*it)->invalidate();
+	}
+	it++;
+    }
+    return count;
+}
+
 void Model::print() const
 {
     for (auto it = cvars.begin(); it != cvars.end(); it++)
@@ -328,6 +402,19 @@ void Model::print() const
 	cout << it->first << " = " << it->second;
     }
     cout << ": discrete;" << endl;
+    
+    ////////////// Model with parameters /////////////////////////////////
+    if ( parameters.size() != 0) {
+        for (auto it = parameters.begin(); it != parameters.end(); it++)
+        {
+                if (it != parameters.begin())
+                    cout << ", ";
+                cout << it->min << "<=" << it->name << "<=" << it->max;
+        }
+        cout << ": parameters;" << endl;
+    }
+    /////////////////////////////////////////////////////////////////////
+
     for (auto it = automata.begin(); it != automata.end(); it++) {
 	it->print();
     }
@@ -369,7 +456,7 @@ void Model::set_init(const constraint &ini)
 
 void Model::add_cvar(const std::string &cv)
 {
-    cvars.insert(cv);
+    cvars.insert(cvars.end(), cv);
 }
 
 void Model::add_dvar(const std::string &dv, int value)
@@ -417,3 +504,4 @@ void Model::set_sstate_type(enum SYMBOLIC_STATE_TYPE t)
 {
     sstate_type = t;
 }
+
