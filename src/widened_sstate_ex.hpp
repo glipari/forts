@@ -28,6 +28,7 @@ public :
     virtual bool equals(const std::shared_ptr<Symbolic_State> &pss) const;
     virtual void print() const;
     virtual void widen();
+    virtual void clear();
     virtual void do_something();
 };
 

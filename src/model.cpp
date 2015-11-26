@@ -236,6 +236,12 @@ void Model::SpaceExplorer()
             //stats.past_elim_from_current += remove_included_sstates_in_a_list(*iit, current);
             ////stats.past_elim_from_space += remove_included_sstates_in_a_list(*iit, Space);
             next.push_back(*iit);
+            if ( max_states_num > 0 ) {
+              if (next.size() + current.size() + Space.size() > max_states_num) {
+                cout << "The upper bound on the state space size is reached..." <<endl;
+                return;
+              }
+            }
           }
         }
 
@@ -250,6 +256,10 @@ void Model::SpaceExplorer()
 	if ( next.size() == 0)
 	    break;
 	current.splice(current.begin(), next);
+        if ( max_steps > 0 and step > max_steps) {
+          cout << "The step limit is reached..." << endl;
+          return;
+        }
 	//if ( not merge) current.splice(current.begin(), next);
         //else {
         //  for ( auto & nx : next) {

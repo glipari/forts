@@ -19,10 +19,13 @@ References:
 * To perform a plain reachability analysis in the LHA model, simply run
         ./efforts input-file
         or 
-        ./efforts -s origin input-file
+        ./efforts -t origin input-file
 
 * For Multiprocessor Global Fixed-Priority Schedulability Analysis
 ** The python script  "forts-gen-smp-sched.py" generates the scheduling model in LHA given an input description
         python forts-gen-smp-sched.py num-of-processors task-set-description-in-json output-file-name
 ** To trigger the efficient schedulability analysis with "slack-time weak simulation relation", run
-        ./efforts -s widened_ex input-file
+        ./efforts -t widened_ex input-file
+
+* Options for running FORTS
+  ** -s max_states_num --- set up an upper bound on the number of states in the state space

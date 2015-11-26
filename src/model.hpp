@@ -40,7 +40,8 @@ enum SYMBOLIC_STATE_TYPE { ORIGIN, WIDENED, WIDENED_EX, WIDENED_MERGE, BOX_WIDEN
 
 class Model {
 protected:
-  bool merge;
+  
+    bool merge;
     enum SYMBOLIC_STATE_TYPE sstate_type = ORIGIN;
     // continuous vars for this model
     VariableList cvars;
@@ -59,6 +60,9 @@ protected:
     model_stats stats;
     TimeStatistic contains_stat;
     TimeStatistic post_stat;
+
+    int max_states_num = 0;
+    int max_steps= 0;
 
     Model();
 
@@ -139,6 +143,9 @@ public:
 
     /** This part is designed for efficient schedulability test of G-FP algorithm on sporadic tasks. */
     void TbT();
+
+    void set_max_states_num(const int num) {  max_states_num = num;}
+    void set_max_steps(const int num) {  max_steps = num;}
 
 
 

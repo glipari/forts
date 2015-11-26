@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   int parall = 1;
   string state_type = "";
   string log_fname = "";
-  while ((c = getopt(argc, argv, "p:s:r:v:f:b:l:")) != -1) {	
+  while ((c = getopt(argc, argv, "t:p:s:r:v:f:b:l:")) != -1) {	
     /**
      * p: to run the software in parallelism, which never works ... 
      **/
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     //  cout << parall << endl;
     //}
     /** there is a series of state types */
-    if (c == 's') {
+    if (c == 't') {
       state_type = string(optarg);
       if (state_type == "box") 
         MODEL.set_sstate_type(BOX_WIDENED);
@@ -66,13 +66,19 @@ int main(int argc, char *argv[])
       }
       cout << "State set to :" << state_type << endl;
     }
+
+    if ( c == 's') {
+      state_type = string(optarg);
+      MODEL.set_max_states_num(stoi(state_type.c_str()));
+    }
+
     if (c == 'l') {
       log_fname = string(optarg);
     }
     /** to set up the bound on steps */
-    //if ( c == 'b') {
-    //    bound = atoi(optarg);
-    //}
+    if ( c == 'b') {
+        MODEL.set_max_steps(atoi(optarg));
+    }
     /** the robustness analysis for the automaton model with parameters */
     //if (c == 'r') {
     //  string robustness_type = string(optarg);

@@ -112,3 +112,6 @@ bool Widened_Symbolic_State_ex::equals(const std::shared_ptr<Symbolic_State> &ps
     return res;
 }
 
+void Widened_Symbolic_State_ex::clear() {
+  cvx.remove_higher_space_dimensions(0);
+}
