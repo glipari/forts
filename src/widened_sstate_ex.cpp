@@ -91,7 +91,8 @@ const PPL::NNC_Polyhedron& Widened_Symbolic_State_ex::get_cvx() const
 
 bool Widened_Symbolic_State_ex::contains(const std::shared_ptr<Symbolic_State> &pss) const
 {
-    if (not signature.includes(pss->get_signature())) return false;
+    if (not (signature == pss->get_signature())) return false;
+    //if (not signature.includes(pss->get_signature())) return false;
     return widened_cvx.contains(pss->get_cvx());
 }
 

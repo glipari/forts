@@ -29,6 +29,7 @@ public :
     virtual void print() const;
     virtual void widen();
     virtual void do_something();
+    virtual void clear();
 };
 
 
