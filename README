@@ -28,7 +28,5 @@ References:
         ./efforts -t widened_ex input-file
 
 * Options for running FORTS
-  ** -s max_states_num --- set up an upper bound on the number of states in the state space, and an early termination will happen
-                            if the number of generated states exceeds this bound.
-  ** -b max_steps --- set up the step limit for state space exploration, and an early termiantion will happen if 
-                            the current step exceeds this number.
+  ** -s max_states_num --- set up an upper bound on the number of states in the state space, and an early termination will happen if the number of generated states exceeds this bound.
+  ** -b max_steps --- set up the step limit for state space exploration, and an early termiantion will happen if the current step exceeds this number.
