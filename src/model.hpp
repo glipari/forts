@@ -24,7 +24,7 @@ struct model_stats {
     int past_elim_from_current = 0;
     int past_elim_from_space = 0;
 
-    void print();
+    void print() const;
 };
 
 
@@ -74,6 +74,7 @@ bool contained_in(const std::shared_ptr<Symbolic_State> &ss, const std::list<std
     int remove_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
     int invalidate_included_sstates_in_a_list(const std::shared_ptr<Symbolic_State> &ss, std::list<std::shared_ptr<Symbolic_State> > &lss);
 
+    void output_stats(const int time_spent) const;
 
 public:
     Model(const Model &other) = delete;

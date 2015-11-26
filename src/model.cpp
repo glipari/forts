@@ -192,6 +192,7 @@ void Model::SpaceExplorer()
     list<shared_ptr<Symbolic_State> > current;
     current.push_back(init);
     int step = 0; 
+    bool early_termination = false;
 
     stats = model_stats{};
 
@@ -212,6 +213,9 @@ void Model::SpaceExplorer()
               continue;
             }
             if ( (*iit)->is_bad()) {
+              end = clock();
+              time_spent = (end-begin) / CLOCKS_PER_SEC;
+              output_stats(time_spent);
               throw ("A bad location is reached ... ");
             }
             if ( contained_in(*iit, current) ) {
@@ -238,6 +242,9 @@ void Model::SpaceExplorer()
             next.push_back(*iit);
             if ( max_states_num > 0 ) {
               if (next.size() + current.size() + Space.size() > max_states_num) {
+                end = clock();
+                time_spent = (end-begin) / CLOCKS_PER_SEC;
+                output_stats(time_spent);
                 cout << "The upper bound on the state space size is reached..." <<endl;
                 return;
               }
@@ -256,7 +263,10 @@ void Model::SpaceExplorer()
 	if ( next.size() == 0)
 	    break;
 	current.splice(current.begin(), next);
-        if ( max_steps > 0 and step > max_steps) {
+        if ( max_steps > 0 and step >= max_steps) {
+          end = clock();
+          time_spent = (end-begin) / CLOCKS_PER_SEC;
+          output_stats(time_spent);
           cout << "The step limit is reached..." << endl;
           return;
         }
@@ -270,8 +280,22 @@ void Model::SpaceExplorer()
         //}
     }
     end = clock();
-    //time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
     time_spent = (end-begin) / CLOCKS_PER_SEC;
+    output_stats(time_spent);
+    //cout << "Total time (in seconds) : " << time_spent << endl;
+    //cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) << endl;
+
+    //stats.print();
+
+    //cout << "Total time inside contains()  : " << contains_stat.get_total() << endl;
+    //cout << "Number of calls to contains() : " << contains_stat.get_counter() << endl;
+    //cout << "Max time inside contains()    : " << contains_stat.get_max() << endl;
+    //cout << "---------------------------------------------------------" << endl;
+    //cout << "Total time inside post()      : " << post_stat.get_total() << endl;
+}
+
+void Model::output_stats(const int time_spent) const {
+
     cout << "Total time (in seconds) : " << time_spent << endl;
     cout << "Total memory (in MB) : " << total_memory_in_bytes()/(1024*1024) << endl;
 
@@ -284,8 +308,7 @@ void Model::SpaceExplorer()
     cout << "Total time inside post()      : " << post_stat.get_total() << endl;
 }
 
-
-void model_stats::print()
+void model_stats::print() const
 {
     int te = eliminated+past_elim_from_next+past_elim_from_current+past_elim_from_space;
     cout << "Total generated states: " << total_states << endl;
