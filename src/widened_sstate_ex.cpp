@@ -57,10 +57,16 @@ void Widened_Symbolic_State_ex::widen()
       int Ti = get_valuation(dvars, "T" + to_string(i+1));
       NNC_Polyhedron tmp(cvx);
 
-      tmp.add_constraint(v>Ti);
+      tmp.add_constraint(v<Ti);
       if ( not tmp.is_empty()) {
-        widened_cvx.unconstrain(v);
+        continue;
       }
+      widened_cvx.unconstrain(v);
+      
+      //tmp.add_constraint(v>Ti);
+      //if ( not tmp.is_empty()) {
+      //  widened_cvx.unconstrain(v);
+      //}
     }
 
 
@@ -82,10 +88,6 @@ const PPL::NNC_Polyhedron& Widened_Symbolic_State_ex::get_cvx() const
     return cvx;
 }
 
-//const PPL::NNC_Polyhedron& Widened_Symbolic_State_ex::get_featured_cvx() const
-//{
-//    return widened_cvx;
-//}
 
 bool Widened_Symbolic_State_ex::contains(const std::shared_ptr<Symbolic_State> &pss) const
 {
